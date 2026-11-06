@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>녹색전환연구소 명함 생성기</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <h1>녹색전환연구소 명함 생성기</h1>
+    <p class="sub">연락처 엑셀을 불러와 이름을 고르면 명함 미리보기와 인쇄발주용 AI 파일이 바로 만들어집니다.</p>
+  </div>
+</header>
+
+<main class="wrap grid">
+  <section class="panel" id="step1">
+    <h2><span class="n">1</span> 연락처 엑셀 불러오기</h2>
+    <label class="drop" id="drop">
+      <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+      <strong>엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
+      <span>예: 운영_연구소 구성원 연락처인쇄용_2026.xlsx</span>
+    </label>
+    <p class="note">파일은 이 브라우저 안에서만 읽힙니다. 서버로 전송되거나 저장되지 않습니다.</p>
+    <div class="row" id="sheetRow" hidden>
+      <label for="sheet">시트</label>
+      <select id="sheet"></select>
+    </div>
+  </section>
+
+  <section class="panel" id="step2">
+    <h2><span class="n">2</span> 구성원 선택</h2>
+    <div class="toolbar">
+      <input type="search" id="q" placeholder="이름 검색">
+      <button type="button" class="ghost" id="addNew">+ 신규 입사자 직접 입력</button>
+    </div>
+    <div id="list" class="list"><p class="empty">엑셀을 불러오거나 ‘신규 입사자 직접 입력’을 눌러 주세요.</p></div>
+    <div class="toolbar small">
+      <button type="button" class="link" id="selAll">전체 선택</button>
+      <button type="button" class="link" id="selNone">선택 해제</button>
+      <span id="count" class="muted"></span>
+    </div>
+  </section>
+
+  <section class="panel" id="step3">
+    <h2><span class="n">3</span> 내용 확인·수정</h2>
+    <form id="form" class="form" autocomplete="off">
+      <p class="empty" id="formEmpty">목록에서 이름을 누르면 여기에서 내용을 고칠 수 있습니다.</p>
+      <div id="fields" hidden>
+        <div class="f"><label>이름</label><input name="name" required></div>
+        <div class="f"><label>영문 이름</label><input name="nameEn"><button type="button" class="link" id="reRoman">로마자 다시 만들기</button></div>
+        <div class="f half"><label>부서</label><select name="dept"></select></div>
+        <div class="f half"><label>직급</label><select name="title"></select></div>
+        <div class="f"><label>국문 직함 줄</label><input name="titleKr"></div>
+        <div class="f"><label>영문 직함 줄</label><input name="titleEn"></div>
+        <div class="f half"><label>휴대전화</label><input name="mobile" inputmode="tel"></div>
+        <div class="f half"><label>사무실 전화</label><input name="tel"></div>
+        <div class="f"><label>이메일</label><input name="email" type="email"></div>
+        <div class="f"><label>주소</label><input name="address"></div>
+        <p class="note">부서·직급을 바꾸면 국문·영문 직함 줄이 자동으로 다시 채워집니다. 영문 이름은 로마자 표기법으로 자동 생성되므로 본인이 쓰는 표기를 확인해 주세요.</p>
+      </div>
+    </form>
+  </section>
+
+  <section class="panel preview" id="step4">
+    <h2><span class="n">4</span> 미리보기·내려받기</h2>
+    <div class="cards">
+      <figure><canvas id="cvFront"></canvas><figcaption>앞면</figcaption></figure>
+      <figure><canvas id="cvBack"></canvas><figcaption>뒷면</figcaption></figure>
+    </div>
+    <p id="status" class="muted" role="status"></p>
+    <div class="actions">
+      <button type="button" id="dlAi" class="primary" disabled>인쇄발주용 AI 내려받기</button>
+      <button type="button" id="dlPdf" class="ghost" disabled>PDF로 내려받기</button>
+    </div>
+    <p class="note">선택한 구성원 전원이 한 파일에 담기며, 사람마다 앞면·뒷면이 한 쪽(아트보드)씩 이어집니다. 재단 90×50mm, 도련 2mm, 앞면 배경은 PANTONE 909 C 별색 그대로입니다.</p>
+  </section>
+</main>
+
+<footer class="wrap foot">
+  <p>원본 템플릿: Business Card_수정가능_별색.ai · 서체: Asta Sans SemiBold (SIL OFL)</p>
+</footer>
+
+<script src="vendor/pdf-lib.min.js"></script>
+<script src="vendor/fontkit.umd.min.js"></script>
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/pdf.min.js"></script>
+<script src="js/card-data.js"></script>
+<script src="js/card-pdf.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

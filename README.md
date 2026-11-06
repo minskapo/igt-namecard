@@ -1,0 +1,19 @@
+# 녹색전환연구소 명함 생성기
+
+연락처 엑셀(`운영_연구소 구성원 연락처인쇄용_*.xlsx`)을 불러와 이름을 고르면 명함 앞·뒷면을 미리 보고, 인쇄발주용 파일(PDF 호환 `.ai`)을 내려받을 수 있는 정적 웹페이지입니다.
+
+- 엑셀은 브라우저 안에서만 읽히며 어디에도 업로드·저장되지 않습니다. 저장소에는 구성원 개인정보가 없습니다.
+- 신규 입사자는 ‘신규 입사자 직접 입력’으로 만들 수 있습니다.
+- 출력 규격: 재단 90×50mm, 도련 2mm(페이지 94×54mm), 앞면 PANTONE 909 C 별색, 뒷면 K100, 서체 Asta Sans SemiBold 전체 임베드.
+- 사람마다 앞면·뒷면 2쪽(=아트보드 2개)으로 이어집니다.
+
+## 구성
+- `assets/base.pdf`: 원본 `Business Card_수정가능_별색.ai`에서 Illustrator 전용 데이터와 뒷면 가변 텍스트를 걷어낸 바탕 템플릿
+- `assets/AstaSans-SemiBold.ttf`: Asta Sans 가변 폰트(SIL OFL)의 SemiBold 정적 인스턴스
+- `js/card-data.js`: 엑셀 파싱, 로마자 표기, 직함 영문화 규칙 (`TEAM_EN`, `TITLE_EN`에서 수정)
+- `js/card-pdf.js`: 좌표·서체 크기·자간(트래킹 -20) 등 레이아웃과 PDF 생성
+- `vendor/`: pdf-lib 1.17.1, @pdf-lib/fontkit 1.1.1, SheetJS 0.18.5, pdf.js 3.11.174
+
+## 참고
+- Illustrator에서 열면 PDF 가져오기 대화상자가 뜰 수 있습니다. 인쇄소에는 그대로 넘기면 됩니다.
+- 팀명이 바뀌거나 새 팀이 생기면 `js/card-data.js`의 `TEAM_EN`에 영문명을 추가하세요.
