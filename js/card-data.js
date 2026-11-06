@@ -50,7 +50,7 @@
     '경제전환팀': 'Economic Transition Team',
     '지역전환팀': 'Local Transition Team',
     '기후시민팀': 'Climate Advocacy Team',
-    '운영기획팀': 'Operations Planning Team'
+    '운영기획팀': 'Operations & Strategy'
   };
   const TITLE_EN = {
     '이사장': 'Chairperson', '소장': 'Director', '부소장': 'Deputy Director',
