@@ -47,8 +47,8 @@
   }
 
   const TEAM_EN = {
-    '경제전환팀': 'Economic Transition Team',
-    '지역전환팀': 'Local Transition Team',
+    '경제전환팀': 'Economic Transformation Team',
+    '지역전환팀': 'Local Transformation Team',
     '기후시민팀': 'Climate Advocacy Team',
     '운영기획팀': 'Operations & Strategy Team'
   };
