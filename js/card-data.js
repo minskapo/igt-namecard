@@ -82,7 +82,7 @@
     return list.find((x) => /@igt\.or\.kr$/i.test(x)) || list[0] || '';
   }
 
-  const OFFICE = { tel: '02  2135  1148', address: '서울 중구 중림로 7길 4, 2층 녹색전환연구소' };
+  const OFFICE = { tel: '02  2135  1148', address: '서울 중구 중림로7길 4, 2층 녹색전환연구소' };
 
   // 엑셀 행 배열(헤더: 부서/이름/직급/핸드폰/이메일) → 명함 데이터
   function rowsToPeople(rows) {

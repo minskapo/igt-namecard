@@ -91,8 +91,10 @@
     const out = await PDFDocument.create();
     out.registerFontkit(fontkitLib);
     const font = await out.embedFont(fontBytes, { subset: false });
-    for (const p of people) {
-      const [front, back] = await out.copyPages(base, [0, 1]);
+    // 한 번에 복사해야 ICC 프로필·로고 등 공통 리소스가 한 벌만 들어감
+    const pages = await out.copyPages(base, people.flatMap(() => [0, 1]));
+    for (const [i, p] of people.entries()) {
+      const front = pages[i * 2], back = pages[i * 2 + 1];
       out.addPage(front);
       out.addPage(back);
       await drawBack(out, back, font, p);
