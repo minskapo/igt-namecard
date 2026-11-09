@@ -50,18 +50,27 @@
     return ops;
   }
 
-  function makeTextTools(doc, font) {
-    const { PDFOperator, PDFNumber } = LIB();
-    const fk = font.embedder.font;
-    const upm = fk.unitsPerEm;
+  // 재단(90×50)·작업(92×52) 영역. 페이지 원점 기준 pt (1mm = 2.83465pt)
+  const MM = 72 / 25.4;
+  const BOX = {
+    trim: { x: 2 * MM, y: 2 * MM, w: 90 * MM, h: 50 * MM },
+    work: { x: 1 * MM, y: 1 * MM, w: 92 * MM, h: 52 * MM }
+  };
 
-    // 글자 단위 인코딩 + 폰트 커닝 반영 (합자 비활성: 이메일 'fi' 등 방지)
+  // fk: fontkit 폰트. pdfFont가 있으면 글자(텍스트)로, 없으면 아웃라인(벡터 패스)으로 그림
+  function makeTextTools(doc, fk, pdfFont) {
+    const { PDFOperator, PDFNumber } = LIB();
+    const upm = fk.unitsPerEm;
+    const N = (v) => PDFNumber.of(Math.round(v * 1000) / 1000);
+
+    // 폰트 커닝 반영 (합자 비활성: 이메일 'fi' 등 방지)
     function measure(text, size, track) {
       const run = fk.layout(text, { liga: false, clig: false, dlig: false });
       let w = 0;
       run.positions.forEach((p, i) => { w += p.xAdvance; if (i < run.positions.length - 1) w += track * upm / 1000; });
       return { run, width: w / upm * size };
     }
+
     function textOps(key, text, x, y, size, track) {
       if (!text) return [];
       const chars = Array.from(text);
@@ -69,7 +78,7 @@
       const sameLen = run.glyphs.length === chars.length;
       const arr = doc.context.obj([]);
       chars.forEach((ch, i) => {
-        arr.push(font.encodeText(ch));
+        arr.push(pdfFont.encodeText(ch));
         if (sameLen && i < chars.length - 1) {
           const g = run.glyphs[i], p = run.positions[i];
           const kern = (p.xAdvance - g.advanceWidth) * 1000 / upm; // 음수=당김
@@ -85,7 +94,36 @@
         PDFOperator.of('ET')
       ];
     }
-    return { measure, textOps };
+
+    // 글리프 외곽선을 PDF 패스로 (같은 커닝·자간)
+    function outlineOps(text, x, y, size, track) {
+      if (!text) return [];
+      const { run } = measure(text, size, track);
+      const sc = size / upm, ops = [];
+      let pen = x;
+      run.glyphs.forEach((g, i) => {
+        const pos = run.positions[i];
+        const ox = pen + pos.xOffset * sc, oy = y + pos.yOffset * sc;
+        const T = (gx, gy) => [N(ox + gx * sc), N(oy + gy * sc)];
+        let cx = 0, cy = 0, sx = 0, sy = 0;
+        for (const c of g.path.commands) {
+          const a = c.args;
+          if (c.command === 'moveTo') { ops.push(PDFOperator.of('m', T(a[0], a[1]))); cx = sx = a[0]; cy = sy = a[1]; }
+          else if (c.command === 'lineTo') { ops.push(PDFOperator.of('l', T(a[0], a[1]))); cx = a[0]; cy = a[1]; }
+          else if (c.command === 'quadraticCurveTo') {
+            const [qx, qy, ex, ey] = a;
+            const c1 = [cx + 2 / 3 * (qx - cx), cy + 2 / 3 * (qy - cy)], c2 = [ex + 2 / 3 * (qx - ex), ey + 2 / 3 * (qy - ey)];
+            ops.push(PDFOperator.of('c', [...T(...c1), ...T(...c2), ...T(ex, ey)])); cx = ex; cy = ey;
+          } else if (c.command === 'bezierCurveTo') {
+            ops.push(PDFOperator.of('c', [...T(a[0], a[1]), ...T(a[2], a[3]), ...T(a[4], a[5])])); cx = a[4]; cy = a[5];
+          } else if (c.command === 'closePath') { ops.push(PDFOperator.of('h')); cx = sx; cy = sy; }
+        }
+        pen += pos.xAdvance * sc + track / 1000 * size;
+      });
+      if (ops.length) ops.push(PDFOperator.of('f'));
+      return ops;
+    }
+    return { measure, textOps, outlineOps };
   }
 
   function titleEnLines(tools, text) {
@@ -96,13 +134,13 @@
     return [text.slice(0, k + 1), text.slice(k + 2)];
   }
 
-  async function drawBack(doc, page, font, p) {
-    const { PDFOperator, PDFNumber, PDFName } = LIB();
-    const tools = makeTextTools(doc, font);
-    // 폰트를 페이지 리소스에 등록
-    const key = page.node.newFontDictionary(font.name, font.ref);
+  function drawBack(doc, page, fk, pdfFont, p) {
+    const { PDFOperator, PDFNumber } = LIB();
+    const tools = makeTextTools(doc, fk, pdfFont);
+    const key = pdfFont ? page.node.newFontDictionary(pdfFont.name, pdfFont.ref) : null;
     const ops = [PDFOperator.of('q'), PDFOperator.of('k', [0, 0, 0, 1].map((v) => PDFNumber.of(v)))];
-    const add = (t, x, y, size, track) => ops.push(...tools.textOps(key, t, x, y, size, track));
+    const add = (t, x, y, size, track) =>
+      ops.push(...(pdfFont ? tools.textOps(key, t, x, y, size, track) : tools.outlineOps(t, x, y, size, track)));
     add(p.name, L.left, L.name.y, L.name.size, L.name.track);
     add(p.titleKr, L.right, L.titleKr.y, L.titleKr.size, L.titleKr.track);
     add(p.nameEn, L.left, L.nameEn.y, L.nameEn.size, L.nameEn.track);
@@ -117,20 +155,50 @@
     page.pushOperators(...ops);
   }
 
+  // 페이지를 작업 사이즈(92×52, 사방 1mm 도련)로 맞추고 재단선(90×50) 정보 지정
+  function setBoxes(page) {
+    const w = BOX.work, t = BOX.trim;
+    page.setMediaBox(w.x, w.y, w.w, w.h);
+    page.setCropBox(w.x, w.y, w.w, w.h);
+    page.setBleedBox(w.x, w.y, w.w, w.h);
+    page.setTrimBox(t.x, t.y, t.w, t.h);
+    page.setArtBox(t.x, t.y, t.w, t.h);
+  }
+  // 92×52·90×50 투명 박스(면·선 모두 불투명도 0). 인쇄되지 않고 크기 기준만 남김
+  function guideBoxOps(doc, page) {
+    const { PDFOperator, PDFNumber, PDFName } = LIB();
+    const gs = doc.context.register(doc.context.obj({ Type: 'ExtGState', CA: 0, ca: 0 }));
+    const key = page.node.newExtGState('GSbox', gs);
+    const N = (v) => PDFNumber.of(Math.round(v * 1000) / 1000);
+    const rect = (b) => PDFOperator.of('re', [N(b.x), N(b.y), N(b.w), N(b.h)]);
+    return [
+      PDFOperator.of('q'), PDFOperator.of('gs', [key]),
+      PDFOperator.of('w', [PDFNumber.of(0.25)]), PDFOperator.of('K', [0, 0, 0, 1].map((v) => PDFNumber.of(v))),
+      rect(BOX.work), PDFOperator.of('S'),
+      rect(BOX.trim), PDFOperator.of('S'),
+      PDFOperator.of('Q')
+    ];
+  }
+
   // people: [{name,titleKr,nameEn,titleEn,mobile,tel,email,address,qrText}] → Uint8Array (PDF 1.6, .ai로 저장 가능)
-  async function buildCards(baseBytes, fontBytes, people, fontkitLib) {
+  // opts.outline: true면 글자를 아웃라인(패스)으로, false면 서체를 넣은 텍스트로
+  async function buildCards(baseBytes, fontBytes, people, fontkitLib, opts) {
     const { PDFDocument } = LIB();
+    const outline = !opts || opts.outline !== false;
     const base = await PDFDocument.load(baseBytes);
     const out = await PDFDocument.create();
     out.registerFontkit(fontkitLib);
-    const font = await out.embedFont(fontBytes, { subset: false });
+    let pdfFont = null, fk;
+    if (outline) fk = fontkitLib.create(new Uint8Array(fontBytes));
+    else { pdfFont = await out.embedFont(fontBytes, { subset: false }); fk = pdfFont.embedder.font; }
     // 한 번에 복사해야 ICC 프로필·로고 등 공통 리소스가 한 벌만 들어감
     const pages = await out.copyPages(base, people.flatMap(() => [0, 1]));
     for (const [i, p] of people.entries()) {
       const front = pages[i * 2], back = pages[i * 2 + 1];
       out.addPage(front);
       out.addPage(back);
-      await drawBack(out, back, font, p);
+      drawBack(out, back, fk, pdfFont, p);
+      for (const pg of [front, back]) { setBoxes(pg); pg.pushOperators(...guideBoxOps(out, pg)); }
     }
     const names = people.map((p) => p.name).join(', ');
     out.setTitle('녹색전환연구소 명함 – ' + names);
@@ -139,6 +207,6 @@
     return out.save({ useObjectStreams: false });
   }
 
-  const api = { buildCards, qrMatrix, LAYOUT: L };
+  const api = { buildCards, qrMatrix, LAYOUT: L, BOX };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.CardPDF = api;
 })(typeof window !== 'undefined' ? window : globalThis);

@@ -71,7 +71,6 @@ figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
 a.btn { display: inline-block; text-decoration: none; border-radius: 8px; padding: 8px 14px; border: 1px solid transparent; font-size: 15px; }
 a.btn.primary { background: var(--ink); color: #fff; }
 a.btn.ghost { background: #fff; border-color: #cfcac3; color: var(--ink); }
-a.bookmarklet { cursor: grab; border-style: dashed; }
 .steps { margin: 14px 0 0; padding-left: 20px; display: grid; gap: 8px; }
 .steps li b:first-child { display: inline-block; min-width: 92px; }
 .steps .muted { display: block; margin-top: 4px; }

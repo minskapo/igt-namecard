@@ -8,7 +8,7 @@
   const state = { people: [], activeId: null, seq: 0, wb: null };
   let assets = null;
   const loadAssets = () => assets || (assets = Promise.all([
-    fetch('assets/base.pdf?v=20261109b').then((r) => r.arrayBuffer()),
+    fetch('assets/base.pdf?v=20261109e').then((r) => r.arrayBuffer()),
     fetch('assets/AstaSans-SemiBold.ttf?v=20261109').then((r) => r.arrayBuffer())
   ]).then(([base, font]) => ({ base, font })));
   loadAssets();
@@ -122,8 +122,8 @@
   function updateCount() {
     const n = state.people.filter((p) => p.selected).length;
     $('#count').textContent = n ? `${n}명 선택됨` : '';
-    $('#dlAi').disabled = $('#dlPdf').disabled = !n;
-    $('#dlAi').textContent = n > 1 ? `인쇄발주용 AI 내려받기 (${n}명)` : '인쇄발주용 AI 내려받기';
+    ['#dlAi', '#dlAiText', '#dlPng'].forEach((k) => ($(k).disabled = !n));
+    $('#dlAi').textContent = n > 1 ? `인쇄발주용 AI (아웃라인, ${n}명 ZIP)` : '인쇄발주용 AI (아웃라인)';
   }
 
   /* ---------- 3. 편집 ---------- */
@@ -191,29 +191,77 @@
 
   /* ---------- 내려받기 ---------- */
   $('#dlAi').addEventListener('click', () => download('ai'));
-  $('#dlPdf').addEventListener('click', () => download('pdf'));
-  async function download(ext) {
+  $('#dlAiText').addEventListener('click', () => download('aiText'));
+  $('#dlPng').addEventListener('click', () => download('png'));
+
+  const ymd = () => { const d = new Date(); return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`; };
+  const safe = (s) => String(s || '이름없음').replace(/[\\/:*?"<>|\s]+/g, '_');
+  function saveBlob(blob, fname) {
+    const url = URL.createObjectURL(blob);
+    const link = Object.assign(document.createElement('a'), { href: url, download: fname });
+    document.body.appendChild(link); link.click(); link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 10000);
+  }
+  // 재단 크기(90×50mm) PNG: 92×52 페이지를 그린 뒤 사방 1mm를 잘라냄
+  async function pngPages(pdfBytes, dpi) {
+    const pdf = await pdfjsLib.getDocument({ data: pdfBytes, worker: pdfWorker, disableFontFace: true }).promise;
+    const out = [];
+    for (let n = 1; n <= pdf.numPages; n++) {
+      const page = await pdf.getPage(n);
+      const vp = page.getViewport({ scale: dpi / 72 });
+      const cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
+      await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+      const m = Math.round(dpi / 25.4), w = Math.round(90 * dpi / 25.4), h = Math.round(50 * dpi / 25.4);
+      const crop = document.createElement('canvas'); crop.width = w; crop.height = h;
+      crop.getContext('2d').drawImage(cv, m, m, w, h, 0, 0, w, h);
+      out.push(await new Promise((r) => crop.toBlob(r, 'image/png')));
+    }
+    pdf.destroy();
+    return out;
+  }
+  // 한 사람 분 파일들 → [{name, data}]
+  async function filesFor(p, kind, a) {
+    const one = [{ ...p, qrText: p.shortUrl }];
+    const base = `녹색전환연구소_명함_${safe(p.name)}`;
+    if (kind === 'ai') return [{ name: `${base}_인쇄용_아웃라인.ai`, data: await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: true }) }];
+    if (kind === 'aiText') return [{ name: `${base}_글자편집용.ai`, data: await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: false }) }];
+    const bytes = await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: true });
+    const [front, back] = await pngPages(bytes, 600);
+    return [{ name: `${base}_앞면.png`, data: front }, { name: `${base}_뒷면.png`, data: back }];
+  }
+  const LABEL = { ai: '인쇄용_아웃라인_AI', aiText: '글자편집용_AI', png: 'PNG' };
+  async function download(kind) {
     const sel = state.people.filter((p) => p.selected);
     const missing = sel.filter((p) => !p.name.trim() || !p.mobile.trim() || !p.email.trim());
     if (missing.length && !confirm(`이름·휴대전화·이메일이 비어 있는 명함이 ${missing.length}장 있습니다. 그대로 만들까요?`)) return;
+    const btns = ['#dlAi', '#dlAiText', '#dlPng'].map((k) => $(k));
+    btns.forEach((b) => (b.disabled = true));
     status('QR 단축링크를 확인하는 중입니다…');
     try {
       for (const p of sel) {
         if (!validEmail(p.email)) throw new Error(`${p.name || '이름 없음'}: 이메일이 없어 QR 추적 링크를 만들 수 없습니다.`);
         await ensureLink(p);
       }
-      status('파일을 만드는 중입니다…');
       const a = await loadAssets();
-      const bytes = await CardPDF.buildCards(a.base, a.font, sel.map((p) => ({ ...p, qrText: p.shortUrl })), fontkit);
-      const d = new Date(), ymd = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
-      const fname = sel.length === 1 ? `녹색전환연구소_명함_${sel[0].name}_${ymd}.${ext}` : `녹색전환연구소_명함_${sel.length}명_${ymd}.${ext}`;
-      const blob = new Blob([bytes], { type: ext === 'ai' ? 'application/postscript' : 'application/pdf' });
-      const url = URL.createObjectURL(blob);
-      const link = Object.assign(document.createElement('a'), { href: url, download: fname });
-      document.body.appendChild(link); link.click(); link.remove();
-      setTimeout(() => URL.revokeObjectURL(url), 5000);
-      status(`${fname} 파일을 내려받았습니다. (${sel.length}명, ${sel.length * 2}쪽) 새로 만든 사람은 ‘시트에 붙여넣을 행 복사’로 추적링크 시트에도 기록해 주세요.`);
+      const files = [];
+      for (const [i, p] of sel.entries()) {
+        status(`파일을 만드는 중입니다… (${i + 1}/${sel.length})`);
+        files.push(...await filesFor(p, kind, a));
+      }
+      let fname;
+      if (files.length === 1) {
+        fname = files[0].name.replace(/(\.\w+)$/, `_${ymd()}$1`);
+        saveBlob(new Blob([files[0].data], { type: 'application/postscript' }), fname);
+      } else {
+        const zip = new JSZip();
+        files.forEach((f) => zip.file(f.name, f.data));
+        const who = sel.length === 1 ? safe(sel[0].name) : `${sel.length}명`;
+        fname = `녹색전환연구소_명함_${who}_${LABEL[kind]}_${ymd()}.zip`;
+        saveBlob(await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' }), fname);
+      }
+      status(`${fname} 파일을 내려받았습니다.${kind === 'ai' ? ' 성원애드피아 주문 방법은 아래 인쇄 주문 가이드를 참고하세요.' : ''}`);
     } catch (err) { status('파일 생성에 실패했습니다: ' + err.message, true); console.error(err); }
+    finally { updateCount(); }
   }
 
   /* ---------- 링크 복사 · 시트 행 복사 ---------- */
