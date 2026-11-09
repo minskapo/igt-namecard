@@ -1,19 +1,50 @@
 (function () {
   const $ = (s) => document.querySelector(s);
   const C = window.CardData;
+  const LK = window.CardLink;
   pdfjsLib.GlobalWorkerOptions.workerSrc = 'vendor/pdf.worker.min.js';
   const pdfWorker = new pdfjsLib.PDFWorker();
 
   const state = { people: [], activeId: null, seq: 0, wb: null };
   let assets = null;
   const loadAssets = () => assets || (assets = Promise.all([
-    fetch('assets/base.pdf?v=20261109').then((r) => r.arrayBuffer()),
+    fetch('assets/base.pdf?v=20261109b').then((r) => r.arrayBuffer()),
     fetch('assets/AstaSans-SemiBold.ttf?v=20261109').then((r) => r.arrayBuffer())
   ]).then(([base, font]) => ({ base, font })));
   loadAssets();
 
   const DEPTS = ['이사장', '소장', '부소장', ...Object.keys(C.TEAM_EN)];
   const TITLES = ['이사장', '소장', '부소장', '팀장', '선임연구원', '연구원', '인턴연구원'];
+
+  /* ---------- 추적 링크(UTM → 단축링크) ---------- */
+  const shortCache = new Map(); // UTM 링크 → 단축링크(진행 중이면 Promise)
+  const validEmail = (e) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(e || '').trim());
+  function ensureLink(p) {
+    const utm = LK.utmUrl(p);
+    if (!utm || !validEmail(p.email)) return Promise.resolve(null);
+    if (p.shortFor === utm && p.shortUrl) return Promise.resolve(p.shortUrl);
+    if (!shortCache.has(utm)) {
+      shortCache.set(utm, LK.ensureShort(utm).catch((err) => { shortCache.delete(utm); throw err; }));
+    }
+    return shortCache.get(utm).then((s) => { p.shortUrl = s; p.shortFor = utm; return s; });
+  }
+  // QR에 넣을 값: 확정된 단축링크, 없으면 UTM 링크(임시)
+  const qrTextOf = (p) => (p.shortUrl && p.shortFor === LK.utmUrl(p) ? p.shortUrl : LK.utmUrl(p));
+  async function refreshLink(p) {
+    if (!p) return;
+    renderLink(p, '단축링크를 확인하는 중…');
+    try { await ensureLink(p); renderLink(p); schedulePreview(); }
+    catch (err) { renderLink(p, '단축링크를 만들지 못했습니다. 잠시 뒤 다시 시도해 주세요. (' + err.message + ')', true); }
+  }
+  function renderLink(p, msg, err) {
+    if (!p || p.id !== state.activeId) return;
+    const utm = LK.utmUrl(p), ok = p.shortUrl && p.shortFor === utm;
+    $('#utmUrl').value = utm || '';
+    $('#shortUrl').value = ok ? p.shortUrl : '';
+    const el = $('#linkMsg');
+    el.textContent = msg || (ok ? `utm_content=${LK.contentId(p)} · QR에는 단축링크가 들어갑니다.` : (validEmail(p.email) ? '' : '이메일을 입력하면 추적 링크가 만들어집니다.'));
+    el.style.color = err ? '#b42318' : '';
+  }
 
   /* ---------- 1. 엑셀 ---------- */
   const fileInput = $('#file'), drop = $('#drop');
@@ -86,7 +117,7 @@
     if (e.target.matches('input[type=checkbox]')) { p.selected = e.target.checked; updateCount(); return; }
     state.activeId = p.id;
     if (!state.people.some((x) => x.selected)) p.selected = true;
-    renderList(); renderForm(); preview();
+    renderList(); renderForm(); preview(); refreshLink(p);
   });
   function updateCount() {
     const n = state.people.filter((p) => p.selected).length;
@@ -105,6 +136,7 @@
     form.elements.dept.innerHTML = opt(DEPTS, p.dept);
     form.elements.title.innerHTML = opt(TITLES, p.title);
     ['name', 'nameEn', 'titleKr', 'titleEn', 'mobile', 'tel', 'email', 'address'].forEach((k) => (form.elements[k].value = p[k] || ''));
+    renderLink(p);
   }
   form.addEventListener('input', (e) => {
     const p = byId(state.activeId); if (!p) return;
@@ -115,11 +147,13 @@
       form.elements.titleKr.value = t.kr; form.elements.titleEn.value = t.en;
     }
     if (k === 'name' || k === 'dept' || k === 'title') renderList();
+    if (k === 'email' || k === 'nameEn') renderLink(p);
     schedulePreview();
   });
   form.addEventListener('change', (e) => {
     const p = byId(state.activeId); if (!p) return;
     if (e.target.name === 'mobile' || e.target.name === 'tel') { p[e.target.name] = C.fmtPhone(e.target.value); e.target.value = p[e.target.name]; schedulePreview(); }
+    if (e.target.name === 'email') { p.email = e.target.value.trim(); e.target.value = p.email; refreshLink(p); }
   });
   form.addEventListener('submit', (e) => e.preventDefault());
   $('#reRoman').addEventListener('click', () => {
@@ -135,7 +169,7 @@
     const my = ++ticket;
     const a = await loadAssets();
     const person = p || C.makePerson({ name: '홍길동', dept: '기후시민팀', title: '연구원', mobile: '01012345678', email: 'gildong.hong@igt.or.kr' });
-    const bytes = await CardPDF.buildCards(a.base, a.font, [person], fontkit);
+    const bytes = await CardPDF.buildCards(a.base, a.font, [{ ...person, qrText: qrTextOf(person) }], fontkit);
     if (my !== ticket) return;
     // 미리보기마다 서체 서브셋이 달라지므로 FontFace 캐시를 쓰지 않고 글리프를 직접 그림
     const pdf = await pdfjsLib.getDocument({ data: bytes, worker: pdfWorker, disableFontFace: true }).promise;
@@ -162,10 +196,15 @@
     const sel = state.people.filter((p) => p.selected);
     const missing = sel.filter((p) => !p.name.trim() || !p.mobile.trim() || !p.email.trim());
     if (missing.length && !confirm(`이름·휴대전화·이메일이 비어 있는 명함이 ${missing.length}장 있습니다. 그대로 만들까요?`)) return;
-    status('파일을 만드는 중입니다…');
+    status('QR 단축링크를 확인하는 중입니다…');
     try {
+      for (const p of sel) {
+        if (!validEmail(p.email)) throw new Error(`${p.name || '이름 없음'}: 이메일이 없어 QR 추적 링크를 만들 수 없습니다.`);
+        await ensureLink(p);
+      }
+      status('파일을 만드는 중입니다…');
       const a = await loadAssets();
-      const bytes = await CardPDF.buildCards(a.base, a.font, sel, fontkit);
+      const bytes = await CardPDF.buildCards(a.base, a.font, sel.map((p) => ({ ...p, qrText: p.shortUrl })), fontkit);
       const d = new Date(), ymd = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`;
       const fname = sel.length === 1 ? `녹색전환연구소_명함_${sel[0].name}_${ymd}.${ext}` : `녹색전환연구소_명함_${sel.length}명_${ymd}.${ext}`;
       const blob = new Blob([bytes], { type: ext === 'ai' ? 'application/postscript' : 'application/pdf' });
@@ -173,9 +212,30 @@
       const link = Object.assign(document.createElement('a'), { href: url, download: fname });
       document.body.appendChild(link); link.click(); link.remove();
       setTimeout(() => URL.revokeObjectURL(url), 5000);
-      status(`${fname} 파일을 내려받았습니다. (${sel.length}명, ${sel.length * 2}쪽)`);
+      status(`${fname} 파일을 내려받았습니다. (${sel.length}명, ${sel.length * 2}쪽) 새로 만든 사람은 ‘시트에 붙여넣을 행 복사’로 추적링크 시트에도 기록해 주세요.`);
     } catch (err) { status('파일 생성에 실패했습니다: ' + err.message, true); console.error(err); }
   }
+
+  /* ---------- 링크 복사 · 시트 행 복사 ---------- */
+  const AUTHOR_KEY = 'igt-namecard-author';
+  try { $('#author').value = localStorage.getItem(AUTHOR_KEY) || ''; } catch (e) { /* 저장소 사용 불가 */ }
+  $('#author').addEventListener('change', (e) => { try { localStorage.setItem(AUTHOR_KEY, e.target.value.trim()); } catch (err) { /* 무시 */ } });
+  async function copyText(t, okMsg) {
+    try { await navigator.clipboard.writeText(t); status(okMsg); }
+    catch (e) { window.prompt('아래 내용을 복사하세요.', t); }
+  }
+  $('#copyShort').addEventListener('click', () => { const v = $('#shortUrl').value; if (v) copyText(v, '단축링크를 복사했습니다.'); });
+  $('#copyRows').addEventListener('click', async () => {
+    const sel = state.people.filter((p) => p.selected);
+    if (!sel.length) return;
+    status('단축링크를 확인하는 중입니다…');
+    try {
+      for (const p of sel) { if (validEmail(p.email)) await ensureLink(p); }
+      const author = $('#author').value.trim();
+      const rows = sel.filter((p) => p.shortUrl).map((p) => LK.sheetRow(p, p.shortUrl, author).join('\t'));
+      await copyText(rows.join('\n'), `${rows.length}명분 행을 복사했습니다. ‘UTM코드 생성기’ 시트 맨 아래 빈 행의 A열에 붙여넣으세요.`);
+    } catch (err) { status('행 복사 실패: ' + err.message, true); }
+  });
 
   /* ---------- util ---------- */
   function byId(id) { return state.people.find((p) => p.id === id); }

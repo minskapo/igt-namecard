@@ -16,8 +16,39 @@
       { label: 'E-MAIL',  key: 'email',   y: 64.0703 },
       { label: 'ADDRESS', key: 'address', y: 52.8076, valueY: 53.1406, valueSize: 7.2 }
     ],
-    rowSize: 7.5, rowTrack: -20
+    rowSize: 7.5, rowTrack: -20,
+    // QR: 원본 템플릿 QR과 같은 자리·크기(약 8mm). 왼쪽 위 기준
+    qr: { x: 229.62, top: 36.83, size: 22.65, ecc: 'M', minVersion: 3 }
   };
+
+  const QRLIB = () => (typeof qrcode !== 'undefined' ? qrcode : require('qrcode-generator'));
+  // 링크 → QR 모듈 배열. 모든 명함의 QR 밀도가 같도록 최소 버전(3, 29칸)부터 맞춤
+  function qrMatrix(text) {
+    const lib = QRLIB();
+    let q = null;
+    for (let v = L.qr.minVersion; v <= 10; v++) {
+      try { q = lib(v, L.qr.ecc); q.addData(text); q.make(); break; } catch (e) { q = null; }
+    }
+    if (!q) { q = lib(0, L.qr.ecc); q.addData(text); q.make(); }
+    const n = q.getModuleCount();
+    return Array.from({ length: n }, (_, r) => Array.from({ length: n }, (_, c) => q.isDark(r, c)));
+  }
+  function qrOps(text) {
+    const { PDFOperator, PDFNumber } = LIB();
+    const M = qrMatrix(text), n = M.length, m = L.qr.size / n;
+    const ops = [];
+    const num = (v) => PDFNumber.of(Math.round(v * 10000) / 10000);
+    M.forEach((row, r) => {
+      for (let c = 0; c < n;) {
+        if (!row[c]) { c++; continue; }
+        const s0 = c; while (c < n && row[c]) c++;
+        // 이웃 칸과 이음새가 생기지 않도록 아주 조금 겹쳐 그림
+        ops.push(PDFOperator.of('re', [num(L.qr.x + s0 * m), num(L.qr.top - (r + 1) * m - 0.005), num((c - s0) * m), num(m + 0.01)]));
+      }
+    });
+    ops.push(PDFOperator.of('f'));
+    return ops;
+  }
 
   function makeTextTools(doc, font) {
     const { PDFOperator, PDFNumber } = LIB();
@@ -81,11 +112,12 @@
       add(r.label, L.left, r.y, L.rowSize, L.rowTrack);
       add(p[r.key], L.right, r.valueY || r.y, r.valueSize || L.rowSize, L.rowTrack);
     });
+    if (p.qrText) ops.push(...qrOps(p.qrText));
     ops.push(PDFOperator.of('Q'));
     page.pushOperators(...ops);
   }
 
-  // people: [{name,titleKr,nameEn,titleEn,mobile,tel,email,address}] → Uint8Array (PDF 1.6, .ai로 저장 가능)
+  // people: [{name,titleKr,nameEn,titleEn,mobile,tel,email,address,qrText}] → Uint8Array (PDF 1.6, .ai로 저장 가능)
   async function buildCards(baseBytes, fontBytes, people, fontkitLib) {
     const { PDFDocument } = LIB();
     const base = await PDFDocument.load(baseBytes);
@@ -107,6 +139,6 @@
     return out.save({ useObjectStreams: false });
   }
 
-  const api = { buildCards, LAYOUT: L };
+  const api = { buildCards, qrMatrix, LAYOUT: L };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.CardPDF = api;
 })(typeof window !== 'undefined' ? window : globalThis);

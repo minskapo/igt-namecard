@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>녹색전환연구소 명함 생성기</title>
-<link rel="stylesheet" href="css/style.css?v=20261109a">
+<link rel="stylesheet" href="css/style.css?v=20261109b">
 </head>
 <body>
 <header class="top">
@@ -59,6 +59,8 @@
         <div class="f half"><label>사무실 전화</label><input name="tel"></div>
         <div class="f"><label>이메일</label><input name="email" type="email"></div>
         <div class="f"><label>주소</label><input name="address"></div>
+        <div class="f linkbox"><label>QR 추적 링크 (UTM)</label><input id="utmUrl" readonly></div>
+        <div class="f linkbox"><label>QR 단축링크 (da.gd)</label><div class="inline"><input id="shortUrl" readonly><button type="button" class="ghost" id="copyShort">복사</button></div><p class="muted" id="linkMsg"></p></div>
         <p class="note">부서·직급을 바꾸면 국문·영문 직함 줄이 자동으로 다시 채워집니다. 영문 이름은 로마자 표기법으로 자동 생성되므로 본인이 쓰는 표기를 확인해 주세요.</p>
       </div>
     </form>
@@ -75,6 +77,12 @@
       <button type="button" id="dlAi" class="primary" disabled>인쇄발주용 AI 내려받기</button>
       <button type="button" id="dlPdf" class="ghost" disabled>PDF로 내려받기</button>
     </div>
+    <div class="sheetbox">
+      <label for="author" class="muted">작성자</label>
+      <input id="author" placeholder="시트 B열에 들어갈 이름">
+      <button type="button" class="ghost" id="copyRows">시트에 붙여넣을 행 복사</button>
+    </div>
+    <p class="note">QR에는 구성원별 UTM 링크(소스 bizcard · 매체 qrcode · 캠페인 business_card · 콘텐츠 이메일 아이디)를 da.gd로 줄인 단축링크가 들어갑니다. 신규 발급자는 ‘시트에 붙여넣을 행 복사’ 후 GA4 추적링크 생성기 시트에 붙여넣어 기록해 주세요.</p>
     <p class="note">선택한 구성원 전원이 한 파일에 담기며, 사람마다 앞면·뒷면이 한 쪽(아트보드)씩 이어집니다. 재단 90×50mm, 도련 2mm, 앞면 배경은 PANTONE 909 C 별색 그대로입니다.</p>
   </section>
 </main>
@@ -87,8 +95,10 @@
 <script src="vendor/fontkit.umd.min.js"></script>
 <script src="vendor/xlsx.full.min.js"></script>
 <script src="vendor/pdf.min.js"></script>
-<script src="js/card-data.js?v=20261109a"></script>
-<script src="js/card-pdf.js?v=20261109a"></script>
-<script src="js/app.js?v=20261109a"></script>
+<script src="vendor/qrcode-generator.js"></script>
+<script src="js/card-data.js?v=20261109b"></script>
+<script src="js/card-link.js?v=20261109b"></script>
+<script src="js/card-pdf.js?v=20261109b"></script>
+<script src="js/app.js?v=20261109b"></script>
 </body>
 </html>
