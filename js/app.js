@@ -8,7 +8,7 @@
   const state = { people: [], activeId: null, seq: 0, wb: null };
   let assets = null;
   const loadAssets = () => assets || (assets = Promise.all([
-    fetch('assets/base.pdf?v=20261109g').then((r) => r.arrayBuffer()),
+    fetch('assets/base.pdf?v=20261109i').then((r) => r.arrayBuffer()),
     fetch('assets/AstaSans-SemiBold.ttf?v=20261109').then((r) => r.arrayBuffer())
   ]).then(([base, font]) => ({ base, font })));
   loadAssets();
@@ -122,8 +122,8 @@
   function updateCount() {
     const n = state.people.filter((p) => p.selected).length;
     $('#count').textContent = n ? `${n}명 선택됨` : '';
-    ['#dlAi', '#dlAiText', '#dlPng'].forEach((k) => ($(k).disabled = !n));
-    $('#dlAi').textContent = n > 1 ? `인쇄발주용 AI (아웃라인, ${n}명 ZIP)` : '인쇄발주용 AI (아웃라인)';
+    ['#dlAi', '#dlPng'].forEach((k) => ($(k).disabled = !n));
+    $('#dlAi').textContent = n > 1 ? `인쇄발주용 AI (${n}명 ZIP)` : '인쇄발주용 AI';
   }
 
   /* ---------- 3. 편집 ---------- */
@@ -178,20 +178,24 @@
     pdf.destroy();
     if (!p && !state.people.length) status('예시(홍길동) 미리보기입니다.');
   }
+  // 미리보기는 재단선(90×50) 안쪽만 보여 줌
   async function drawPage(pdf, n, cv) {
     const page = await pdf.getPage(n);
     const w = cv.parentElement.clientWidth || 500;
     const vp0 = page.getViewport({ scale: 1 });
-    const scale = (w / vp0.width) * Math.min(window.devicePixelRatio || 1, 3);
+    const trimW = vp0.width - 4 * 72 / 25.4;
+    const scale = (w / trimW) * Math.min(window.devicePixelRatio || 1, 3);
     const vp = page.getViewport({ scale });
-    cv.width = vp.width; cv.height = vp.height;
-    await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
+    const full = document.createElement('canvas'); full.width = Math.round(vp.width); full.height = Math.round(vp.height);
+    await page.render({ canvasContext: full.getContext('2d'), viewport: vp }).promise;
+    const m = 2 * 72 / 25.4 * scale;
+    cv.width = Math.round(vp.width - 2 * m); cv.height = Math.round(vp.height - 2 * m);
+    cv.getContext('2d').drawImage(full, m, m, cv.width, cv.height, 0, 0, cv.width, cv.height);
   }
   window.addEventListener('resize', schedulePreview);
 
   /* ---------- 내려받기 ---------- */
   $('#dlAi').addEventListener('click', () => download('ai'));
-  $('#dlAiText').addEventListener('click', () => download('aiText'));
   $('#dlPng').addEventListener('click', () => download('png'));
 
   const ymd = () => { const d = new Date(); return `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}${String(d.getDate()).padStart(2, '0')}`; };
@@ -202,7 +206,7 @@
     document.body.appendChild(link); link.click(); link.remove();
     setTimeout(() => URL.revokeObjectURL(url), 10000);
   }
-  // 재단 크기(90×50mm) PNG: 92×52 페이지를 그린 뒤 사방 1mm를 잘라냄
+  // 재단 크기(90×50mm) PNG: 94×54 페이지를 그린 뒤 사방 도련 2mm를 잘라냄
   async function pngPages(pdfBytes, dpi) {
     const pdf = await pdfjsLib.getDocument({ data: pdfBytes, worker: pdfWorker, disableFontFace: true }).promise;
     const out = [];
@@ -211,7 +215,7 @@
       const vp = page.getViewport({ scale: dpi / 72 });
       const cv = document.createElement('canvas'); cv.width = Math.round(vp.width); cv.height = Math.round(vp.height);
       await page.render({ canvasContext: cv.getContext('2d'), viewport: vp }).promise;
-      const m = Math.round(dpi / 25.4), w = Math.round(90 * dpi / 25.4), h = Math.round(50 * dpi / 25.4);
+      const m = Math.round(2 * dpi / 25.4), w = Math.round(90 * dpi / 25.4), h = Math.round(50 * dpi / 25.4);
       const crop = document.createElement('canvas'); crop.width = w; crop.height = h;
       crop.getContext('2d').drawImage(cv, m, m, w, h, 0, 0, w, h);
       out.push(await new Promise((r) => crop.toBlob(r, 'image/png')));
@@ -223,18 +227,17 @@
   async function filesFor(p, kind, a) {
     const one = [{ ...p, qrText: p.shortUrl }];
     const base = `녹색전환연구소_명함_${safe(p.name)}`;
-    if (kind === 'ai') return [{ name: `${base}_인쇄용_아웃라인.ai`, data: await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: true }) }];
-    if (kind === 'aiText') return [{ name: `${base}_글자편집용.ai`, data: await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: false }) }];
+    if (kind === 'ai') return [{ name: `${base}_인쇄용.ai`, data: await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: true }) }];
     const bytes = await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: true, editingData: false });
     const [front, back] = await pngPages(bytes, 600);
     return [{ name: `${base}_앞면.png`, data: front }, { name: `${base}_뒷면.png`, data: back }];
   }
-  const LABEL = { ai: '인쇄용_아웃라인_AI', aiText: '글자편집용_AI', png: 'PNG' };
+  const LABEL = { ai: '인쇄용_AI', png: 'PNG' };
   async function download(kind) {
     const sel = state.people.filter((p) => p.selected);
     const missing = sel.filter((p) => !p.name.trim() || !p.mobile.trim() || !p.email.trim());
     if (missing.length && !confirm(`이름·휴대전화·이메일이 비어 있는 명함이 ${missing.length}장 있습니다. 그대로 만들까요?`)) return;
-    const btns = ['#dlAi', '#dlAiText', '#dlPng'].map((k) => $(k));
+    const btns = ['#dlAi', '#dlPng'].map((k) => $(k));
     btns.forEach((b) => (b.disabled = true));
     status('QR 단축링크를 확인하는 중입니다…');
     try {

@@ -184,12 +184,12 @@
     page.pushOperators(...ops);
   }
 
-  // 페이지를 작업 사이즈(92×52, 사방 1mm 도련)로 맞추고 재단선(90×50) 정보 지정
+  // 페이지 = 재단 90×50 + 사방 도련 2mm(94×54). 원점 (0,0) 유지: Illustrator가 PDF로 열어도 정렬이 틀어지지 않게
   function setBoxes(page) {
-    const w = BOX.work, t = BOX.trim;
-    page.setMediaBox(w.x, w.y, w.w, w.h);
-    page.setCropBox(w.x, w.y, w.w, w.h);
-    page.setBleedBox(w.x, w.y, w.w, w.h);
+    const t = BOX.trim, F = { x: 0, y: 0, w: 94 * MM, h: 54 * MM };
+    page.setMediaBox(F.x, F.y, F.w, F.h);
+    page.setCropBox(F.x, F.y, F.w, F.h);
+    page.setBleedBox(F.x, F.y, F.w, F.h);
     page.setTrimBox(t.x, t.y, t.w, t.h);
     page.setArtBox(t.x, t.y, t.w, t.h);
   }
