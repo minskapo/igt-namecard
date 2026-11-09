@@ -55,11 +55,11 @@
     return ops;
   }
 
-  // 재단(90×50)·작업(92×52) 영역. 페이지 원점 기준 pt (1mm = 2.83465pt)
+  // 재단(90×50)·도련(94×54) 영역. 페이지 원점 기준 pt (1mm = 2.83465pt)
   const MM = 72 / 25.4;
   const BOX = {
     trim: { x: 2 * MM, y: 2 * MM, w: 90 * MM, h: 50 * MM },
-    work: { x: 1 * MM, y: 1 * MM, w: 92 * MM, h: 52 * MM }
+    bleed: { x: 0, y: 0, w: 94 * MM, h: 54 * MM }
   };
 
   // fk: fontkit 폰트. pdfFont가 있으면 글자(텍스트)로, 없으면 아웃라인(벡터 패스)으로 그림
@@ -193,7 +193,7 @@
     page.setTrimBox(t.x, t.y, t.w, t.h);
     page.setArtBox(t.x, t.y, t.w, t.h);
   }
-  // 92×52·90×50 투명 박스(면·선 모두 불투명도 0). 인쇄되지 않고 크기 기준만 남김
+  // 94×54(도련선)·90×50(재단선) 투명 박스(면·선 모두 불투명도 0). 인쇄되지 않고 크기 기준만 남김
   function guideBoxOps(doc, page) {
     const { PDFOperator, PDFNumber, PDFName } = LIB();
     const gs = doc.context.register(doc.context.obj({ Type: 'ExtGState', CA: 0, ca: 0 }));
@@ -203,7 +203,7 @@
     return [
       PDFOperator.of('q'), PDFOperator.of('gs', [key]),
       PDFOperator.of('w', [PDFNumber.of(0.25)]), PDFOperator.of('K', [0, 0, 0, 1].map((v) => PDFNumber.of(v))),
-      rect(BOX.work), PDFOperator.of('S'),
+      rect(BOX.bleed), PDFOperator.of('S'),
       rect(BOX.trim), PDFOperator.of('S'),
       PDFOperator.of('Q')
     ];
@@ -266,8 +266,8 @@
       drawBack(out, back, fk, pdfFont, p, bRec);
       for (const pg of [front, back]) { setBoxes(pg); pg.pushOperators(...guideBoxOps(out, pg)); groupPage(out, pg); }
       const no = String(i + 1).padStart(2, '0'), id = String(p.email || '').split('@')[0] || no;
-      aiPages.push({ side: 'front', name: `${no}_${p.name}_앞면`, abName: `${no}_${id}_front`, items: fRec, boxes: [BOX.work, BOX.trim] });
-      aiPages.push({ side: 'back', name: `${no}_${p.name}_뒷면`, abName: `${no}_${id}_back`, items: bRec, boxes: [BOX.work, BOX.trim] });
+      aiPages.push({ side: 'front', name: `${no}_${p.name}_앞면`, abName: `${no}_${id}_front`, items: fRec, boxes: [BOX.bleed, BOX.trim] });
+      aiPages.push({ side: 'back', name: `${no}_${p.name}_뒷면`, abName: `${no}_${id}_back`, items: bRec, boxes: [BOX.bleed, BOX.trim] });
     }
     // 아웃라인 파일에는 Illustrator 편집 데이터를 넣어 아트보드·레이어·그룹이 그대로 열리게 함
     // (글자 편집용은 서체 텍스트를 살리기 위해 PDF 내용만 둠: Illustrator 편집 데이터는 글자를 아웃라인으로만 담을 수 있음)

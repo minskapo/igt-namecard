@@ -3,7 +3,7 @@
 (function (root) {
   const DATA = () => (typeof CardAIData !== 'undefined' ? CardAIData : require('./card-ai-data.js'));
   const MM = 72 / 25.4;
-  // Illustrator 관례대로 아트보드 = 재단 크기(90×50), 사방 1mm는 도련 영역(작업 사이즈 92×52)
+  // Illustrator 관례대로 아트보드 = 재단 크기(90×50), 사방 2mm 도련(94×54)
   const W = 90 * MM, H = 50 * MM, GAP = 36;
   const PX = 2 * MM, PY = 2 * MM + H;           // PDF 좌표 → 아트보드(재단선) 왼쪽 위 기준
   const FX = -1 * MM, FY = 1 * MM;
