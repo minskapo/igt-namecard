@@ -8,7 +8,7 @@
   const state = { people: [], activeId: null, seq: 0, wb: null };
   let assets = null;
   const loadAssets = () => assets || (assets = Promise.all([
-    fetch('assets/base.pdf?v=20261109e').then((r) => r.arrayBuffer()),
+    fetch('assets/base.pdf?v=20261109g').then((r) => r.arrayBuffer()),
     fetch('assets/AstaSans-SemiBold.ttf?v=20261109').then((r) => r.arrayBuffer())
   ]).then(([base, font]) => ({ base, font })));
   loadAssets();

@@ -17,6 +17,8 @@
       { label: 'ADDRESS', key: 'address', y: 52.8076, valueY: 53.1406, valueSize: 7.2 }
     ],
     rowSize: 7.5, rowTrack: -20,
+    // 앞면 하단 영문 기관명
+    front: { text: 'Institute for Green Transformation', x: 80.9492, y: 14.6309, size: 7, track: -20 },
     // QR: 원본 템플릿 QR과 같은 자리·크기(약 8mm). 왼쪽 위 기준
     qr: { x: 229.62, top: 36.83, size: 22.65, ecc: 'M', minVersion: 3 }
   };
@@ -134,6 +136,16 @@
     return [text.slice(0, k + 1), text.slice(k + 2)];
   }
 
+  function drawFront(doc, page, fk, pdfFont) {
+    const { PDFOperator, PDFNumber } = LIB();
+    const tools = makeTextTools(doc, fk, pdfFont);
+    const t = L.front;
+    const key = pdfFont ? page.node.newFontDictionary(pdfFont.name, pdfFont.ref) : null;
+    page.pushOperators(PDFOperator.of('q'), PDFOperator.of('k', [0, 0, 0, 1].map((v) => PDFNumber.of(v))),
+      ...(pdfFont ? tools.textOps(key, t.text, t.x, t.y, t.size, t.track) : tools.outlineOps(t.text, t.x, t.y, t.size, t.track)),
+      PDFOperator.of('Q'));
+  }
+
   function drawBack(doc, page, fk, pdfFont, p) {
     const { PDFOperator, PDFNumber } = LIB();
     const tools = makeTextTools(doc, fk, pdfFont);
@@ -180,6 +192,40 @@
     ];
   }
 
+
+  // 아트보드(페이지)의 모든 내용을 하나의 그룹으로: 페이지 내용 전체를 폼 XObject(투명도 그룹) 하나로 옮김.
+  // Illustrator 등에서 열면 아트보드마다 그룹 1개(배경·글자·QR·투명 박스 포함)로 들어옴
+  function groupPage(doc, page) {
+    const { PDFName, PDFArray, PDFRawStream, PDFContentStream, decodePDFRawStream, PDFOperator } = LIB();
+    const ctx = doc.context;
+    const node = page.node;
+    const raw = node.get(PDFName.of('Contents'));
+    const list = [];
+    const take = (ref) => {
+      const obj = ctx.lookup(ref);
+      if (obj instanceof PDFArray) { for (let i = 0; i < obj.size(); i++) take(obj.get(i)); return; }
+      if (obj instanceof PDFContentStream) list.push(obj.getUnencodedContents());
+      else if (obj instanceof PDFRawStream) list.push(decodePDFRawStream(obj).decode());
+    };
+    take(raw);
+    const parts = [];
+    list.forEach((u) => { parts.push(u); parts.push(new Uint8Array([10])); });
+    const total = parts.reduce((n, u) => n + u.length, 0);
+    const bytes = new Uint8Array(total);
+    let o = 0; parts.forEach((u) => { bytes.set(u, o); o += u.length; });
+    const mb = page.getMediaBox();
+    const form = ctx.flateStream(bytes, {
+      Type: 'XObject', Subtype: 'Form',
+      BBox: [mb.x, mb.y, mb.x + mb.width, mb.y + mb.height],
+      Resources: node.get(PDFName.of('Resources')),
+      Group: { Type: 'Group', S: 'Transparency' }
+    });
+    const formRef = ctx.register(form);
+    node.set(PDFName.of('Resources'), ctx.obj({ XObject: { Artboard: formRef } }));
+    const content = PDFContentStream.of(ctx.obj({}), [PDFOperator.of('q'), PDFOperator.of('Do', [PDFName.of('Artboard')]), PDFOperator.of('Q')]);
+    node.set(PDFName.of('Contents'), ctx.register(content));
+  }
+
   // people: [{name,titleKr,nameEn,titleEn,mobile,tel,email,address,qrText}] → Uint8Array (PDF 1.6, .ai로 저장 가능)
   // opts.outline: true면 글자를 아웃라인(패스)으로, false면 서체를 넣은 텍스트로
   async function buildCards(baseBytes, fontBytes, people, fontkitLib, opts) {
@@ -197,8 +243,9 @@
       const front = pages[i * 2], back = pages[i * 2 + 1];
       out.addPage(front);
       out.addPage(back);
+      drawFront(out, front, fk, pdfFont);
       drawBack(out, back, fk, pdfFont, p);
-      for (const pg of [front, back]) { setBoxes(pg); pg.pushOperators(...guideBoxOps(out, pg)); }
+      for (const pg of [front, back]) { setBoxes(pg); pg.pushOperators(...guideBoxOps(out, pg)); groupPage(out, pg); }
     }
     const names = people.map((p) => p.name).join(', ');
     out.setTitle('녹색전환연구소 명함 – ' + names);
