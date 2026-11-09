@@ -225,7 +225,7 @@
     const base = `녹색전환연구소_명함_${safe(p.name)}`;
     if (kind === 'ai') return [{ name: `${base}_인쇄용_아웃라인.ai`, data: await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: true }) }];
     if (kind === 'aiText') return [{ name: `${base}_글자편집용.ai`, data: await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: false }) }];
-    const bytes = await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: true });
+    const bytes = await CardPDF.buildCards(a.base, a.font, one, fontkit, { outline: true, editingData: false });
     const [front, back] = await pngPages(bytes, 600);
     return [{ name: `${base}_앞면.png`, data: front }, { name: `${base}_뒷면.png`, data: back }];
   }

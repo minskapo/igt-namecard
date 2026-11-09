@@ -35,20 +35,23 @@
     const n = q.getModuleCount();
     return Array.from({ length: n }, (_, r) => Array.from({ length: n }, (_, c) => q.isDark(r, c)));
   }
-  function qrOps(text) {
+  function qrOps(text, rec) {
     const { PDFOperator, PDFNumber } = LIB();
     const M = qrMatrix(text), n = M.length, m = L.qr.size / n;
-    const ops = [];
+    const ops = [], cts = [];
     const num = (v) => PDFNumber.of(Math.round(v * 10000) / 10000);
     M.forEach((row, r) => {
       for (let c = 0; c < n;) {
         if (!row[c]) { c++; continue; }
         const s0 = c; while (c < n && row[c]) c++;
         // 이웃 칸과 이음새가 생기지 않도록 아주 조금 겹쳐 그림
-        ops.push(PDFOperator.of('re', [num(L.qr.x + s0 * m), num(L.qr.top - (r + 1) * m - 0.005), num((c - s0) * m), num(m + 0.01)]));
+        const x = L.qr.x + s0 * m, y = L.qr.top - (r + 1) * m - 0.005, w = (c - s0) * m, h = m + 0.01;
+        ops.push(PDFOperator.of('re', [num(x), num(y), num(w), num(h)]));
+        cts.push([['m', x, y], ['l', x + w, y], ['l', x + w, y + h], ['l', x, y + h], ['h']]);
       }
     });
     ops.push(PDFOperator.of('f'));
+    if (rec) rec.push({ contours: cts, color: '0 0 0 1 k' });
     return ops;
   }
 
@@ -97,35 +100,49 @@
       ];
     }
 
-    // 글리프 외곽선을 PDF 패스로 (같은 커닝·자간)
-    function outlineOps(text, x, y, size, track) {
+    // 글리프 외곽선 → 윤곽선 목록(PDF 좌표). [['m',x,y],['l',x,y],['c',x1,y1,x2,y2,x3,y3],['h']]
+    function contours(text, x, y, size, track) {
       if (!text) return [];
       const { run } = measure(text, size, track);
-      const sc = size / upm, ops = [];
+      const sc = size / upm, out = [];
       let pen = x;
       run.glyphs.forEach((g, i) => {
         const pos = run.positions[i];
         const ox = pen + pos.xOffset * sc, oy = y + pos.yOffset * sc;
-        const T = (gx, gy) => [N(ox + gx * sc), N(oy + gy * sc)];
-        let cx = 0, cy = 0, sx = 0, sy = 0;
+        const T = (gx, gy) => [ox + gx * sc, oy + gy * sc];
+        let cur = null, cx = 0, cy = 0, sx = 0, sy = 0;
         for (const c of g.path.commands) {
           const a = c.args;
-          if (c.command === 'moveTo') { ops.push(PDFOperator.of('m', T(a[0], a[1]))); cx = sx = a[0]; cy = sy = a[1]; }
-          else if (c.command === 'lineTo') { ops.push(PDFOperator.of('l', T(a[0], a[1]))); cx = a[0]; cy = a[1]; }
+          if (c.command === 'moveTo') { cur = [['m', ...T(a[0], a[1])]]; out.push(cur); cx = sx = a[0]; cy = sy = a[1]; }
+          else if (c.command === 'lineTo') { cur.push(['l', ...T(a[0], a[1])]); cx = a[0]; cy = a[1]; }
           else if (c.command === 'quadraticCurveTo') {
             const [qx, qy, ex, ey] = a;
-            const c1 = [cx + 2 / 3 * (qx - cx), cy + 2 / 3 * (qy - cy)], c2 = [ex + 2 / 3 * (qx - ex), ey + 2 / 3 * (qy - ey)];
-            ops.push(PDFOperator.of('c', [...T(...c1), ...T(...c2), ...T(ex, ey)])); cx = ex; cy = ey;
-          } else if (c.command === 'bezierCurveTo') {
-            ops.push(PDFOperator.of('c', [...T(a[0], a[1]), ...T(a[2], a[3]), ...T(a[4], a[5])])); cx = a[4]; cy = a[5];
-          } else if (c.command === 'closePath') { ops.push(PDFOperator.of('h')); cx = sx; cy = sy; }
+            cur.push(['c', ...T(cx + 2 / 3 * (qx - cx), cy + 2 / 3 * (qy - cy)), ...T(ex + 2 / 3 * (qx - ex), ey + 2 / 3 * (qy - ey)), ...T(ex, ey)]);
+            cx = ex; cy = ey;
+          } else if (c.command === 'bezierCurveTo') { cur.push(['c', ...T(a[0], a[1]), ...T(a[2], a[3]), ...T(a[4], a[5])]); cx = a[4]; cy = a[5]; }
+          else if (c.command === 'closePath') { cur.push(['h']); cx = sx; cy = sy; }
         }
         pen += pos.xAdvance * sc + track / 1000 * size;
       });
+      return out;
+    }
+    function contourOps(cts) {
+      const ops = [];
+      for (const ct of cts) for (const s of ct) {
+        if (s[0] === 'm') ops.push(PDFOperator.of('m', [N(s[1]), N(s[2])]));
+        else if (s[0] === 'l') ops.push(PDFOperator.of('l', [N(s[1]), N(s[2])]));
+        else if (s[0] === 'c') ops.push(PDFOperator.of('c', s.slice(1).map(N)));
+        else ops.push(PDFOperator.of('h'));
+      }
       if (ops.length) ops.push(PDFOperator.of('f'));
       return ops;
     }
-    return { measure, textOps, outlineOps };
+    function outlineOps(text, x, y, size, track, rec) {
+      const cts = contours(text, x, y, size, track);
+      if (rec && cts.length) rec.push({ contours: cts, color: '0 0 0 1 k' });
+      return contourOps(cts);
+    }
+    return { measure, textOps, outlineOps, contourOps };
   }
 
   function titleEnLines(tools, text) {
@@ -136,23 +153,23 @@
     return [text.slice(0, k + 1), text.slice(k + 2)];
   }
 
-  function drawFront(doc, page, fk, pdfFont) {
+  function drawFront(doc, page, fk, pdfFont, rec) {
     const { PDFOperator, PDFNumber } = LIB();
     const tools = makeTextTools(doc, fk, pdfFont);
     const t = L.front;
     const key = pdfFont ? page.node.newFontDictionary(pdfFont.name, pdfFont.ref) : null;
     page.pushOperators(PDFOperator.of('q'), PDFOperator.of('k', [0, 0, 0, 1].map((v) => PDFNumber.of(v))),
-      ...(pdfFont ? tools.textOps(key, t.text, t.x, t.y, t.size, t.track) : tools.outlineOps(t.text, t.x, t.y, t.size, t.track)),
+      ...(pdfFont ? tools.textOps(key, t.text, t.x, t.y, t.size, t.track) : tools.outlineOps(t.text, t.x, t.y, t.size, t.track, rec)),
       PDFOperator.of('Q'));
   }
 
-  function drawBack(doc, page, fk, pdfFont, p) {
+  function drawBack(doc, page, fk, pdfFont, p, rec) {
     const { PDFOperator, PDFNumber } = LIB();
     const tools = makeTextTools(doc, fk, pdfFont);
     const key = pdfFont ? page.node.newFontDictionary(pdfFont.name, pdfFont.ref) : null;
     const ops = [PDFOperator.of('q'), PDFOperator.of('k', [0, 0, 0, 1].map((v) => PDFNumber.of(v)))];
     const add = (t, x, y, size, track) =>
-      ops.push(...(pdfFont ? tools.textOps(key, t, x, y, size, track) : tools.outlineOps(t, x, y, size, track)));
+      ops.push(...(pdfFont ? tools.textOps(key, t, x, y, size, track) : tools.outlineOps(t, x, y, size, track, rec)));
     add(p.name, L.left, L.name.y, L.name.size, L.name.track);
     add(p.titleKr, L.right, L.titleKr.y, L.titleKr.size, L.titleKr.track);
     add(p.nameEn, L.left, L.nameEn.y, L.nameEn.size, L.nameEn.track);
@@ -162,7 +179,7 @@
       add(r.label, L.left, r.y, L.rowSize, L.rowTrack);
       add(p[r.key], L.right, r.valueY || r.y, r.valueSize || L.rowSize, L.rowTrack);
     });
-    if (p.qrText) ops.push(...qrOps(p.qrText));
+    if (p.qrText) ops.push(...qrOps(p.qrText, rec));
     ops.push(PDFOperator.of('Q'));
     page.pushOperators(...ops);
   }
@@ -239,13 +256,24 @@
     else { pdfFont = await out.embedFont(fontBytes, { subset: false }); fk = pdfFont.embedder.font; }
     // 한 번에 복사해야 ICC 프로필·로고 등 공통 리소스가 한 벌만 들어감
     const pages = await out.copyPages(base, people.flatMap(() => [0, 1]));
+    const aiPages = [];
     for (const [i, p] of people.entries()) {
       const front = pages[i * 2], back = pages[i * 2 + 1];
       out.addPage(front);
       out.addPage(back);
-      drawFront(out, front, fk, pdfFont);
-      drawBack(out, back, fk, pdfFont, p);
+      const fRec = [], bRec = [];
+      drawFront(out, front, fk, pdfFont, fRec);
+      drawBack(out, back, fk, pdfFont, p, bRec);
       for (const pg of [front, back]) { setBoxes(pg); pg.pushOperators(...guideBoxOps(out, pg)); groupPage(out, pg); }
+      const no = String(i + 1).padStart(2, '0'), id = String(p.email || '').split('@')[0] || no;
+      aiPages.push({ side: 'front', name: `${no}_${p.name}_앞면`, abName: `${no}_${id}_front`, items: fRec, boxes: [BOX.work, BOX.trim] });
+      aiPages.push({ side: 'back', name: `${no}_${p.name}_뒷면`, abName: `${no}_${id}_back`, items: bRec, boxes: [BOX.work, BOX.trim] });
+    }
+    // 아웃라인 파일에는 Illustrator 편집 데이터를 넣어 아트보드·레이어·그룹이 그대로 열리게 함
+    // (글자 편집용은 서체 텍스트를 살리기 위해 PDF 내용만 둠: Illustrator 편집 데이터는 글자를 아웃라인으로만 담을 수 있음)
+    if (outline && opts && opts.editingData !== false) {
+      const AI = typeof CardAI !== 'undefined' ? CardAI : require('./card-ai.js');
+      await AI.attach(out, AI.buildPrivateText(aiPages, '녹색전환연구소 명함'));
     }
     const names = people.map((p) => p.name).join(', ');
     out.setTitle('녹색전환연구소 명함 – ' + names);

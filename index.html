@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
 <title>녹색전환연구소 명함 생성기</title>
-<link rel="stylesheet" href="css/style.css?v=20261109g">
+<link rel="stylesheet" href="css/style.css?v=20261109h">
 </head>
 <body>
 <header class="top">
@@ -78,8 +78,7 @@
       <button type="button" id="dlAiText" class="ghost" disabled>AI (글자 편집 가능)</button>
       <button type="button" id="dlPng" class="ghost" disabled>PNG 이미지</button>
     </div>
-    <p class="note">QR에는 구성원별 추적 단축링크가 들어갑니다. 시트 기록과 인쇄 주문 방법은 아래 가이드를 참고하세요.</p>
-    <p class="note">인쇄발주용 AI는 작업 사이즈 92×52mm(사방 1mm 도련)에 앞면·뒷면이 한 쪽(아트보드)씩 들어가고, 92×52mm·90×50mm 투명 박스가 함께 들어 있습니다. ‘아웃라인’은 글자를 벡터로 바꾼 인쇄용, ‘글자 편집 가능’은 서체가 들어간 수정용입니다. PNG는 재단 크기(90×50mm, 600dpi) 앞·뒷면 이미지입니다. 여러 명을 고르면 사람별 파일을 ZIP 하나로 묶어 받습니다.</p>
+    <p class="note">인쇄용 AI: 재단 90×50mm · 도련 1mm(작업 92×52mm) · 아트보드별 그룹. 여러 명은 ZIP으로 받습니다.</p>
   </section>
 
   <section class="panel guide" id="guide-order">
@@ -100,7 +99,6 @@
       <li><b>여러 명</b> 같은 옵션으로 사람 수만큼 장바구니에 담아 한 번에 결제합니다.</li>
       <li><b>기록</b> 신규 발급자는 아래 ‘추적링크 시트’ 가이드대로 시트에 한 줄을 남깁니다.</li>
     </ol>
-    <p class="note">참고: 2026년 11월 기준 200매 양면칼라는 1건 약 8,800원(부가세 포함)이었습니다. 가격·옵션은 주문 사이트에서 바뀔 수 있습니다.</p>
   </section>
 
   <section class="panel guide" id="guide-sheet">
@@ -129,9 +127,11 @@
 <script src="vendor/pdf.min.js"></script>
 <script src="vendor/qrcode-generator.js"></script>
 <script src="vendor/jszip.min.js"></script>
-<script src="js/card-data.js?v=20261109g"></script>
-<script src="js/card-link.js?v=20261109g"></script>
-<script src="js/card-pdf.js?v=20261109g"></script>
-<script src="js/app.js?v=20261109g"></script>
+<script src="js/card-data.js?v=20261109h"></script>
+<script src="js/card-link.js?v=20261109h"></script>
+<script src="js/card-ai-data.js?v=20261109h"></script>
+<script src="js/card-ai.js?v=20261109h"></script>
+<script src="js/card-pdf.js?v=20261109h"></script>
+<script src="js/app.js?v=20261109h"></script>
 </body>
 </html>
