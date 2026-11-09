@@ -58,11 +58,12 @@
   }
 
   // 'UTM코드 생성기' 시트 A~L열 한 행 (K열은 시트 수식과 같은 결과값)
-  function sheetRow(p, shortUrl, author, date) {
+  const AUTHOR = '명함생성기 자동생성'; // 시트 B열(작성자)
+  function sheetRow(p, shortUrl, date) {
     const d = date || new Date();
     const ymd = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
     const role = [p.titleKr].filter(Boolean).join(' ');
-    return [ymd, author || '', `명함 QR코드 - ${p.name}${role ? ' (' + role + ')' : ''}`, LINK.landing,
+    return [ymd, AUTHOR, `명함 QR코드 - ${p.name}${role ? ' (' + role + ')' : ''}`, LINK.landing,
       LINK.campaign, LINK.source, LINK.medium, contentId(p), '', '', utmUrl(p), shortUrl || ''];
   }
 

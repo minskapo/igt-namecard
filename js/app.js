@@ -217,9 +217,6 @@
   }
 
   /* ---------- 링크 복사 · 시트 행 복사 ---------- */
-  const AUTHOR_KEY = 'igt-namecard-author';
-  try { $('#author').value = localStorage.getItem(AUTHOR_KEY) || ''; } catch (e) { /* 저장소 사용 불가 */ }
-  $('#author').addEventListener('change', (e) => { try { localStorage.setItem(AUTHOR_KEY, e.target.value.trim()); } catch (err) { /* 무시 */ } });
   async function copyText(t, okMsg) {
     try { await navigator.clipboard.writeText(t); status(okMsg); }
     catch (e) { window.prompt('아래 내용을 복사하세요.', t); }
@@ -231,8 +228,7 @@
     status('단축링크를 확인하는 중입니다…');
     try {
       for (const p of sel) { if (validEmail(p.email)) await ensureLink(p); }
-      const author = $('#author').value.trim();
-      const rows = sel.filter((p) => p.shortUrl).map((p) => LK.sheetRow(p, p.shortUrl, author).join('\t'));
+      const rows = sel.filter((p) => p.shortUrl).map((p) => LK.sheetRow(p, p.shortUrl).join('\t'));
       await copyText(rows.join('\n'), `${rows.length}명분 행을 복사했습니다. ‘UTM코드 생성기’ 시트 맨 아래 빈 행의 A열에 붙여넣으세요.`);
     } catch (err) { status('행 복사 실패: ' + err.message, true); }
   });
