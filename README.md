@@ -8,7 +8,7 @@
 - 사람마다 앞면·뒷면 2쪽(=아트보드 2개)으로 이어집니다.
 
 ## 구성
-- `assets/base.pdf`: 원본 `Business Card_수정가능_별색.ai`에서 Illustrator 전용 데이터와 뒷면 가변 텍스트를 걷어낸 바탕 템플릿
+- `assets/base.pdf`: 원본 `녹색전환연구소 명함_별색_9050.ai`에서 Illustrator 전용 데이터와 뒷면 가변 텍스트를 걷어낸 바탕 템플릿
 - `assets/AstaSans-SemiBold.ttf`: Asta Sans 가변 폰트(SIL OFL)의 SemiBold 정적 인스턴스
 - `js/card-data.js`: 엑셀 파싱, 로마자 표기, 직함 영문화 규칙 (`TEAM_EN`, `TITLE_EN`에서 수정)
 - `js/card-pdf.js`: 좌표·서체 크기·자간(트래킹 -20) 등 레이아웃과 PDF 생성

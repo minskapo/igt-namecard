@@ -2,18 +2,19 @@
 (function (root) {
   const LIB = () => (typeof PDFLib !== 'undefined' ? PDFLib : require('pdf-lib'));
 
-  // 템플릿(Business Card_수정가능_별색.ai) 뒷면 좌표, 단위 pt, 재단선 바깥 2mm 도련 포함 페이지 기준
+  // 템플릿(녹색전환연구소 명함_별색_9050.ai, 2026-11-09) 뒷면 좌표, 단위 pt, 재단선 바깥 2mm 도련 포함 페이지 기준
+  // 영문 직함은 2줄 자리를 확보한 배치: 한 줄에 들어가면 1줄, 넘치면 직급/팀명으로 나눠 2줄(행간 1.2em)
   const L = {
     left: 14.1733, right: 95.8496,
     name:    { y: 131.8047, size: 8.5, track: 0 },
     titleKr: { y: 132.0186, size: 7.8, track: -20 },
     nameEn:  { y: 121.2344, size: 7.8, track: 0 },
-    titleEn: { y: 121.2344, size: 7.8, track: -20, leading: 10.8, maxWidth: 150 },
+    titleEn: { y: 121.2344, size: 7.8, track: -20, leading: 9.36, maxWidth: 150 },
     rows: [
-      { label: 'MOBILE',  key: 'mobile',  y: 89.8857 },
-      { label: 'TEL',     key: 'tel',     y: 78.623 },
-      { label: 'E-MAIL',  key: 'email',   y: 67.3604 },
-      { label: 'ADDRESS', key: 'address', y: 56.0977, valueY: 56.4307, valueSize: 7.2 }
+      { label: 'MOBILE',  key: 'mobile',  y: 86.5957 },
+      { label: 'TEL',     key: 'tel',     y: 75.333 },
+      { label: 'E-MAIL',  key: 'email',   y: 64.0703 },
+      { label: 'ADDRESS', key: 'address', y: 52.8076, valueY: 53.1406, valueSize: 7.2 }
     ],
     rowSize: 7.5, rowTrack: -20
   };
