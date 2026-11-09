@@ -62,3 +62,18 @@ figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
 #linkMsg { margin: 2px 0 0; }
 .sheetbox { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-top: 14px; padding-top: 12px; border-top: 1px solid var(--line); }
 .sheetbox input { flex: 1; min-width: 140px; width: auto; }
+.guide { grid-column: 1 / -1; }
+.guide .tag { font-size: 12px; font-weight: 500; color: var(--muted); background: #f1efea; border-radius: 999px; padding: 2px 10px; }
+.spec { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 4px 0 14px; }
+.spec div { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fbfdf9; display: grid; gap: 2px; }
+.spec span { font-size: 12px; color: var(--muted); }
+.spec strong { font-size: 15px; }
+a.btn { display: inline-block; text-decoration: none; border-radius: 8px; padding: 8px 14px; border: 1px solid transparent; font-size: 15px; }
+a.btn.primary { background: var(--ink); color: #fff; }
+a.btn.ghost { background: #fff; border-color: #cfcac3; color: var(--ink); }
+a.bookmarklet { cursor: grab; border-style: dashed; }
+.steps { margin: 14px 0 0; padding-left: 20px; display: grid; gap: 8px; }
+.steps li b:first-child { display: inline-block; min-width: 92px; }
+.steps .muted { display: block; margin-top: 4px; }
+code { background: #f1efea; border-radius: 4px; padding: 1px 5px; font-size: 13px; }
+@media (max-width: 860px) { .spec { grid-template-columns: 1fr 1fr; } .steps li b:first-child { display: block; min-width: 0; } }
