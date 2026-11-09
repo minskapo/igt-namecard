@@ -64,7 +64,7 @@ figcaption { font-size: 12px; color: var(--muted); margin-top: 6px; }
 .sheetbox input { flex: 1; min-width: 140px; width: auto; }
 .guide { grid-column: 1 / -1; }
 .guide .tag { font-size: 12px; font-weight: 500; color: var(--muted); background: #f1efea; border-radius: 999px; padding: 2px 10px; }
-.spec { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin: 4px 0 14px; }
+.spec { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 4px 0 14px; }
 .spec div { border: 1px solid var(--line); border-radius: 10px; padding: 10px 12px; background: #fbfdf9; display: grid; gap: 2px; }
 .spec span { font-size: 12px; color: var(--muted); }
 .spec strong { font-size: 15px; }
@@ -75,4 +75,4 @@ a.btn.ghost { background: #fff; border-color: #cfcac3; color: var(--ink); }
 .steps li b:first-child { display: inline-block; min-width: 92px; }
 .steps .muted { display: block; margin-top: 4px; }
 code { background: #f1efea; border-radius: 4px; padding: 1px 5px; font-size: 13px; }
-@media (max-width: 860px) { .spec { grid-template-columns: 1fr 1fr; } .steps li b:first-child { display: block; min-width: 0; } }
+@media (max-width: 860px) { .spec { grid-template-columns: 1fr; } .steps li b:first-child { display: block; min-width: 0; } }
