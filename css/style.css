@@ -76,3 +76,5 @@ a.btn.ghost { background: #fff; border-color: #cfcac3; color: var(--ink); }
 .steps .muted { display: block; margin-top: 4px; }
 code { background: #f1efea; border-radius: 4px; padding: 1px 5px; font-size: 13px; }
 @media (max-width: 860px) { .spec { grid-template-columns: 1fr; } .steps li b:first-child { display: block; min-width: 0; } }
+.spec a { color: inherit; text-decoration: underline; text-underline-offset: 2px; }
+.spec + .spec { margin-top: -4px; }
