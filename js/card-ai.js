@@ -104,13 +104,13 @@
       return ['%_/Dictionary :',
         `%_${f(x1)} 0 /RealPointRelToROrigin`, '%_ (PositionPoint1) ,',
         `%_${f(x1 + W)} ${f(-H)} /RealPointRelToROrigin`, '%_ (PositionPoint2) ,',
-        `%_${f(Math.round(x1 + ox))} ${f(Math.round(oy))} /RealPoint`, '%_ (RulerOrigin) ,',
+        `%_${f(x1 + ox)} ${f(oy)} /RealPoint`, '%_ (RulerOrigin) ,',
         '%_1 /Real (PAR) ,', '%_0 /Int (DisplayMark) ,',
-        `%_${i === 0 ? 1 : 0} /Bool (IsArtboardSelected) ,`,
+        `%_${i === 0 ? 1 : 0} /Bool (IsArtboardSelected) ,`, '%_0 /Bool (IsArtboardDefaultName) ,', '%_0 /Bool (IsArtboardLocked) ,',
         `%_${aiStr(pg.abName)} /UnicodeString (Name) ,`, '%_; ,'].join('\n');
     }).join('\n');
     const doc = ['%AI9_BeginDocumentData', '%_/Document :', '%_/Dictionary :', '%_/Array :', abs,
-      '%_; (ArtboardArray) ,',
+      '%_; (ArtboardArray) ,', '%_0 /Int (CropAreaActive) ,',
       `%_${f(BLEED)} /Real (BleedLeftValue) ,`, `%_${f(BLEED)} /Real (BleedTopValue) ,`,
       `%_${f(BLEED)} /Real (BleedRightValue) ,`, `%_${f(BLEED)} /Real (BleedBottomValue) ,`,
       '%_16383 /Int (AIDocumentCanvasSize) ,', '%_; /Recorded ,',
