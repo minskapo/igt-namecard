@@ -4,10 +4,11 @@
   const DATA = () => (typeof CardAIData !== 'undefined' ? CardAIData : require('./card-ai-data.js'));
   const MM = 72 / 25.4;
   // Illustrator 관례대로 아트보드 = 재단 크기(90×50), 사방 2mm 도련(94×54)
-  const W = 90 * MM, H = 50 * MM, GAP = 36;
-  const PX = 2 * MM, PY = 2 * MM + H;           // PDF 좌표 → 아트보드(재단선) 왼쪽 위 기준
-  const FX = -1 * MM, FY = 1 * MM;
-  const BLEED = 2 * MM;                         // 문서 도련 2mm              // 고정 아트 조각(92×52 기준) → 재단선 기준
+  // 아트보드 = 작업 영역 94×54(도련 포함), 문서 도련 설정 없음. 재단은 안쪽 90×50 투명 박스 기준
+  const W = 94 * MM, H = 54 * MM, GAP = 36;
+  const PX = 0, PY = H;                          // PDF 좌표 → 아트보드 왼쪽 위 기준
+  const FX = 1 * MM, FY = -1 * MM;               // 고정 아트 조각(92×52 기준) → 94×54 기준
+  const BLEED = 0;              // 고정 아트 조각(92×52 기준) → 재단선 기준
   const COORD = new Set(['m', 'l', 'L', 'c', 'C', 'v', 'V', 'y', 'Y']);
   const f = (v) => { const s = (Math.round(v * 10000) / 10000).toString(); return s === '-0' ? '0' : s; };
 
@@ -107,8 +108,6 @@
     }).join('\n');
     const doc = ['%AI9_BeginDocumentData', '%_/Document :', '%_/Dictionary :', '%_/Array :', abs,
       '%_; (ArtboardArray) ,',
-      `%_${f(BLEED)} /Real (BleedLeftValue) ,`, `%_${f(BLEED)} /Real (BleedTopValue) ,`,
-      `%_${f(BLEED)} /Real (BleedRightValue) ,`, `%_${f(BLEED)} /Real (BleedBottomValue) ,`,
       '%_16383 /Int (AIDocumentCanvasSize) ,', '%_; /Recorded ,',
       '%_/Dictionary : /NotRecorded ,', '%_; /NotRecorded ,', '%_;', '%AI9_EndDocumentData', '%%EndSetup'].join('\n');
 
