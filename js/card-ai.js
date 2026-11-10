@@ -41,12 +41,15 @@
     if (!contours.length) return '';
     const P = (x, y) => f(dx + x - PX) + ' ' + f(y - PY);
     const out = [color, '0 O', '0 XR', '*u'];
+    // Illustrator가 읽을 때 마지막 변이 빠지지 않도록, 각 윤곽선 끝에 시작점을 명시적으로 다시 찍어 닫음
     for (const ct of contours) {
+      let sx = null, sy = null, ex = null, ey = null;
       for (const s of ct) {
-        if (s[0] === 'm') out.push(P(s[1], s[2]) + ' m');
-        else if (s[0] === 'l') out.push(P(s[1], s[2]) + ' L');
-        else if (s[0] === 'c') out.push(P(s[1], s[2]) + ' ' + P(s[3], s[4]) + ' ' + P(s[5], s[6]) + ' C');
+        if (s[0] === 'm') { out.push(P(s[1], s[2]) + ' m'); sx = ex = s[1]; sy = ey = s[2]; }
+        else if (s[0] === 'l') { out.push(P(s[1], s[2]) + ' L'); ex = s[1]; ey = s[2]; }
+        else if (s[0] === 'c') { out.push(P(s[1], s[2]) + ' ' + P(s[3], s[4]) + ' ' + P(s[5], s[6]) + ' C'); ex = s[5]; ey = s[6]; }
       }
+      if (sx !== null && (Math.abs(ex - sx) > 1e-6 || Math.abs(ey - sy) > 1e-6)) out.push(P(sx, sy) + ' L');
       out.push('f');
     }
     out.push('*U');
