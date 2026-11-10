@@ -4,124 +4,167 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>녹색전환연구소 명함 생성기</title>
-<link rel="stylesheet" href="css/style.css?v=20261110g">
+<title>명함 생성기 · 녹색전환연구소</title>
+<link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=20261110h">
 </head>
 <body>
-<header class="top">
-  <div class="wrap">
-    <h1>녹색전환연구소 명함 생성기</h1>
-    <p class="sub">연락처 엑셀을 불러와 이름을 고르면 명함 미리보기와 인쇄발주용 AI 파일이 바로 만들어집니다.</p>
+<a class="skip" href="#make">본문으로 건너뛰기</a>
+
+<header class="site">
+  <div class="wrap navrow">
+    <a class="logo" href="https://igt.or.kr/" aria-label="녹색전환연구소 홈페이지">
+      <img class="symbol" src="assets/logo-symbol.svg" alt="">
+      <img class="word" src="assets/logo-word.svg" alt="녹색전환연구소">
+    </a>
+    <nav class="nav" aria-label="페이지 안 이동">
+      <a href="#make">명함 만들기</a>
+      <a href="#guide-order">인쇄 주문</a>
+      <a href="#guide-sheet">추적링크</a>
+    </nav>
   </div>
 </header>
 
-<main class="wrap grid">
-  <section class="panel" id="step1">
-    <h2><span class="n">1</span> 연락처 엑셀 불러오기</h2>
-    <label class="drop" id="drop">
-      <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
-      <strong>엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
-      <span>예: 운영_연구소 구성원 연락처인쇄용_2026.xlsx</span>
-    </label>
-    <p class="note">파일은 이 브라우저 안에서만 읽힙니다. 서버로 전송되거나 저장되지 않습니다.</p>
-    <div class="row" id="sheetRow" hidden>
-      <label for="sheet">시트</label>
-      <select id="sheet"></select>
-    </div>
-  </section>
+<section class="intro">
+  <div class="intro-gradient" aria-hidden="true"></div>
+  <div class="wrap intro-inner">
+    <span class="eyebrow">구성원 명함 발급</span>
+    <h1>명함 생성기</h1>
+    <p class="lead">연락처 엑셀을 불러와 이름을 고르면<br class="br-md"> 명함 미리보기와 인쇄발주용 AI 파일이 바로 만들어집니다.</p>
+  </div>
+</section>
 
-  <section class="panel" id="step2">
-    <h2><span class="n">2</span> 구성원 선택</h2>
-    <div class="toolbar">
-      <input type="search" id="q" placeholder="이름 검색">
-      <button type="button" class="ghost" id="addNew">+ 신규 입사자 직접 입력</button>
+<main id="make">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>명함 만들기</h2>
+      <span class="sec-sub">엑셀 불러오기 → 구성원 선택 → 내용 확인 → 내려받기</span>
     </div>
-    <div id="list" class="list"><p class="empty">엑셀을 불러오거나 ‘신규 입사자 직접 입력’을 눌러 주세요.</p></div>
-    <div class="toolbar small">
-      <button type="button" class="link" id="selAll">전체 선택</button>
-      <button type="button" class="link" id="selNone">선택 해제</button>
-      <span id="count" class="muted"></span>
-    </div>
-  </section>
 
-  <section class="panel" id="step3">
-    <h2><span class="n">3</span> 내용 확인·수정</h2>
-    <form id="form" class="form" autocomplete="off">
-      <p class="empty" id="formEmpty">목록에서 이름을 누르면 여기에서 내용을 고칠 수 있습니다.</p>
-      <div id="fields" hidden>
-        <div class="f"><label>이름</label><input name="name" required></div>
-        <div class="f"><label>영문 이름</label><input name="nameEn"><button type="button" class="link" id="reRoman">로마자 다시 만들기</button></div>
-        <div class="f half"><label>부서</label><select name="dept"></select></div>
-        <div class="f half"><label>직급</label><select name="title"></select></div>
-        <div class="f"><label>국문 직함 줄</label><input name="titleKr"></div>
-        <div class="f"><label>영문 직함 줄</label><input name="titleEn"></div>
-        <div class="f half"><label>휴대전화</label><input name="mobile" inputmode="tel"></div>
-        <div class="f half"><label>사무실 전화</label><input name="tel"></div>
-        <div class="f"><label>이메일</label><input name="email" type="email"></div>
-        <div class="f"><label>주소</label><input name="address"></div>
-        <div class="f linkbox"><label>QR 추적 링크 (UTM)</label><input id="utmUrl" readonly></div>
-        <div class="f linkbox"><label>QR 단축링크 (da.gd)</label><div class="inline"><input id="shortUrl" readonly><button type="button" class="ghost" id="copyShort">복사</button></div><p class="muted" id="linkMsg"></p></div>
-        <p class="note">부서·직급을 바꾸면 국문·영문 직함 줄이 자동으로 다시 채워집니다. 영문 이름은 로마자 표기법으로 자동 생성되므로 본인이 쓰는 표기를 확인해 주세요.</p>
-      </div>
-    </form>
-  </section>
+    <div class="grid">
+      <section class="panel" id="step1">
+        <h3><span class="n">1</span> 연락처 엑셀 불러오기</h3>
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+          <strong>엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
+          <span>예: 운영_연구소 구성원 연락처인쇄용_2026.xlsx</span>
+        </label>
+        <p class="note">파일은 이 브라우저 안에서만 읽힙니다. 서버로 전송되거나 저장되지 않습니다.</p>
+        <div class="row" id="sheetRow" hidden>
+          <label for="sheet">시트</label>
+          <select id="sheet"></select>
+        </div>
+      </section>
 
-  <section class="panel preview" id="step4">
-    <h2><span class="n">4</span> 미리보기·내려받기</h2>
-    <div class="cards">
-      <figure><canvas id="cvFront"></canvas><figcaption>앞면</figcaption></figure>
-      <figure><canvas id="cvBack"></canvas><figcaption>뒷면</figcaption></figure>
-    </div>
-    <p id="status" class="muted" role="status"></p>
-    <div class="actions">
-      <button type="button" id="dlAi" class="primary" disabled>인쇄발주용 AI</button>
-      <button type="button" id="dlPng" class="ghost" disabled>PNG 이미지</button>
-    </div>
-    <p class="note">인쇄용 AI: 대지 90×50mm · 도련 2mm · 단위 mm · 글자 아웃라인 · 아트보드별 그룹. 내용 수정은 연락처 엑셀이나 위 ③에서 한 뒤 다시 내려받으세요. 여러 명은 ZIP으로 받습니다.</p>
-  </section>
+      <section class="panel" id="step2">
+        <h3><span class="n">2</span> 구성원 선택</h3>
+        <div class="toolbar">
+          <input type="search" id="q" placeholder="이름 검색">
+          <button type="button" class="ghost" id="addNew">+ 신규 입사자 직접 입력</button>
+        </div>
+        <div id="list" class="list"><p class="empty">엑셀을 불러오거나 ‘신규 입사자 직접 입력’을 눌러 주세요.</p></div>
+        <div class="toolbar small">
+          <button type="button" class="link" id="selAll">전체 선택</button>
+          <button type="button" class="link" id="selNone">선택 해제</button>
+          <span id="count" class="muted"></span>
+        </div>
+      </section>
 
-  <section class="panel guide" id="guide-order">
-    <h2><span class="n">5</span> 인쇄 주문 가이드 <span class="tag">강프린팅</span></h2>
+      <section class="panel" id="step3">
+        <h3><span class="n">3</span> 내용 확인·수정</h3>
+        <form id="form" class="form" autocomplete="off">
+          <p class="empty" id="formEmpty">목록에서 이름을 누르면 여기에서 내용을 고칠 수 있습니다.</p>
+          <div id="fields" hidden>
+            <div class="f"><label>이름</label><input name="name" required></div>
+            <div class="f"><label>영문 이름</label><input name="nameEn"><button type="button" class="link" id="reRoman">로마자 다시 만들기</button></div>
+            <div class="f half"><label>부서</label><select name="dept"></select></div>
+            <div class="f half"><label>직급</label><select name="title"></select></div>
+            <div class="f"><label>국문 직함 줄</label><input name="titleKr"></div>
+            <div class="f"><label>영문 직함 줄</label><input name="titleEn"></div>
+            <div class="f half"><label>휴대전화</label><input name="mobile" inputmode="tel"></div>
+            <div class="f half"><label>사무실 전화</label><input name="tel"></div>
+            <div class="f"><label>이메일</label><input name="email" type="email"></div>
+            <div class="f"><label>주소</label><input name="address"></div>
+            <div class="f linkbox"><label>QR 추적 링크 (UTM)</label><input id="utmUrl" readonly></div>
+            <div class="f linkbox"><label>QR 단축링크 (da.gd)</label><div class="inline"><input id="shortUrl" readonly><button type="button" class="ghost" id="copyShort">복사</button></div><p class="muted" id="linkMsg"></p></div>
+            <p class="note">부서·직급을 바꾸면 국문·영문 직함 줄이 자동으로 다시 채워집니다. 영문 이름은 로마자 표기법으로 자동 생성되므로 본인이 쓰는 표기를 확인해 주세요.</p>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel preview" id="step4">
+        <h3><span class="n">4</span> 미리보기·내려받기</h3>
+        <div class="cards">
+          <figure><canvas id="cvFront"></canvas><figcaption>앞면</figcaption></figure>
+          <figure><canvas id="cvBack"></canvas><figcaption>뒷면</figcaption></figure>
+        </div>
+        <p id="status" class="muted" role="status"></p>
+        <div class="actions">
+          <button type="button" id="dlAi" class="primary" disabled>인쇄발주용 AI</button>
+          <button type="button" id="dlPng" class="ghost" disabled>PNG 이미지</button>
+        </div>
+        <ul class="chips" aria-label="인쇄용 AI 사양">
+          <li>대지 90×50mm</li><li>도련 2mm</li><li>단위 mm</li><li>글자 아웃라인</li><li>아트보드별 그룹</li>
+        </ul>
+        <p class="note">내용 수정은 연락처 엑셀이나 위 ③에서 한 뒤 다시 내려받으세요. 여러 명은 ZIP으로 받습니다.</p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<section class="block" id="guide-order">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>인쇄 주문 가이드</h2>
+      <a class="more" href="http://www.kangprinting.com/" target="_blank" rel="noopener">강프린팅 홈페이지</a>
+    </div>
     <div class="spec">
       <div><span>인쇄소</span><strong>강프린팅 · 강원경 실장님</strong></div>
       <div><span>연락처</span><strong><a href="tel:+821088637226">010-8863-7226</a></strong></div>
       <div><span>홈페이지</span><strong><a href="http://www.kangprinting.com/" target="_blank" rel="noopener">kangprinting.com</a></strong></div>
-    </div>
-    <div class="spec">
       <div><span>용지</span><strong>엑스트라누보 350g</strong></div>
       <div><span>인쇄도수</span><strong>양면칼라</strong></div>
       <div><span>규격</span><strong>90mm × 50mm</strong></div>
     </div>
+    <ol class="steps">
+      <li><b>파일 준비</b><span>‘명함 만들기’ ④에서 ‘인쇄발주용 AI’를 받습니다. 여러 명을 고르면 사람별 파일이 ZIP으로 묶여 내려옵니다.</span></li>
+      <li><b>발주 요청</b><span>강프린팅 강원경 실장님께 위 사양(엑스트라누보 350g · 양면칼라 · 90×50mm)과 인원·수량을 알리고 파일을 보냅니다.</span></li>
+      <li><b>파일 사양</b><span>파일은 대지 90×50mm에 문서 도련 2mm(작업 94×54mm)가 설정되어 있고, 94×54mm·90×50mm 투명 박스가 함께 들어 있습니다.</span></li>
+      <li><b>기록</b><span>신규 발급자는 아래 ‘추적링크 시트’ 가이드대로 시트에 한 줄을 남깁니다.</span></li>
+    </ol>
     <div class="actions">
       <a class="btn primary" href="tel:+821088637226">강원경 실장님께 전화</a>
       <a class="btn ghost" href="http://www.kangprinting.com/" target="_blank" rel="noopener">강프린팅 홈페이지</a>
     </div>
-    <ol class="steps">
-      <li><b>파일 준비</b> ④에서 ‘인쇄발주용 AI’를 받습니다. 여러 명을 고르면 사람별 파일이 ZIP으로 묶여 내려옵니다.</li>
-      <li><b>발주 요청</b> 강프린팅 강원경 실장님께 위 사양(엑스트라누보 350g · 양면칼라 · 90×50mm)과 인원·수량을 알리고 파일을 보냅니다.</li>
-      <li><b>파일 사양</b> 파일은 대지 90×50mm에 문서 도련 2mm(작업 94×54mm)가 설정되어 있고, 94×54mm·90×50mm 투명 박스가 함께 들어 있습니다.</li>
-      <li><b>기록</b> 신규 발급자는 아래 ‘추적링크 시트’ 가이드대로 시트에 한 줄을 남깁니다.</li>
-    </ol>
-  </section>
+  </div>
+</section>
 
-  <section class="panel guide" id="guide-sheet">
-    <h2><span class="n">6</span> 추적링크 시트 가이드 <span class="tag">GA4 추적링크 생성기</span></h2>
+<section class="band" id="guide-sheet">
+  <div class="wrap">
+    <span class="eyebrow dark">GA4 추적링크 생성기</span>
+    <h2>추적링크 시트 가이드</h2>
+    <p class="band-lead">명함 QR에는 사람마다 다른 추적 링크가 들어갑니다. 신규 발급자는 시트에 한 줄을 남겨 주세요.</p>
     <div class="actions">
       <a class="btn primary" href="https://docs.google.com/spreadsheets/d/1C5ncxBevH9FuNXDelcyYIBg-rYFwMoAu8GtsUAkG-Jo/edit?gid=870958988#gid=870958988" target="_blank" rel="noopener">추적링크 시트 열기</a>
-      <button type="button" class="ghost" id="copyRows">시트에 붙여넣을 행 복사</button>
+      <button type="button" class="light" id="copyRows">시트에 붙여넣을 행 복사</button>
     </div>
     <ol class="steps">
-      <li><b>무엇인가요?</b> 명함 QR에는 사람마다 다른 추적 링크가 들어갑니다. 이 링크가 누구 것인지 연구소 GA4 추적링크 시트(‘UTM코드 생성기’ 탭)에 한 줄씩 기록해 둡니다. 기존 구성원 23명은 이미 기록되어 있습니다.</li>
-      <li><b>신규 발급 시</b> ②에서 신규 발급자를 체크하고 위 ‘시트에 붙여넣을 행 복사’를 누릅니다.</li>
-      <li><b>붙여넣기</b> ‘추적링크 시트 열기’ → ‘UTM코드 생성기’ 탭 맨 아래 빈 행의 <b>A열</b>을 클릭하고 붙여넣습니다(Cmd+V / Ctrl+V). 생성일·작성자(명함생성기 자동생성)·메모·랜딩·캠페인·소스·매체·콘텐츠·UTM 링크·단축링크가 A~L열에 채워집니다.</li>
-      <li><b>성과 보기</b> GA4에서 세션 소스/매체가 <code>bizcard / qrcode</code>인 유입이 명함 QR로 들어온 방문입니다. 캠페인은 <code>business_card</code>, 콘텐츠(utm_content)는 구성원 이메일 아이디라 사람별로 나눠 볼 수 있습니다.</li>
+      <li><b>무엇인가요?</b><span>이 링크가 누구 것인지 연구소 GA4 추적링크 시트(‘UTM코드 생성기’ 탭)에 한 줄씩 기록해 둡니다. 기존 구성원 23명은 이미 기록되어 있습니다.</span></li>
+      <li><b>신규 발급 시</b><span>‘명함 만들기’ ②에서 신규 발급자를 체크하고 위 ‘시트에 붙여넣을 행 복사’를 누릅니다.</span></li>
+      <li><b>붙여넣기</b><span>‘추적링크 시트 열기’ → ‘UTM코드 생성기’ 탭 맨 아래 빈 행의 <b>A열</b>을 클릭하고 붙여넣습니다(Cmd+V / Ctrl+V). 생성일·작성자(명함생성기 자동생성)·메모·랜딩·캠페인·소스·매체·콘텐츠·UTM 링크·단축링크가 A~L열에 채워집니다.</span></li>
+      <li><b>성과 보기</b><span>GA4에서 세션 소스/매체가 <code>bizcard / qrcode</code>인 유입이 명함 QR로 들어온 방문입니다. 캠페인은 <code>business_card</code>, 콘텐츠(utm_content)는 구성원 이메일 아이디라 사람별로 나눠 볼 수 있습니다.</span></li>
     </ol>
-    <p class="note">시트를 붙여넣지 않아도 QR과 GA4 추적은 작동합니다. 시트는 링크 관리용 기록입니다. 시트는 연구소 계정으로 공유된 사람만 열 수 있습니다.</p>
-  </section>
-</main>
+    <p class="note">시트를 붙여넣지 않아도 QR과 GA4 추적은 작동합니다. 시트는 링크 관리용 기록이며, 연구소 계정으로 공유된 사람만 열 수 있습니다.</p>
+  </div>
+</section>
 
-<footer class="wrap foot">
-  <p>원본 템플릿: 녹색전환연구소 명함_별색_9050.ai · 서체: Asta Sans SemiBold (SIL OFL)</p>
+<footer class="site-foot">
+  <div class="wrap">
+    <p class="foot-org">사단법인 녹색전환연구소</p>
+    <p>TEL 02-2135-1148 | E-MAIL office@igt.or.kr</p>
+    <p>주소 (04506) 서울특별시 중구 중림로7길 4, 2층</p>
+    <p class="foot-meta">원본 템플릿: 녹색전환연구소 명함_별색_9050.ai · 서체: Asta Sans (SIL OFL) · 내부 업무용 페이지</p>
+  </div>
 </footer>
 
 <script src="vendor/pdf-lib.min.js"></script>
@@ -130,11 +173,11 @@
 <script src="vendor/pdf.min.js"></script>
 <script src="vendor/qrcode-generator.js"></script>
 <script src="vendor/jszip.min.js"></script>
-<script src="js/card-data.js?v=20261110g"></script>
-<script src="js/card-link.js?v=20261110g"></script>
-<script src="js/card-ai-data.js?v=20261110g"></script>
-<script src="js/card-ai.js?v=20261110g"></script>
-<script src="js/card-pdf.js?v=20261110g"></script>
-<script src="js/app.js?v=20261110g"></script>
+<script src="js/card-data.js?v=20261110h"></script>
+<script src="js/card-link.js?v=20261110h"></script>
+<script src="js/card-ai-data.js?v=20261110h"></script>
+<script src="js/card-ai.js?v=20261110h"></script>
+<script src="js/card-pdf.js?v=20261110h"></script>
+<script src="js/app.js?v=20261110h"></script>
 </body>
 </html>
