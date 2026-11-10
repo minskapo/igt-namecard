@@ -171,9 +171,10 @@
     const privDict = { AIMetaData: metaRef, ContainerVersion: 12, CreatorVersion: 30, NumBlock: blocks.length, RoundtripStreamType: 2, RoundtripVersion: 24 };
     blocks.forEach((r, i) => { privDict['AIPrivateData' + (i + 1)] = r; });
     const privRef = ctx.register(ctx.obj(privDict));
+    // /Illustrator 사전은 반드시 간접 객체로 두어야 Illustrator가 파일을 열 때 'PDF 가져오기' 대신 .ai 원본으로 연다
+    const illRef = ctx.register(ctx.obj({ LastModified: PDFString.of(stamp), Private: privRef }));
     for (const page of pdfDoc.getPages()) {
-      const ill = ctx.obj({ LastModified: PDFString.of(stamp), Private: privRef });
-      page.node.set(PDFName.of('PieceInfo'), ctx.obj({ Illustrator: ill }));
+      page.node.set(PDFName.of('PieceInfo'), ctx.obj({ Illustrator: illRef }));
       page.node.set(PDFName.of('LastModified'), PDFString.of(stamp));
     }
   }
