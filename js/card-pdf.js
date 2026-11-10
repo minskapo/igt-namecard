@@ -184,15 +184,14 @@
     page.pushOperators(...ops);
   }
 
-  // 페이지·대지 = 작업 영역 94×54(사방 2mm 여분 포함), 도련·재단 설정 없음. 인쇄소에 90×50 재단 요청
-  // 원점 (0,0) 유지: Illustrator가 PDF로 열어도 정렬이 틀어지지 않게
+  // 페이지 = 재단 90×50 + 사방 도련 2mm(94×54). 원점 (0,0) 유지: Illustrator가 PDF로 열어도 정렬이 틀어지지 않게
   function setBoxes(page) {
-    const F = BOX.bleed;
+    const F = BOX.bleed, t = BOX.trim;
     page.setMediaBox(F.x, F.y, F.w, F.h);
     page.setCropBox(F.x, F.y, F.w, F.h);
     page.setBleedBox(F.x, F.y, F.w, F.h);
-    page.setTrimBox(F.x, F.y, F.w, F.h);
-    page.setArtBox(F.x, F.y, F.w, F.h);
+    page.setTrimBox(t.x, t.y, t.w, t.h);
+    page.setArtBox(t.x, t.y, t.w, t.h);
   }
   // 94×54(도련선)·90×50(재단선) 투명 박스(면·선 모두 불투명도 0). 인쇄되지 않고 크기 기준만 남김
   function guideBoxOps(doc, page) {
