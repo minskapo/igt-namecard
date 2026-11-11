@@ -94,15 +94,37 @@
     x += draw(ctx, L.name, x, lay.b1, 700, f1.n, INK, -0.2);
     if (L.title) draw(ctx, L.title, x + f1.gap, lay.b1, 500, f1.t, INK);
     if (L.sub) draw(ctx, L.sub, lay.x, lay.b2, 400, f2.s, GRAY);
+    // 연락처 줄: M·T·E 묶음마다 시작·끝 x를 기록해 두었다가 전화·메일 링크 칸을 자른다.
     x = lay.x;
+    const groups = [];
     line3Parts(L).forEach(([k, val], i) => {
+      const x0 = x;
       x += draw(ctx, k, x, lay.b3, 600, 12.5, GRAY) + 6;
-      x += draw(ctx, val, x, lay.b3, 400, f3.v, INK) + (i < 2 ? f3.g : 0);
+      x += draw(ctx, val, x, lay.b3, 400, f3.v, INK);
+      groups.push([x0, x]);
+      if (i < 2) x += f3.g;
     });
-    return { canvas: cv, warn };
+    // 칸 경계는 묶음 사이 간격의 가운데 (정수 px)
+    const cut = [Math.round((groups[0][1] + groups[1][0]) / 2), Math.round((groups[1][1] + groups[2][0]) / 2)];
+    return { canvas: cv, warn, geom: { cut, r3: lay.r3, scale: sc } };
+  }
+
+  // 윗부분 이미지를 [위, 휴대전화 칸, 사무실 칸, 메일 칸, 아래] 다섯 조각으로 자른다.
+  function parts(r) {
+    const cv = r.canvas, g = r.geom, sc = g.scale, W = cv.width / sc, H = cv.height / sc;
+    const [y0, y1] = g.r3, xs = [0, g.cut[0], g.cut[1], W];
+    const crop = (x, y, w, h) => { const c = document.createElement('canvas'); c.width = Math.round(w * sc); c.height = Math.round(h * sc);
+      c.getContext('2d').drawImage(cv, Math.round(x * sc), Math.round(y * sc), c.width, c.height, 0, 0, c.width, c.height); return c; };
+    return {
+      a: { canvas: crop(0, 0, W, y0), w: W, h: y0 },
+      m1: { canvas: crop(xs[0], y0, xs[1] - xs[0], y1 - y0), w: xs[1] - xs[0], h: y1 - y0 },
+      m2: { canvas: crop(xs[1], y0, xs[2] - xs[1], y1 - y0), w: xs[2] - xs[1], h: y1 - y0 },
+      m3: { canvas: crop(xs[2], y0, xs[3] - xs[2], y1 - y0), w: xs[3] - xs[2], h: y1 - y0 },
+      b: { canvas: crop(0, y1, W, H - y1), w: W, h: H - y1 }
+    };
   }
 
   const toBlob = (cv) => new Promise((ok) => cv.toBlob(ok, 'image/png'));
 
-  root.SigRender = { load, top, toBlob };
+  root.SigRender = { load, top, parts, toBlob };
 })(window);

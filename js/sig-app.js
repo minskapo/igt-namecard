@@ -133,7 +133,7 @@
     document.querySelectorAll('.tab').forEach((x) => x.setAttribute('aria-selected', String(x === b)));
     preview();
   }));
-  let timer = null, ticket = 0, lastUrl = null;
+  let timer = null, ticket = 0, lastUrls = [];
   const schedulePreview = () => { clearTimeout(timer); timer = setTimeout(preview, 250); };
   async function preview() {
     const p = byId(state.activeId), my = ++ticket, lang = state.lang;
@@ -141,13 +141,14 @@
     if (!p) { $('#sigPreview').innerHTML = '<p class="empty">구성원을 고르면 서명이 여기에 보입니다.</p>'; $('#warn').hidden = true; $('#hostState').textContent = ''; return; }
     try {
       const A = await R.load();
-      const { canvas, warn } = await R.top(p, lang);
+      const r = await R.top(p, lang), warn = r.warn;
       if (my !== ticket) return;
-      const blob = await R.toBlob(canvas);
-      if (lastUrl) URL.revokeObjectURL(lastUrl);
-      lastUrl = URL.createObjectURL(blob);
-      $('#sigPreview').innerHTML = S.html({ ...p, sigCode: p.sigCode || 'preview' }, lang, A.layout, {
-        top: lastUrl, common: (f) => `assets/email/sig/common/${lang}/${f}?v=${S.COMMON_VER}`
+      const pc = R.parts(r), urls = {};
+      for (const k of S.PARTS) urls[k] = URL.createObjectURL(await R.toBlob(pc[k].canvas));
+      if (my !== ticket) { Object.values(urls).forEach(URL.revokeObjectURL); return; }
+      lastUrls.forEach(URL.revokeObjectURL); lastUrls = Object.values(urls);
+      $('#sigPreview').innerHTML = S.html({ ...p, sigCode: p.sigCode || 'preview' }, lang, A.layout, r.geom, {
+        part: (k) => urls[k], common: (f) => `assets/email/sig/common/${lang}/${f}?v=${S.COMMON_VER}`
       });
       const miss = S.problems(p);
       const items = (miss.length ? [`비어 있거나 형식이 맞지 않는 값: ${miss.join(', ')}`] : []).concat(warn);
@@ -170,6 +171,8 @@
 
   /* ---------- 복사·내려받기 ---------- */
   async function layout() { return (await R.load()).layout; }
+  // 연락처 칸 경계는 글자 폭에 따라 사람마다 달라서, HTML을 만들 때마다 윗부분을 다시 계산한다.
+  async function sigHtml(p, lang) { const L = await layout(); const r = await R.top(p, lang); return S.html(p, lang, L, r.geom); }
   const active = () => byId(state.activeId);
   const docOf = (body, title) => `<!doctype html>\n<html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title></head>\n<body style="margin:24px;font-family:-apple-system,'Apple SD Gothic Neo','Malgun Gothic',sans-serif;">\n<!-- 서명 시작: 아래 표 전체를 복사해 메일 프로그램의 서명 칸에 붙여 넣습니다 -->\n${body}\n<!-- 서명 끝 -->\n</body></html>\n`;
   function save(blob, name) {
@@ -180,7 +183,7 @@
 
   $('#copySig').addEventListener('click', async () => {
     const p = active(); if (!p) return;
-    const html = S.html(p, state.lang, await layout());
+    const html = await sigHtml(p, state.lang);
     try {
       await navigator.clipboard.write([new ClipboardItem({
         'text/html': new Blob([html], { type: 'text/html' }),
@@ -197,7 +200,7 @@
   $('#dlHtml').addEventListener('click', async () => {
     const p = active(); if (!p) return;
     ensureCode(p); renderForm(); renderList();
-    save(new Blob([docOf(S.html(p, state.lang, await layout()), fileBase(p, state.lang))], { type: 'text/html' }), fileBase(p, state.lang) + '.html');
+    save(new Blob([docOf(await sigHtml(p, state.lang), fileBase(p, state.lang))], { type: 'text/html' }), fileBase(p, state.lang) + '.html');
     if (p.codeNew) status('새 서명 코드가 만들어졌습니다. 이미지를 저장소에 올리고 DB에 코드를 적어야 HTML의 이미지가 보입니다.');
   });
   $('#dlPng').addEventListener('click', async () => {
@@ -232,15 +235,17 @@
         status(`서명 이미지를 만드는 중… (${++i}/${sel.length}) ${p.name}`);
         ensureCode(p);
         if (p.codeNew) codes.push([S.idOf(p), p.name, p.sigCode]);
+        const htmlBy = {};
         for (const lang of ['kr', 'en']) {
-          const { canvas } = await R.top(p, lang);
-          repo.file(`assets/email/sig/${p.sigCode}/${lang}.png`, await R.toBlob(canvas));
-          zip.file(`사람별_HTML/${fileBase(p, lang)}.html`, docOf(S.html(p, lang, L), fileBase(p, lang)));
+          const r = await R.top(p, lang), pc = R.parts(r);
+          for (const k of S.PARTS) repo.file(`assets/email/sig/${p.sigCode}/${lang}_${k}.png`, await R.toBlob(pc[k].canvas));
+          htmlBy[lang] = S.html(p, lang, L, r.geom);
+          zip.file(`사람별_HTML/${fileBase(p, lang)}.html`, docOf(htmlBy[lang], fileBase(p, lang)));
           zip.file(`사람별_HTML/${fileBase(p, lang)}.txt`, S.plain(p, lang) + '\n');
           urls.push(`${p.name}\t${lang}\t${S.topUrl(p, lang)}`);
         }
         const lang = p.sigLang === 'en' ? 'en' : 'kr', id = S.idOf(p);
-        zip.file(`gam/html/${id}.html`, S.html(p, lang, L));
+        zip.file(`gam/html/${id}.html`, htmlBy[lang]);
         csv.push([p.email.trim(), `gam/html/${id}.html`, p.name, lang]);
       }
       const toCsv = (rows) => '﻿' + rows.map((r) => r.map((c) => /[",\n]/.test(c) ? `"${String(c).replace(/"/g, '""')}"` : c).join(',')).join('\r\n') + '\r\n';

@@ -104,28 +104,44 @@
   }
   const validCode = (c) => /^[a-z0-9]{8,32}$/.test(String(c || ''));
 
-  const topUrl = (p, lang) => `${BASE}${p.sigCode}/${lang}.png?v=${version(p, lang)}`;
+  // 사람별 이미지 조각: <lang>_a(이름·직함), <lang>_m1·m2·m3(휴대전화·사무실·메일 칸), <lang>_b(주소·비전)
+  const PARTS = ['a', 'm1', 'm2', 'm3', 'b'];
+  const partUrl = (p, lang, part) => `${BASE}${p.sigCode}/${lang}_${part}.png?v=${version(p, lang)}`;
+  const topUrl = (p, lang) => partUrl(p, lang, 'a');
   const commonUrl = (lang, f) => `${BASE}common/${lang}/${f}?v=${COMMON_VER}`;
   const esc = (s) => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+  const telHref = (num) => 'tel:' + String(num || '').replace(/[^+\d]/g, '').replace(/^0/, '+82');
 
-  // 서명 HTML. layout = assets/email/sig/common/layout.json, srcs = 이미지 주소를 바꿔 넣을 때(미리보기)
-  function html(p, lang, layout, srcs) {
-    const L = layout[lang], id = idOf(p);
-    const top = srcs ? srcs.top : topUrl(p, lang);
+  // 서명 HTML. layout = common/layout.json, geom = SigRender.top()이 돌려준 연락처 칸 경계,
+  // srcs = 이미지 주소를 바꿔 넣을 때(미리보기)
+  function html(p, lang, layout, geom, srcs) {
+    const L = layout[lang], id = idOf(p), T = lines(p, lang);
+    const part = (k) => (srcs && srcs.part ? srcs.part(k) : partUrl(p, lang, k));
     const common = (f) => (srcs && srcs.common ? srcs.common(f) : commonUrl(lang, f));
     const card = utm(LINK.landing, id, 'card');
-    const img = (src, w, h, alt) => `<img src="${esc(src)}" width="${w}" height="${h}" alt="${esc(alt)}"` +
+    const img = (src, w, h, alt) => `<img src="${esc(src)}" width="${Math.round(w)}" height="${Math.round(h)}" alt="${esc(alt)}"` +
       (alt ? ` title="${esc(alt)}"` : '') + ' style="display:block;border:0;outline:none;width:100%;height:auto;">';
     const td = 'padding:0;line-height:0;font-size:0;';
-    const cells = L.cells.map((c) => {
+    const pct = (w) => (w / L.W * 100).toFixed(3) + '%';
+    const row = (cells) => `<tr><td style="${td}"><table cellpadding="0" cellspacing="0" border="0" role="presentation" width="100%" style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr>${cells}</tr></table></td></tr>`;
+    const cell = (w, href, src, h, alt) => `<td width="${pct(w)}" style="width:${pct(w)};${td}"><a href="${esc(href)}" target="_blank">${img(src, w, h, alt)}</a></td>`;
+    const [y0, y1] = L.r3, xs = [0, geom.cut[0], geom.cut[1], L.W], mh = y1 - y0;
+    const en = lang === 'en';
+    const contact = [
+      [telHref(T.m), en ? `Call mobile ${T.m}` : `휴대전화 ${T.m} 전화 걸기`],
+      [telHref(T.t), en ? `Call office ${T.t}` : `사무실 ${T.t} 전화 걸기`],
+      ['mailto:' + T.e, en ? `Email ${T.e}` : `${T.e}로 메일 쓰기`]
+    ].map(([href, alt], i) => cell(xs[i + 1] - xs[i], href, part('m' + (i + 1)), mh, alt)).join('');
+    const buttons = L.cells.map((c) => {
       const b = c.btn === null ? null : BUTTONS[lang][c.btn];
       const href = b ? (b.noUtm ? b.url : utm(b.url, id, b.key)) : card;
-      const pct = (c.w / L.W * 100).toFixed(3);
-      return `<td width="${pct}%" style="width:${pct}%;${td}"><a href="${esc(href)}" target="_blank">${img(common(c.f), c.w, L.bot - L.top, b ? b.alt : '')}</a></td>`;
+      return cell(c.w, href, common(c.f), L.bot - L.top, b ? b.alt : '');
     }).join('');
     return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" width="100%" style="width:100%;max-width:${L.W}px;border-collapse:collapse;">` +
-      `<tr><td style="${td}"><a href="${esc(card)}" target="_blank">${img(top, L.W, L.top, altText(p, lang))}</a></td></tr>` +
-      `<tr><td style="${td}"><table cellpadding="0" cellspacing="0" border="0" role="presentation" width="100%" style="width:100%;border-collapse:collapse;table-layout:fixed;"><tr>${cells}</tr></table></td></tr>` +
+      `<tr><td style="${td}"><a href="${esc(card)}" target="_blank">${img(part('a'), L.W, y0, altText(p, lang))}</a></td></tr>` +
+      row(contact) +
+      `<tr><td style="${td}"><a href="${esc(card)}" target="_blank">${img(part('b'), L.W, L.top - y1, '')}</a></td></tr>` +
+      row(buttons) +
       `<tr><td style="${td}">${img(common('bot.png'), L.W, L.H - L.bot, '')}</td></tr></table>`;
   }
 
@@ -174,6 +190,6 @@
       url, UTM.campaign, UTM.source, UTM.medium, id, term, '', utm(url, id, term), '']);
   }
 
-  const api = { UTM, sheetRows, SITE, BASE, COMMON_VER, LINK, BUTTONS, idOf, utm, phone, lines, altText, version, newCode, validCode, topUrl, commonUrl, html, plain, problems, splitTitleEn };
+  const api = { UTM, sheetRows, PARTS, partUrl, telHref, SITE, BASE, COMMON_VER, LINK, BUTTONS, idOf, utm, phone, lines, altText, version, newCode, validCode, topUrl, commonUrl, html, plain, problems, splitTitleEn };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.SigCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);
