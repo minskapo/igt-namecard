@@ -121,7 +121,8 @@
           <button type="button" id="copyText" class="ghost" disabled>글자 서명 복사</button>
         </div>
         <div class="bulk">
-          <button type="button" id="dlZip" class="primary" disabled>배포 파일 ZIP</button>
+          <div class="actions" style="margin-top:0"><button type="button" id="dlZip" class="primary" disabled>배포 파일 ZIP</button>
+          <button type="button" id="copyRows" class="ghost" disabled>추적링크 시트 행 복사</button></div>
           <p class="note">선택한 사람의 서명 이미지(저장소에 올릴 파일), GAM 일괄 적용 파일, 사람별 HTML이 함께 들어 있습니다.</p>
         </div>
         <p id="status" class="muted" role="status"></p>
@@ -187,6 +188,7 @@
     <ol class="steps">
       <li><b>DB에 적기</b><span>DB 시트 ‘구성원’ 탭 맨 아래에 한 줄을 넣습니다. 이메일 아이디·이름·부서·직급·핸드폰·이메일만 채우면 되고, 영문 이름과 직함은 비워 두어도 자동으로 채워집니다. 퇴사자는 ‘상태’를 <b>퇴사</b>로 바꿉니다.</span></li>
       <li><b>배포 파일 받기</b><span>DB를 다시 받아 불러온 뒤 그 사람만 골라 <b>배포 파일 ZIP</b>을 받습니다. 서명 코드가 비어 있던 사람은 도구가 코드를 새로 만들고, ZIP 안 <code>서명코드_DB기록.csv</code>에 적어 줍니다. 이 코드를 DB ‘서명 코드’ 칸에 꼭 옮겨 적어 주세요.</span></li>
+      <li><b>추적링크 기록</b><span>같은 사람을 고른 채 <b>추적링크 시트 행 복사</b>를 누르고, <a href="https://docs.google.com/spreadsheets/d/1C5ncxBevH9FuNXDelcyYIBg-rYFwMoAu8GtsUAkG-Jo/edit?gid=870958988#gid=870958988" target="_blank" rel="noopener">GA4 추적링크 시트</a> ‘UTM코드 생성기’ 탭 맨 아래 빈 행의 A열에 붙여 넣습니다. 사람마다 버튼별로 5줄이 들어갑니다. 명함 QR 기록과 같은 방식입니다.</span></li>
       <li><b>올리고 적용</b><span>위 관리자 4~5단계처럼 이미지를 저장소에 올리고, 관리자가 그 사람만 <code>gam user …</code>로 적용합니다. 관리자가 없을 때는 본인이 개별 설치로 넣어도 됩니다.</span></li>
       <li><b>정보가 바뀌면</b><span>직급·전화가 바뀌어도 서명 코드는 그대로 둡니다. 같은 과정으로 이미지를 다시 올리고 다시 적용하면, 이미지 주소의 버전 값이 바뀌어 새 서명이 바로 보입니다.</span></li>
     </ol>
@@ -223,8 +225,8 @@
 <script src="js/card-data.js?v=20261111b"></script>
 <script src="js/db-load.js?v=20261111a"></script>
 <script src="js/sig-glyphs.js?v=20261111a"></script>
-<script src="js/sig-core.js?v=20261111b"></script>
+<script src="js/sig-core.js?v=20261111c"></script>
 <script src="js/sig-render.js?v=20261111a"></script>
-<script src="js/sig-app.js?v=20261111b"></script>
+<script src="js/sig-app.js?v=20261111c"></script>
 </body>
 </html>

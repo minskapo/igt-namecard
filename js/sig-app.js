@@ -80,7 +80,7 @@
   function updateCount() {
     const n = state.people.filter((p) => p.selected).length;
     $('#count').textContent = n ? `${n}명 선택됨` : '';
-    $('#dlZip').disabled = !n;
+    $('#dlZip').disabled = !n; $('#copyRows').disabled = !n;
     $('#dlZip').textContent = n ? `배포 파일 ZIP (${n}명)` : '배포 파일 ZIP';
   }
 
@@ -242,6 +242,7 @@
       zip.file('gam/signatures.csv', rows2csv(csv));
       zip.file('이미지_주소_확인.txt', urls.join('\n') + '\n');
       if (codes.length > 1) zip.file('서명코드_DB기록.csv', toCsv(codes));
+      zip.file('추적링크_시트행.tsv', tsvRows(sel));
       zip.file('읽어주세요.txt', readme(sel, codes.length - 1));
       const stamp = new Date().toISOString().slice(0, 10).replace(/-/g, '');
       save(await zip.generateAsync({ type: 'blob' }), `메일서명_배포파일_${stamp}_${sel.length}명.zip`);
@@ -249,6 +250,13 @@
       status(`${sel.length}명의 배포 파일을 만들었습니다.` + (codes.length > 1 ? ` 새 서명 코드 ${codes.length - 1}개는 ZIP 안 ‘서명코드_DB기록.csv’대로 DB에 적어 주세요.` : ''));
     } catch (err) { status('배포 파일을 만들지 못했습니다: ' + err.message, true); }
     finally { updateCount(); }
+  });
+  const tsvRows = (ps) => ps.flatMap((p) => S.sheetRows(p)).map((r) => r.join('\t')).join('\n') + '\n';
+  $('#copyRows').addEventListener('click', async () => {
+    const sel = state.people.filter((p) => p.selected);
+    if (!sel.length) return;
+    try { await navigator.clipboard.writeText(tsvRows(sel)); status(`${sel.length}명 × 5줄을 복사했습니다. 추적링크 시트 ‘UTM코드 생성기’ 탭 맨 아래 빈 행의 A열에 붙여 넣으세요.`); }
+    catch (err) { status('복사하지 못했습니다: ' + err.message, true); }
   });
   // GAM용 CSV는 BOM 없이 UTF-8로 쓴다.
   const rows2csv = (rows) => rows.map((r) => r.map((c) => /[",\n]/.test(c) ? `"${String(c).replace(/"/g, '""')}"` : c).join(',')).join('\n') + '\n';

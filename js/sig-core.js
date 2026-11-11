@@ -158,6 +158,22 @@
     return out;
   }
 
-  const api = { UTM, SITE, BASE, COMMON_VER, LINK, BUTTONS, idOf, utm, phone, lines, altText, version, newCode, validCode, topUrl, commonUrl, html, plain, problems, splitTitleEn };
+  // 연구소 추적링크 시트('UTM코드 생성기' 탭 A~L열)에 붙여 넣을 행 (사람당 5줄, 명함생성기와 같은 형식)
+  const SHEET_ROWS = [
+    ['후원하기 버튼(국문)', LINK.donate, 'donate'],
+    ['뉴스레터 버튼(국문)', LINK.newsletter, 'newsletter'],
+    ['홈페이지 버튼(국문)', LINK.landing, 'homepage'],
+    ['Website 버튼(영문)', LINK.landing, 'website'],
+    ['버튼 밖 서명 영역', LINK.landing, 'card']
+  ];
+  function sheetRows(p, date) {
+    const d = date || new Date();
+    const ymd = `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`;
+    const id = idOf(p), role = p.titleKr ? ` (${p.titleKr})` : '';
+    return SHEET_ROWS.map(([label, url, term]) => [ymd, '메일서명 도구 자동생성', `메일 서명 ${label} - ${p.name}${role}`,
+      url, UTM.campaign, UTM.source, UTM.medium, id, term, '', utm(url, id, term), '']);
+  }
+
+  const api = { UTM, sheetRows, SITE, BASE, COMMON_VER, LINK, BUTTONS, idOf, utm, phone, lines, altText, version, newCode, validCode, topUrl, commonUrl, html, plain, problems, splitTitleEn };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.SigCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);
