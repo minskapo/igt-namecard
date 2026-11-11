@@ -6,23 +6,22 @@
 <meta name="robots" content="noindex, nofollow">
 <title>명함 생성기 · 녹색전환연구소</title>
 <link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=20261111a">
+<link rel="stylesheet" href="css/style.css?v=20261111b">
 </head>
 <body>
 <a class="skip" href="#make">본문으로 건너뛰기</a>
 
 <header class="site">
   <div class="wrap navrow">
-    <a class="logo" href="https://igt.or.kr/" aria-label="녹색전환연구소 홈페이지">
-      <img class="symbol" src="assets/logo-symbol.svg" alt="">
-      <img class="word" src="assets/logo-word.svg" alt="녹색전환연구소">
+    <a class="logo" href="index.html" aria-label="녹색전환연구소 디자인 산출물 통합도구 처음으로">
+      <span class="brand"><b>녹색전환연구소</b> 디자인 산출물 통합도구</span>
     </a>
-    <nav class="nav" aria-label="페이지 안 이동">
-      <a href="#make">명함 만들기</a>
-      <a href="#guide-order">인쇄 주문</a>
-      <a href="#guide-sheet">추적링크</a>
-      <a href="#skill">Claude 스킬</a>
+    <nav class="nav" aria-label="도구 이동">
+      <a href="index.html#make" aria-current="page">명함 생성기</a>
+      <a href="index.html#guide-order">인쇄 주문</a>
+      <a href="index.html#guide-sheet">추적링크</a>
       <a href="signature.html">메일 서명</a>
+      <a href="index.html#skill">Claude 스킬</a>
     </nav>
   </div>
 </header>
@@ -32,7 +31,7 @@
   <div class="wrap intro-inner">
     <span class="eyebrow">구성원 명함 발급</span>
     <h1>명함 생성기</h1>
-    <p class="lead">연락처 엑셀을 불러와 이름을 고르면<br class="br-md"> 명함 미리보기와 인쇄발주용 AI 파일이 바로 만들어집니다.</p>
+    <p class="lead">구성원 DB를 불러와 이름을 고르면<br class="br-md"> 명함 미리보기와 인쇄발주용 AI 파일이 바로 만들어집니다.</p>
   </div>
 </section>
 
@@ -40,12 +39,17 @@
   <div class="wrap">
     <div class="sec-head">
       <h2>명함 만들기</h2>
-      <span class="sec-sub">엑셀 불러오기 → 구성원 선택 → 내용 확인 → 내려받기</span>
+      <span class="sec-sub">DB 불러오기 → 구성원 선택 → 내용 확인 → 내려받기</span>
     </div>
 
     <div class="grid">
       <section class="panel" id="step1">
-        <h3><span class="n">1</span> 연락처 엑셀 불러오기</h3>
+        <h3><span class="n">1</span> 구성원 DB 불러오기</h3>
+        <div class="gload">
+          <button type="button" class="primary" id="dbLoad">Google 계정으로 DB 불러오기</button>
+          <span class="muted" id="dbLoadNote">연구소 계정으로 로그인하면 구성원 DB를 바로 읽어 옵니다.</span>
+        </div>
+        <p class="or"><span>또는 파일로 불러오기</span></p>
         <label class="drop" id="drop">
           <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
           <strong>엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
@@ -202,10 +206,11 @@
 <script src="vendor/qrcode-generator.js"></script>
 <script src="vendor/jszip.min.js"></script>
 <script src="js/card-data.js?v=20261111b"></script>
+<script src="js/db-load.js?v=20261111a"></script>
 <script src="js/card-link.js?v=20261111a"></script>
 <script src="js/card-ai-data.js?v=20261111a"></script>
 <script src="js/card-ai.js?v=20261111a"></script>
 <script src="js/card-pdf.js?v=20261111a"></script>
-<script src="js/app.js?v=20261111a"></script>
+<script src="js/app.js?v=20261111b"></script>
 </body>
 </html>

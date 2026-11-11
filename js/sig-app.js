@@ -18,15 +18,25 @@
     try {
       const wb = XLSX.read(await f.arrayBuffer(), { type: 'array' });
       const name = wb.SheetNames.includes('구성원') ? '구성원' : wb.SheetNames[0];
-      const rows = XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: '', raw: false });
+      loadRows(XLSX.utils.sheet_to_json(wb.Sheets[name], { header: 1, defval: '', raw: false }));
+      drop.querySelector('strong').textContent = f.name;
+    } catch (err) { status('파일을 읽지 못했습니다: ' + err.message, true); }
+  }
+  $('#dbLoad').addEventListener('click', async () => {
+    const b = $('#dbLoad'); b.disabled = true; status('구성원 DB를 불러오는 중…');
+    try { loadRows(await DBLoad.fetchRows()); $('#dbLoadNote').textContent = '구성원 DB 시트에서 불러왔습니다. 시트를 고친 뒤 다시 누르면 새 내용이 반영됩니다.'; }
+    catch (err) { status(err.message, true); }
+    finally { b.disabled = false; }
+  });
+  function loadRows(rows) {
+    {
       const fresh = C.rowsToPeople(rows).map((p) => ({ ...p, id: ++state.seq, selected: false, codeNew: false }));
       state.people = state.people.filter((p) => p.isNew).concat(fresh);
       state.activeId = null;
-      drop.querySelector('strong').textContent = f.name;
       const noCode = fresh.filter((p) => !S.validCode(p.sigCode)).length;
       status(`${fresh.length}명을 불러왔습니다.` + (fresh[0] && !fresh[0].fromDb ? ' 이 파일에는 ‘서명 코드’ 열이 없어 모두 새 코드가 만들어집니다. 구성원 DB 파일을 쓰는 것이 좋습니다.' : noCode ? ` 서명 코드가 없는 ${noCode}명은 내려받을 때 새 코드가 만들어집니다.` : ''));
       renderList(); renderForm(); preview();
-    } catch (err) { status('파일을 읽지 못했습니다: ' + err.message, true); }
+    }
   }
 
   /* ---------- 2. 목록 ---------- */

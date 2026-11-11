@@ -7,22 +7,22 @@
 <title>메일 서명 · 녹색전환연구소</title>
 <link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/style.css?v=20261111b">
-<link rel="stylesheet" href="css/sig.css?v=20261111a">
+<link rel="stylesheet" href="css/sig.css?v=20261111b">
 </head>
 <body>
 <a class="skip" href="#make">본문으로 건너뛰기</a>
 
 <header class="site">
   <div class="wrap navrow">
-    <a class="logo" href="https://igt.or.kr/" aria-label="녹색전환연구소 홈페이지">
-      <img class="symbol" src="assets/logo-symbol.svg" alt="">
-      <img class="word" src="assets/logo-word.svg" alt="녹색전환연구소">
+    <a class="logo" href="index.html" aria-label="녹색전환연구소 디자인 산출물 통합도구 처음으로">
+      <span class="brand"><b>녹색전환연구소</b> 디자인 산출물 통합도구</span>
     </a>
-    <nav class="nav" aria-label="페이지 이동">
-      <a href="index.html">명함 생성기</a>
+    <nav class="nav" aria-label="도구 이동">
+      <a href="index.html#make">명함 생성기</a>
+      <a href="index.html#guide-order">인쇄 주문</a>
+      <a href="index.html#guide-sheet">추적링크</a>
       <a href="signature.html" aria-current="page">메일 서명</a>
-      <a href="#guide">설치 가이드</a>
-      <a href="#trouble">문제 해결</a>
+      <a href="index.html#skill">Claude 스킬</a>
     </nav>
   </div>
 </header>
@@ -56,6 +56,11 @@
     <div class="grid">
       <section class="panel" id="step1">
         <h3><span class="n">1</span> 구성원 DB 불러오기</h3>
+        <div class="gload">
+          <button type="button" class="primary" id="dbLoad">Google 계정으로 DB 불러오기</button>
+          <span class="muted" id="dbLoadNote">연구소 계정으로 로그인하면 구성원 DB를 바로 읽어 옵니다.</span>
+        </div>
+        <p class="or"><span>또는 파일로 불러오기</span></p>
         <label class="drop" id="drop">
           <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
           <strong>DB 엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
@@ -65,7 +70,7 @@
           <a class="btn ghost" href="https://docs.google.com/spreadsheets/d/1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI/edit" target="_blank" rel="noopener">DB 시트 열기</a>
           <a class="btn ghost" href="https://docs.google.com/spreadsheets/d/1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI/export?format=xlsx">DB를 .xlsx로 받기</a>
         </div>
-        <p class="note">파일은 이 브라우저 안에서만 읽힙니다. DB 시트는 연구소 계정으로 공유된 사람만 열 수 있습니다.</p>
+        <p class="note">DB는 이 브라우저 안에서만 읽히고 저장되지 않습니다. DB 시트를 공유받은 연구소 계정만 불러올 수 있습니다.</p>
       </section>
 
       <section class="panel" id="step2">
@@ -144,6 +149,20 @@
   </div>
 </section>
 
+<section class="block" id="oauth">
+  <div class="wrap">
+    <div class="sec-head"><h2>DB 바로 불러오기 설정 (처음 한 번)</h2></div>
+    <p class="lead-s">‘Google 계정으로 DB 불러오기’ 버튼을 쓰려면 Google Cloud에서 로그인용 클라이언트 ID를 하나 만들어야 합니다. GAM을 설치할 때 만든 Cloud 프로젝트를 그대로 쓰면 됩니다.</p>
+    <ol class="steps">
+      <li><b>API 켜기</b><span><a href="https://console.cloud.google.com/apis/library/sheets.googleapis.com" target="_blank" rel="noopener">Google Cloud 콘솔</a>에서 프로젝트를 고르고 <b>Google Sheets API</b>를 ‘사용’으로 바꿉니다.</span></li>
+      <li><b>동의 화면</b><span>API 및 서비스 › OAuth 동의 화면(Google 인증 플랫폼)에서 사용자 유형을 <b>내부</b>로 정합니다. 앱 이름은 ‘녹색전환연구소 디자인 산출물 통합도구’로 적습니다. 내부 앱은 연구소 계정만 쓸 수 있고 별도 심사가 없습니다.</span></li>
+      <li><b>클라이언트 ID</b><span>사용자 인증 정보 › 사용자 인증 정보 만들기 › <b>OAuth 클라이언트 ID</b> › 유형 ‘웹 애플리케이션’을 고르고, 승인된 JavaScript 원본에 <code>https://minskapo.github.io</code>를 넣고 만듭니다.</span></li>
+      <li><b>연결</b><span>만들어진 클라이언트 ID(<code>…apps.googleusercontent.com</code>)를 저장소 <code>js/db-load.js</code>의 <code>clientId</code>에 넣고 push 하거나, 김민석에게 보내 주세요. 클라이언트 ID는 공개되어도 괜찮은 값입니다.</span></li>
+    </ol>
+    <p class="note">불러오기는 로그인한 사람의 권한으로 시트를 읽기만 합니다. DB 시트를 공유받지 않은 계정은 불러올 수 없고, 읽은 내용은 브라우저 밖으로 나가지 않습니다.</p>
+  </div>
+</section>
+
 <section class="band" id="personal">
   <div class="wrap">
     <span class="eyebrow dark">개별 설치</span>
@@ -201,9 +220,10 @@
 <script src="vendor/xlsx.full.min.js"></script>
 <script src="vendor/jszip.min.js"></script>
 <script src="js/card-data.js?v=20261111b"></script>
+<script src="js/db-load.js?v=20261111a"></script>
 <script src="js/sig-glyphs.js?v=20261111a"></script>
 <script src="js/sig-core.js?v=20261111a"></script>
 <script src="js/sig-render.js?v=20261111a"></script>
-<script src="js/sig-app.js?v=20261111a"></script>
+<script src="js/sig-app.js?v=20261111b"></script>
 </body>
 </html>

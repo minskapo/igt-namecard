@@ -1,5 +1,4 @@
 /* 메일 서명 페이지 */
-.nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--green); text-decoration-thickness: 3px; text-underline-offset: 6px; }
 .flow { padding-bottom: 56px; }
 .who { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
 .who > div { border: 1px solid var(--line); border-radius: var(--radius); padding: 22px 24px; display: grid; gap: 10px; align-content: start; }
@@ -41,3 +40,4 @@
 
 @media (max-width: 960px) { .who { grid-template-columns: 1fr; } .clients { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .sigbox { padding: 12px; } #sigPreview { padding: 10px; } }
+#oauth { padding-top: 0; }

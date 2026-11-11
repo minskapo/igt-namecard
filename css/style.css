@@ -171,3 +171,14 @@ code { background: var(--chip); border-radius: 6px; padding: 2px 6px; font-size:
 .skill-card { border: 1px solid var(--line); border-radius: var(--radius); padding: 28px; background: radial-gradient(120% 140% at 100% 0%, var(--green-2) 0%, var(--mint) 35%, #fff 70%); }
 .skill-info p { margin: 12px 0 0; max-width: 720px; color: #45474d; line-height: 1.65; }
 @media (max-width: 640px) { .skill { padding-top: 72px; } .skill-card { padding: 20px; } }
+
+/* Google 계정으로 DB 불러오기 */
+.gload { display: grid; gap: 8px; justify-items: start; }
+.or { display: flex; align-items: center; gap: 10px; color: var(--muted); font-size: 13px; margin: 16px 0 12px; }
+.or::before, .or::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+
+/* 상단 이름 (로고 대신) */
+.logo .brand { font-size: 16px; font-weight: 500; color: var(--ink-2); letter-spacing: -0.2px; white-space: nowrap; }
+.logo .brand b { font-weight: 700; margin-right: 4px; }
+.nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--green); text-decoration-thickness: 3px; text-underline-offset: 6px; }
+@media (max-width: 1100px) { .nav { gap: 20px; } .nav a { font-size: 15px; } }

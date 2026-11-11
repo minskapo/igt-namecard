@@ -68,7 +68,15 @@
 
   function loadSheet(i) {
     const ws = state.wb.Sheets[state.wb.SheetNames[i]];
-    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false });
+    loadRows(XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false }));
+  }
+  $('#dbLoad').addEventListener('click', async () => {
+    const b = $('#dbLoad'); b.disabled = true; status('구성원 DB를 불러오는 중…');
+    try { loadRows(await DBLoad.fetchRows()); $('#dbLoadNote').textContent = '구성원 DB 시트에서 불러왔습니다. 시트를 고친 뒤 다시 누르면 새 내용이 반영됩니다.'; }
+    catch (err) { status(err.message, true); }
+    finally { b.disabled = false; }
+  });
+  function loadRows(rows) {
     try {
       const fresh = C.rowsToPeople(rows).map((p) => ({ ...p, id: ++state.seq, selected: false }));
       state.people = state.people.filter((p) => p.isNew).concat(fresh);
