@@ -145,6 +145,7 @@
       <li><b>일괄 적용</b><span>압축을 푼 폴더에서 <code>gam csv gam/signatures.csv gam user ~email signature file ~file html</code>을 실행합니다. 한 사람만 바꿀 때는 <code>gam user minski@igt.or.kr signature file gam/html/minski.html html</code>처럼 씁니다.</span></li>
       <li><b>확인</b><span><code>gam user minski@igt.or.kr show signature</code>로 들어간 서명을 확인하고, 본인 Gmail에서 새 메일을 열어 서명이 붙는지 봅니다.</span></li>
     </ol>
+    <p class="note"><b>추적 링크:</b> 서명 버튼에는 연구소 GA4 추적링크 시트 규칙대로 <code>utm_source=signature</code> · <code>utm_medium=email</code> · <code>utm_campaign=email_signature</code>가 붙고, <code>utm_content</code>에는 구성원 이메일 아이디, <code>utm_term</code>에는 누른 버튼(donate·newsletter·homepage·website·card)이 들어갑니다. GA4에서 세션 소스/매체 <code>signature / email</code>로 보면 메일 서명으로 들어온 방문이고, 콘텐츠·검색어로 사람별·버튼별로 나눠 볼 수 있습니다. LinkedIn 버튼은 외부 사이트라 추적 링크를 붙이지 않습니다.</p>
     <p class="note">일괄 적용은 사람마다 서명 하나(DB의 ‘서명 언어’)만 넣습니다. 영문 서명을 함께 쓰려는 사람은 아래 개별 설치로 하나 더 추가합니다. 적용하면 기존 서명은 바뀌므로, 미리 공지해 주세요.</p>
   </div>
 </section>
@@ -222,7 +223,7 @@
 <script src="js/card-data.js?v=20261111b"></script>
 <script src="js/db-load.js?v=20261111a"></script>
 <script src="js/sig-glyphs.js?v=20261111a"></script>
-<script src="js/sig-core.js?v=20261111a"></script>
+<script src="js/sig-core.js?v=20261111b"></script>
 <script src="js/sig-render.js?v=20261111a"></script>
 <script src="js/sig-app.js?v=20261111b"></script>
 </body>

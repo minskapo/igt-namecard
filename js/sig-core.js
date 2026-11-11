@@ -11,8 +11,8 @@
 
   const LINK = {
     landing: 'https://igt.or.kr/',
-    donate: 'https://secure.donus.org/igt/pay',
-    newsletter: 'https://igtkorea.stibee.com/subscribe/',
+    donate: 'https://secure.donus.org/igt/pay/step1',
+    newsletter: 'https://igtkorea.stibee.com/',
     linkedin: 'https://www.linkedin.com/in/igtkorea2013/'
   };
   // 버튼 순서는 공통 이미지(assets/email/sig/common/<lang>/)와 같아야 한다.
@@ -30,8 +30,13 @@
 
   const idOf = (p) => String(p.email || '').split('@')[0].trim().toLowerCase();
 
+  // 연구소 GA4 추적링크 시트(UTM코드 생성기)의 규칙을 따른다.
+  // 순서: source → medium → campaign → content → term (시트 K열 수식과 같음)
+  // source=signature(설정 탭 소스 목록), medium=email, campaign=email_signature,
+  // content=구성원 이메일 아이디(명함 QR과 같은 방식), term=누른 곳(donate·newsletter·homepage·website·card)
+  const UTM = { source: 'signature', medium: 'email', campaign: 'email_signature' };
   function utm(url, id, term) {
-    const q = ['utm_source=email', 'utm_medium=signature', 'utm_campaign=email_signature',
+    const q = ['utm_source=' + UTM.source, 'utm_medium=' + UTM.medium, 'utm_campaign=' + UTM.campaign,
       'utm_content=' + encodeURIComponent(id), 'utm_term=' + term].join('&');
     return url + (url.includes('?') ? '&' : '?') + q;
   }
@@ -153,6 +158,6 @@
     return out;
   }
 
-  const api = { SITE, BASE, COMMON_VER, LINK, BUTTONS, idOf, utm, phone, lines, altText, version, newCode, validCode, topUrl, commonUrl, html, plain, problems, splitTitleEn };
+  const api = { UTM, SITE, BASE, COMMON_VER, LINK, BUTTONS, idOf, utm, phone, lines, altText, version, newCode, validCode, topUrl, commonUrl, html, plain, problems, splitTitleEn };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.SigCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);
