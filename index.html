@@ -22,6 +22,7 @@
       <a href="#guide-order">인쇄 주문</a>
       <a href="#guide-sheet">추적링크</a>
       <a href="#skill">Claude 스킬</a>
+      <a href="signature.html">메일 서명</a>
     </nav>
   </div>
 </header>
@@ -48,9 +49,9 @@
         <label class="drop" id="drop">
           <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
           <strong>엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
-          <span>예: 운영_연구소 구성원 연락처인쇄용_2026.xlsx</span>
+          <span>구성원 DB(‘운영_구성원 DB (명함·메일서명)’을 .xlsx로 받은 파일) 또는 연락처 엑셀</span>
         </label>
-        <p class="note">파일은 이 브라우저 안에서만 읽힙니다. 서버로 전송되거나 저장되지 않습니다.</p>
+        <p class="note">파일은 이 브라우저 안에서만 읽힙니다. 서버로 전송되거나 저장되지 않습니다. <a href="https://docs.google.com/spreadsheets/d/1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI/export?format=xlsx">구성원 DB를 .xlsx로 받기</a></p>
         <div class="row" id="sheetRow" hidden>
           <label for="sheet">시트</label>
           <select id="sheet"></select>
@@ -200,7 +201,7 @@
 <script src="vendor/pdf.min.js"></script>
 <script src="vendor/qrcode-generator.js"></script>
 <script src="vendor/jszip.min.js"></script>
-<script src="js/card-data.js?v=20261111a"></script>
+<script src="js/card-data.js?v=20261111b"></script>
 <script src="js/card-link.js?v=20261111a"></script>
 <script src="js/card-ai-data.js?v=20261111a"></script>
 <script src="js/card-ai.js?v=20261111a"></script>

@@ -1,0 +1,209 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>메일 서명 · 녹색전환연구소</title>
+<link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=20261111b">
+<link rel="stylesheet" href="css/sig.css?v=20261111a">
+</head>
+<body>
+<a class="skip" href="#make">본문으로 건너뛰기</a>
+
+<header class="site">
+  <div class="wrap navrow">
+    <a class="logo" href="https://igt.or.kr/" aria-label="녹색전환연구소 홈페이지">
+      <img class="symbol" src="assets/logo-symbol.svg" alt="">
+      <img class="word" src="assets/logo-word.svg" alt="녹색전환연구소">
+    </a>
+    <nav class="nav" aria-label="페이지 이동">
+      <a href="index.html">명함 생성기</a>
+      <a href="signature.html" aria-current="page">메일 서명</a>
+      <a href="#guide">설치 가이드</a>
+      <a href="#trouble">문제 해결</a>
+    </nav>
+  </div>
+</header>
+
+<section class="intro">
+  <div class="intro-gradient" aria-hidden="true"></div>
+  <div class="wrap intro-inner">
+    <span class="eyebrow">구성원 메일 서명</span>
+    <h1>메일 서명 도구</h1>
+    <p class="lead">구성원 DB를 불러오면 사람별 서명 이미지와<br class="br-md"> Gmail 일괄 적용 파일이 바로 만들어집니다.</p>
+  </div>
+</section>
+
+<section class="block flow">
+  <div class="wrap">
+    <div class="who">
+      <div><span class="eyebrow">기본</span><b>관리자가 한꺼번에 적용</b><p>모든 구성원의 Gmail 웹·앱 서명은 관리자가 GAM으로 한 번에 넣습니다. 구성원은 따로 할 일이 없습니다.</p><a class="more" href="#admin">관리자 일괄 적용</a></div>
+      <div><span class="eyebrow dark">개별</span><b>직접 넣어야 하는 경우</b><p>Outlook·Apple Mail 같은 다른 메일 프로그램을 쓰거나, 영문 서명을 하나 더 두고 싶을 때는 아래 도구에서 복사해 직접 붙여 넣습니다.</p><a class="more" href="#personal">개별 설치</a></div>
+      <div><span class="eyebrow dark">신규</span><b>새 구성원이 들어오면</b><p>DB 시트에 한 줄을 넣고, 이 페이지에서 배포 파일을 받아 저장소에 올린 뒤 관리자가 그 사람만 적용합니다.</p><a class="more" href="#newbie">신규 구성원</a></div>
+    </div>
+  </div>
+</section>
+
+<main id="make">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>서명 만들기</h2>
+      <span class="sec-sub">DB 불러오기 → 구성원 선택 → 내용 확인 → 복사·내려받기</span>
+    </div>
+
+    <div class="grid">
+      <section class="panel" id="step1">
+        <h3><span class="n">1</span> 구성원 DB 불러오기</h3>
+        <label class="drop" id="drop">
+          <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+          <strong>DB 엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
+          <span>‘운영_구성원 DB (명함·메일서명)’ 시트를 .xlsx로 받은 파일</span>
+        </label>
+        <div class="actions">
+          <a class="btn ghost" href="https://docs.google.com/spreadsheets/d/1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI/edit" target="_blank" rel="noopener">DB 시트 열기</a>
+          <a class="btn ghost" href="https://docs.google.com/spreadsheets/d/1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI/export?format=xlsx">DB를 .xlsx로 받기</a>
+        </div>
+        <p class="note">파일은 이 브라우저 안에서만 읽힙니다. DB 시트는 연구소 계정으로 공유된 사람만 열 수 있습니다.</p>
+      </section>
+
+      <section class="panel" id="step2">
+        <h3><span class="n">2</span> 구성원 선택</h3>
+        <div class="toolbar">
+          <input type="search" id="q" placeholder="이름 검색">
+          <button type="button" class="ghost" id="addNew">+ 직접 입력</button>
+        </div>
+        <div id="list" class="list"><p class="empty">DB를 불러오거나 ‘직접 입력’을 눌러 주세요.</p></div>
+        <div class="toolbar small">
+          <button type="button" class="link" id="selAll">전체 선택</button>
+          <button type="button" class="link" id="selNone">선택 해제</button>
+          <span id="count" class="muted"></span>
+        </div>
+      </section>
+
+      <section class="panel" id="step3">
+        <h3><span class="n">3</span> 내용 확인·수정</h3>
+        <form id="form" class="form" autocomplete="off">
+          <p class="empty" id="formEmpty">목록에서 이름을 누르면 여기에서 내용을 고칠 수 있습니다.</p>
+          <div id="fields" hidden>
+            <div class="f half"><label>이름</label><input name="name"></div>
+            <div class="f half"><label>영문 이름</label><input name="nameEn"></div>
+            <div class="f"><label>국문 직함 줄</label><input name="titleKr"></div>
+            <div class="f"><label>영문 직함 줄 (직급, 팀)</label><input name="titleEn"></div>
+            <div class="f half"><label>휴대전화</label><input name="mobile" inputmode="tel"></div>
+            <div class="f half"><label>이메일</label><input name="email" type="email"></div>
+            <div class="f half"><label>일괄 적용 언어</label><select name="sigLang"><option value="kr">국문</option><option value="en">영문</option></select></div>
+            <div class="f half"><label>서명 코드</label><div class="inline"><input name="sigCode" readonly><button type="button" class="ghost" id="newCode">새로 만들기</button></div></div>
+            <p class="note">여기서 고친 내용은 DB 시트에 저장되지 않습니다. 계속 쓸 내용은 DB 시트를 고친 뒤 다시 불러오세요.</p>
+          </div>
+        </form>
+      </section>
+
+      <section class="panel preview" id="step4">
+        <h3><span class="n">4</span> 미리보기·복사·내려받기</h3>
+        <div class="tabs" role="tablist">
+          <button type="button" role="tab" class="tab" data-lang="kr" aria-selected="true">국문</button>
+          <button type="button" role="tab" class="tab" data-lang="en" aria-selected="false">영문</button>
+        </div>
+        <div class="sigbox"><div id="sigPreview"><p class="empty">구성원을 고르면 서명이 여기에 보입니다.</p></div></div>
+        <ul id="warn" class="warn" hidden></ul>
+        <p id="hostState" class="muted"></p>
+        <div class="actions">
+          <button type="button" id="copySig" class="primary" disabled>서명 복사</button>
+          <button type="button" id="dlHtml" class="ghost" disabled>HTML 내려받기</button>
+          <button type="button" id="dlPng" class="ghost" disabled>이미지 내려받기</button>
+          <button type="button" id="copyText" class="ghost" disabled>글자 서명 복사</button>
+        </div>
+        <div class="bulk">
+          <button type="button" id="dlZip" class="primary" disabled>배포 파일 ZIP</button>
+          <p class="note">선택한 사람의 서명 이미지(저장소에 올릴 파일), GAM 일괄 적용 파일, 사람별 HTML이 함께 들어 있습니다.</p>
+        </div>
+        <p id="status" class="muted" role="status"></p>
+      </section>
+    </div>
+  </div>
+</main>
+
+<section class="block" id="guide">
+  <div class="wrap">
+    <div class="sec-head" id="admin">
+      <h2>관리자 일괄 적용 (GAM)</h2>
+      <a class="more" href="https://github.com/GAM-team/GAM/wiki" target="_blank" rel="noopener">GAM 안내서</a>
+    </div>
+    <p class="lead-s">Google Workspace 관리자가 명령 한 줄로 모든 구성원의 Gmail 서명을 바꿉니다. 처음 한 번 GAM을 설치하고 권한을 연결해 두면, 그 뒤로는 3~5단계만 반복합니다.</p>
+    <ol class="steps">
+      <li><b>GAM 설치</b><span>관리자 PC에 GAM을 설치합니다. 맥·리눅스는 터미널에서 <code>bash &lt;(curl -s -S -L https://git.io/gam-install)</code>, 윈도우는 GAM 안내서의 설치 파일을 씁니다.</span></li>
+      <li><b>권한 연결</b><span>설치 안내에 따라 <code>gam create project</code> → <code>gam oauth create</code> → <code>gam user 관리자@igt.or.kr check serviceaccount</code>를 차례로 실행합니다. 마지막 단계에서 나오는 주소로 관리 콘솔의 ‘도메인 전체 위임’을 승인하면, 구성원 서명을 바꿀 권한(Gmail settings)이 생깁니다.</span></li>
+      <li><b>배포 파일 받기</b><span>위 ‘서명 만들기’에서 DB를 불러오고 <b>전체 선택</b> → <b>배포 파일 ZIP</b>을 받아 압축을 풉니다.</span></li>
+      <li><b>이미지 올리기</b><span>ZIP 안 <code>저장소에_올릴_파일/assets</code> 폴더를 명함생성기 저장소(<code>minskapo/igt-namecard</code>) 맨 위에 그대로 덮어쓰고 커밋·push 합니다. 1~2분 뒤 ZIP 안 <code>이미지_주소_확인.txt</code>의 주소를 하나 열어 이미지가 보이면 준비가 끝난 것입니다.</span></li>
+      <li><b>일괄 적용</b><span>압축을 푼 폴더에서 <code>gam csv gam/signatures.csv gam user ~email signature file ~file html</code>을 실행합니다. 한 사람만 바꿀 때는 <code>gam user minski@igt.or.kr signature file gam/html/minski.html html</code>처럼 씁니다.</span></li>
+      <li><b>확인</b><span><code>gam user minski@igt.or.kr show signature</code>로 들어간 서명을 확인하고, 본인 Gmail에서 새 메일을 열어 서명이 붙는지 봅니다.</span></li>
+    </ol>
+    <p class="note">일괄 적용은 사람마다 서명 하나(DB의 ‘서명 언어’)만 넣습니다. 영문 서명을 함께 쓰려는 사람은 아래 개별 설치로 하나 더 추가합니다. 적용하면 기존 서명은 바뀌므로, 미리 공지해 주세요.</p>
+  </div>
+</section>
+
+<section class="band" id="personal">
+  <div class="wrap">
+    <span class="eyebrow dark">개별 설치</span>
+    <h2>직접 서명을 넣어야 할 때</h2>
+    <p class="band-lead">‘서명 만들기’에서 본인을 고른 뒤 <b>서명 복사</b>를 누르고, 쓰는 메일 프로그램의 서명 칸에 붙여 넣습니다.</p>
+    <div class="clients">
+      <div><b>Gmail 웹 (영문 서명 추가)</b><span>설정(톱니바퀴) › 모든 설정 보기 › 기본설정 › 서명 › <b>새로 만들기</b> → 붙여넣기. 아래 ‘서명 기본값’에서 새 메일·답장에 쓸 서명을 고르고 맨 아래 <b>변경사항 저장</b>을 누릅니다.</span></div>
+      <div><b>Gmail 앱 (휴대폰)</b><span>최신 Gmail 앱은 웹 서명을 가져와 씁니다. 앱 설정 › 계정 › 서명에서 웹 서명이 골라져 있는지 확인하고, ‘모바일 서명’(글자만 쓰는 서명)이 켜져 있으면 꺼 둡니다. 앱이 오래된 버전이면 업데이트해 주세요.</span></div>
+      <div><b>Outlook (Windows·Mac·웹)</b><span>설정 › 메일 › 서명(새 Outlook은 계정 › 서명) › 새 서명 → 붙여넣기 → 새 메일·회신 기본값 지정. 이미지가 안 보이면 ‘HTML 내려받기’ 파일을 브라우저로 열어 서명 부분을 복사해 다시 붙입니다.</span></div>
+      <div><b>Apple Mail (Mac)</b><span>설정 › 서명 › 계정 선택 › <b>+</b> → ‘항상 기본 메시지 서체와 일치’를 끄고 붙여넣기. 붙인 직후 이미지가 회색으로 보여도 보내는 메일에는 정상으로 들어갑니다.</span></div>
+      <div><b>iPhone 기본 메일</b><span>설정 › 앱 › Mail › 서명에 붙여 넣으면 이미지가 빠지거나 깨질 수 있습니다. 이때는 <b>글자 서명 복사</b>로 글자만 넣어 주세요.</span></div>
+      <div><b>Thunderbird 등 기타</b><span>‘HTML 내려받기’로 받은 파일을 서명 파일로 지정하거나(HTML 사용 켜기), 내용을 서명 칸에 붙여 넣습니다.</span></div>
+    </div>
+    <p class="note">서명 복사는 저장소에 이미지가 올라간 사람만 정상 작동합니다. 미리보기 아래에 ‘이미지 준비됨’이 보이는지 먼저 확인하세요.</p>
+  </div>
+</section>
+
+<section class="block" id="newbie">
+  <div class="wrap">
+    <div class="sec-head"><h2>신규 구성원·정보 변경</h2></div>
+    <ol class="steps">
+      <li><b>DB에 적기</b><span>DB 시트 ‘구성원’ 탭 맨 아래에 한 줄을 넣습니다. 이메일 아이디·이름·부서·직급·핸드폰·이메일만 채우면 되고, 영문 이름과 직함은 비워 두어도 자동으로 채워집니다. 퇴사자는 ‘상태’를 <b>퇴사</b>로 바꿉니다.</span></li>
+      <li><b>배포 파일 받기</b><span>DB를 다시 받아 불러온 뒤 그 사람만 골라 <b>배포 파일 ZIP</b>을 받습니다. 서명 코드가 비어 있던 사람은 도구가 코드를 새로 만들고, ZIP 안 <code>서명코드_DB기록.csv</code>에 적어 줍니다. 이 코드를 DB ‘서명 코드’ 칸에 꼭 옮겨 적어 주세요.</span></li>
+      <li><b>올리고 적용</b><span>위 관리자 4~5단계처럼 이미지를 저장소에 올리고, 관리자가 그 사람만 <code>gam user …</code>로 적용합니다. 관리자가 없을 때는 본인이 개별 설치로 넣어도 됩니다.</span></li>
+      <li><b>정보가 바뀌면</b><span>직급·전화가 바뀌어도 서명 코드는 그대로 둡니다. 같은 과정으로 이미지를 다시 올리고 다시 적용하면, 이미지 주소의 버전 값이 바뀌어 새 서명이 바로 보입니다.</span></li>
+    </ol>
+  </div>
+</section>
+
+<section class="block" id="trouble">
+  <div class="wrap">
+    <div class="sec-head"><h2>문제 해결</h2></div>
+    <div class="faq">
+      <details><summary>서명 이미지가 엑스(X)나 빈칸으로 보여요</summary><p>이미지가 저장소에 아직 안 올라갔거나 push 직후일 수 있습니다. ‘서명 만들기’ 미리보기 아래 상태를 확인하고, ‘이미지 준비 안 됨’이면 관리자 4단계를 다시 해 주세요. 받는 사람 메일 프로그램이 외부 이미지를 막아 둔 경우에는 ‘이미지 표시’를 눌러야 보입니다.</p></details>
+      <details><summary>바꾼 내용이 서명에 반영되지 않아요</summary><p>이미지만 다시 올리고 서명을 다시 적용하지 않으면 예전 주소가 남아 있습니다. 배포 파일을 새로 받아 다시 적용해 주세요. Gmail은 이미지를 한동안 저장해 두므로, 주소가 같은 상태로는 바로 바뀌지 않을 수 있습니다.</p></details>
+      <details><summary>서명이 두 번 붙거나 휴대폰에서 다른 서명이 붙어요</summary><p>Gmail 앱의 ‘모바일 서명’, Outlook·Apple Mail의 서명이 함께 켜져 있는지 확인하세요. Gmail로 보내는 메일에는 Gmail 서명 하나만 켜 두면 됩니다.</p></details>
+      <details><summary>다크모드에서 서명이 하얀 상자로 보여요</summary><p>의도된 모습입니다. 서명 전체를 이미지로 만들어 다크모드에서도 원래 색이 유지되도록 했습니다.</p></details>
+      <details><summary>버튼을 누르면 google.com을 거쳐 열려요</summary><p>Gmail이 받은 메일의 링크를 안전 확인 주소로 감싸는 기능입니다. 실제 이동하는 주소는 그대로이며, 서명에서 뺄 수 없습니다.</p></details>
+      <details><summary>이름이나 직함이 잘리거나 작게 나와요</summary><p>서명 폭(480px)을 넘는 글자는 도구가 조금씩 줄여 맞추고, 그래도 넘으면 미리보기 아래에 경고를 띄웁니다. DB의 영문 직함 줄을 짧게 고친 뒤 다시 만들어 주세요.</p></details>
+      <details><summary>GAM에서 권한 오류가 나요</summary><p><code>gam user 관리자@igt.or.kr check serviceaccount</code>를 다시 실행해 빠진 권한을 확인하고, 안내되는 주소에서 도메인 전체 위임을 승인합니다. 서명 변경에는 Gmail settings(basic·sharing) 권한이 필요합니다.</p></details>
+    </div>
+    <p class="note">그래도 안 되면 기후시민팀 김민석(minski@igt.or.kr)에게 화면을 캡처해 보내 주세요.</p>
+  </div>
+</section>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p class="foot-org">사단법인 녹색전환연구소</p>
+    <p>TEL 02-2135-1148 | E-MAIL office@igt.or.kr</p>
+    <p>주소 (04506) 서울특별시 중구 중림로7길 4, 2층</p>
+    <p class="foot-meta">서명 이미지: assets/email/sig/ · 서체: Asta Sans (SIL OFL) · 내부 업무용 페이지</p>
+  </div>
+</footer>
+
+<script src="vendor/xlsx.full.min.js"></script>
+<script src="vendor/jszip.min.js"></script>
+<script src="js/card-data.js?v=20261111b"></script>
+<script src="js/sig-glyphs.js?v=20261111a"></script>
+<script src="js/sig-core.js?v=20261111a"></script>
+<script src="js/sig-render.js?v=20261111a"></script>
+<script src="js/sig-app.js?v=20261111a"></script>
+</body>
+</html>

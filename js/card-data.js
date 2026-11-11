@@ -91,12 +91,23 @@
     const head = rows[h].map((c) => String(c || '').trim());
     const ix = (k) => head.indexOf(k);
     const [iD, iN, iT, iP, iE] = ['부서', '이름', '직급', '핸드폰', '이메일'].map(ix);
+    // 구성원 DB 시트에만 있는 열 (없으면 -1)
+    const [iNE, iTK, iTE, iS, iL, iC] = ['영문 이름', '국문 직함', '영문 직함', '상태', '서명 언어', '서명 코드'].map(ix);
+    const cell = (r, i) => (i >= 0 && r ? String(r[i] || '').trim() : '');
     const people = []; let lastDept = '';
     for (const r of rows.slice(h + 1)) {
       const name = String((r && r[iN]) || '').trim();
       if (r && r[iD] && String(r[iD]).trim() && !String(r[iD]).startsWith('*')) lastDept = String(r[iD]).trim();
       if (!name || !/^[가-힣]{2,5}$/.test(name)) continue;
-      people.push(makePerson({ name, dept: lastDept, title: String(r[iT] || '').trim(), mobile: r[iP], email: r[iE] }));
+      if (cell(r, iS) === '퇴사') continue;
+      const p = makePerson({ name, dept: lastDept, title: String(r[iT] || '').trim(), mobile: r[iP], email: r[iE] });
+      if (cell(r, iNE)) p.nameEn = cell(r, iNE);
+      if (cell(r, iTK)) p.titleKr = cell(r, iTK);
+      if (cell(r, iTE)) p.titleEn = cell(r, iTE);
+      p.sigLang = cell(r, iL) === '영문' ? 'en' : 'kr';
+      p.sigCode = cell(r, iC);
+      p.fromDb = iC >= 0;
+      people.push(p);
     }
     return people;
   }
