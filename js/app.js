@@ -70,10 +70,15 @@
     const ws = state.wb.Sheets[state.wb.SheetNames[i]];
     loadRows(XLSX.utils.sheet_to_json(ws, { header: 1, defval: '', raw: false }));
   }
+  // DB 불러오기 결과는 버튼 바로 아래에 보여 준다(④의 상태줄은 화면 밖에 있을 수 있음).
+  const dbNote = (msg, err) => { const el = $('#dbLoadNote'); el.textContent = msg; el.style.color = err ? '#b42318' : ''; };
+  if (!DBLoad.ready()) dbNote('Google 로그인 연결 설정 전이라 아직 쓸 수 없습니다. 지금은 아래처럼 DB를 .xlsx로 받아 끌어다 놓아 주세요.', true);
   $('#dbLoad').addEventListener('click', async () => {
-    const b = $('#dbLoad'); b.disabled = true; status('구성원 DB를 불러오는 중…');
-    try { loadRows(await DBLoad.fetchRows()); $('#dbLoadNote').textContent = '구성원 DB 시트에서 불러왔습니다. 시트를 고친 뒤 다시 누르면 새 내용이 반영됩니다.'; }
-    catch (err) { status(err.message, true); }
+    const b = $('#dbLoad');
+    if (!DBLoad.ready()) { dbNote('아직 Google 로그인 연결(클라이언트 ID)이 설정되지 않았습니다. 관리자가 메일 서명 페이지의 ‘DB 바로 불러오기 설정’을 마치면 쓸 수 있습니다. 지금은 아래 파일 불러오기를 써 주세요.', true); return; }
+    b.disabled = true; dbNote('구성원 DB를 불러오는 중…');
+    try { loadRows(await DBLoad.fetchRows()); dbNote('구성원 DB 시트에서 불러왔습니다. 시트를 고친 뒤 다시 누르면 새 내용이 반영됩니다.'); }
+    catch (err) { dbNote(err.message, true); }
     finally { b.disabled = false; }
   });
   function loadRows(rows) {
