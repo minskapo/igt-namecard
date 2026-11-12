@@ -12,7 +12,7 @@
     // 구성원 셀프 반영용 Apps Script 웹앱 주소 (tools/sig-self.gs 배포 후 넣는다)
     selfUrl: ''
   };
-  const SCOPE = 'openid email https://www.googleapis.com/auth/spreadsheets.readonly';
+  const SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly';
   let gsi = null, token = null, tokenExp = 0;
 
   const ready = () => !!CONFIG.clientId;
@@ -52,17 +52,46 @@
     const j = await r.json();
     return j.values || [];
   }
-  // 셀프 반영 웹앱 호출 (본인 정보 불러오기, 본인 서명 반영)
+  // 구성원 본인 확인: Google 로그인(ID 토큰). 이미 동의한 연구소 계정이면 자동으로 로그인된다.
   const selfReady = () => ready() && !!CONFIG.selfUrl;
+  let idTok = null, idExp = 0, idWaiters = [], idInit = false, onSignIn = null;
+  const jwtExp = (t) => { try { return JSON.parse(atob(t.split('.')[1].replace(/-/g, '+').replace(/_/g, '/'))).exp * 1000; } catch (e) { return 0; } };
+  function gotCredential(r) {
+    idTok = r.credential; idExp = jwtExp(idTok);
+    idWaiters.splice(0).forEach((f) => f(idTok));
+    if (onSignIn) onSignIn(idTok);
+  }
+  // 페이지가 열릴 때 부른다. auto_select로 자동 로그인을 시도하고, 버튼 자리에 Google 로그인 버튼을 그린다.
+  async function initSignIn(buttonEl, cb) {
+    if (!selfReady()) return false;
+    onSignIn = cb;
+    const google = await loadGsi();
+    if (!idInit) {
+      google.accounts.id.initialize({ client_id: CONFIG.clientId, callback: gotCredential, auto_select: true, hd: CONFIG.domain, use_fedcm_for_prompt: true, itp_support: true });
+      idInit = true;
+    }
+    if (buttonEl) google.accounts.id.renderButton(buttonEl, { theme: 'filled_black', size: 'large', shape: 'pill', text: 'continue_with', locale: 'ko' });
+    google.accounts.id.prompt();
+    return true;
+  }
+  function getIdToken() {
+    if (idTok && Date.now() < idExp - 60000) return Promise.resolve(idTok);
+    return new Promise((ok, no) => {
+      idWaiters.push(ok);
+      loadGsi().then((g) => g.accounts.id.prompt());
+      setTimeout(() => no(new Error('로그인이 필요합니다. 위 ①의 Google 버튼을 눌러 연구소 계정으로 로그인해 주세요.')), 20000);
+    });
+  }
+  // 셀프 반영 웹앱 호출 (본인 정보 불러오기, 본인 서명 반영)
   async function callSelf(action, data) {
     if (!selfReady()) throw new Error('아직 구성원용 기능이 설정되지 않았습니다. 김민석(minski@igt.or.kr)에게 알려 주세요.');
-    const t = await getToken();
+    const t = await getIdToken();
     let r;
-    try { r = await fetch(CONFIG.selfUrl, { method: 'POST', body: JSON.stringify({ ...(data || {}), action, token: t }) }); }
+    try { r = await fetch(CONFIG.selfUrl, { method: 'POST', body: JSON.stringify({ ...(data || {}), action, idToken: t }) }); }
     catch (e) { throw new Error('서버에 연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요.'); }
     const j = await r.json().catch(() => ({ ok: false, error: '서버 응답을 읽지 못했습니다.' }));
     if (!j.ok) throw new Error(j.error || '요청을 처리하지 못했습니다.');
     return j;
   }
-  root.DBLoad = { CONFIG, ready, fetchRows, selfReady, callSelf };
+  root.DBLoad = { CONFIG, ready, fetchRows, selfReady, callSelf, initSignIn };
 })(window);

@@ -56,7 +56,8 @@
         <h3><span class="n">1</span> 내 정보 불러오기</h3>
         <div class="gload">
           <button type="button" class="primary" id="meLoad">Google 계정으로 내 정보 불러오기</button>
-          <span class="muted" id="dbLoadNote">연구소 계정으로 로그인하면 구성원 DB에서 내 정보만 불러옵니다.</span>
+          <div id="gsiBtn"></div>
+          <span class="muted" id="dbLoadNote">연구소 계정으로 로그인되어 있으면 내 정보가 자동으로 나타납니다. 나타나지 않으면 버튼을 눌러 로그인해 주세요.</span>
         </div>
         <details class="admin-tools">
           <summary>관리자: 전체 구성원 불러오기</summary>
@@ -152,7 +153,7 @@
     <div class="sec-head"><h2>직함 바꾸기</h2></div>
     <p class="lead-s">서명에는 기본으로 부서와 직급이 들어갑니다. ‘연구원’ 대신 ‘커뮤니케이션 담당자’처럼 다른 직책명을 쓰고 싶으면 직접 바꿀 수 있습니다.</p>
     <ol class="steps">
-      <li><b>내 정보 불러오기</b><span>위 ‘서명 만들기’ ①에서 <b>Google 계정으로 내 정보 불러오기</b>를 누르고 연구소 계정으로 로그인합니다.</span></li>
+      <li><b>내 정보 불러오기</b><span>연구소 계정으로 로그인되어 있으면 이 페이지를 열 때 내 정보가 자동으로 나타납니다. 나타나지 않으면 ‘서명 만들기’ ①의 Google 버튼을 눌러 로그인합니다.</span></li>
       <li><b>직함 고치기</b><span>③의 <b>국문 직함 줄</b>과 <b>영문 직함 줄</b>을 고치고, ④ 미리보기의 국문·영문 탭에서 글자가 잘리지 않는지 확인합니다.</span></li>
       <li><b>반영하기</b><span>④의 <b>바꾼 직함 내 서명에 반영</b>을 두 번 누릅니다. 1~3분 뒤 ‘반영되었습니다’가 뜨면 끝입니다. 바꾼 직함은 DB에도 저장되어, 관리자가 다시 일괄 적용해도 유지됩니다.</span></li>
       <li><b>Gmail에 다시 넣기</b><span><b>서명 복사</b>를 눌러 Gmail 서명 칸의 기존 서명을 지우고 붙여 넣은 뒤 <b>변경사항 저장</b>을 누릅니다. 영문 서명을 쓰는 분은 영문 탭에서도 같은 방법으로 바꿉니다.</span></li>
@@ -202,10 +203,10 @@
 <script src="vendor/xlsx.full.min.js"></script>
 <script src="vendor/jszip.min.js"></script>
 <script src="js/card-data.js?v=20261111b"></script>
-<script src="js/db-load.js?v=20261112b"></script>
+<script src="js/db-load.js?v=20261112c"></script>
 <script src="js/sig-glyphs.js?v=20261111a"></script>
 <script src="js/sig-core.js?v=20261112f"></script>
 <script src="js/sig-render.js?v=20261112b"></script>
-<script src="js/sig-app.js?v=20261112d"></script>
+<script src="js/sig-app.js?v=20261112e"></script>
 </body>
 </html>

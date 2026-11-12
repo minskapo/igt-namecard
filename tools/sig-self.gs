@@ -11,7 +11,7 @@
  *  2) 프로젝트 설정 › 스크립트 속성에 GITHUB_TOKEN 을 넣는다.
  *     (GitHub fine-grained token: 저장소 minskapo/igt-namecard 만, Contents 읽기·쓰기)
  *  3) 배포 › 새 배포 › 웹 앱: 실행 계정 '나', 액세스 권한 '모든 사용자'.
- *     로그인 확인은 아래 verify()가 연구소 계정 토큰으로 직접 한다.
+ *     로그인 확인은 아래 verify()가 Google ID 토큰으로 직접 한다.
  *  4) 웹 앱 URL을 js/db-load.js 의 selfUrl 에 넣는다.
  */
 const CFG = {
@@ -30,7 +30,7 @@ function doPost(e) {
   let out;
   try {
     const req = JSON.parse(e.postData.contents);
-    const email = verify(req.token);
+    const email = verify(req.idToken);
     if (req.action === 'me') out = me(email);
     else if (req.action === 'publish') out = publish(email, req);
     else throw new Error('알 수 없는 요청입니다.');
@@ -44,13 +44,14 @@ function doGet() {
   return ContentService.createTextOutput('IGT signature self-service: OK');
 }
 
-// 서명 페이지에서 받은 Google 로그인 토큰이 우리 클라이언트에서, 연구소 계정으로 발급된 것인지 확인한다.
-function verify(token) {
-  if (!token) throw new Error('로그인이 필요합니다.');
-  const r = UrlFetchApp.fetch('https://oauth2.googleapis.com/tokeninfo?access_token=' + encodeURIComponent(token), { muteHttpExceptions: true });
-  if (r.getResponseCode() !== 200) throw new Error('로그인이 만료되었습니다. 버튼을 다시 눌러 주세요.');
+// 서명 페이지의 Google 로그인(ID 토큰)이 우리 클라이언트에서, 연구소 계정으로 발급된 것인지 확인한다.
+function verify(idToken) {
+  if (!idToken) throw new Error('로그인이 필요합니다.');
+  const r = UrlFetchApp.fetch('https://oauth2.googleapis.com/tokeninfo?id_token=' + encodeURIComponent(idToken), { muteHttpExceptions: true });
+  if (r.getResponseCode() !== 200) throw new Error('로그인이 만료되었습니다. 페이지를 새로고침해 주세요.');
   const t = JSON.parse(r.getContentText());
-  if (t.aud !== CFG.CLIENT_ID && t.azp !== CFG.CLIENT_ID) throw new Error('허용되지 않은 로그인입니다.');
+  if (t.aud !== CFG.CLIENT_ID) throw new Error('허용되지 않은 로그인입니다.');
+  if (Number(t.exp) * 1000 < Date.now()) throw new Error('로그인이 만료되었습니다. 페이지를 새로고침해 주세요.');
   const email = String(t.email || '').toLowerCase();
   if (!email.endsWith('@' + CFG.DOMAIN) || String(t.email_verified) !== 'true') throw new Error('연구소 계정(@' + CFG.DOMAIN + ')으로 로그인해 주세요.');
   return email;

@@ -34,19 +34,25 @@
     finally { b.disabled = false; }
   });
   // 구성원: 본인 정보만 불러오기 (DB 시트를 공유받지 않아도 된다)
-  $('#meLoad').addEventListener('click', async () => {
-    const b = $('#meLoad');
-    b.disabled = true; dbNote('내 정보를 불러오는 중…');
+  // 연구소 계정으로 이미 로그인해 두었으면 페이지를 열 때 자동으로 불러온다.
+  let meLoaded = false;
+  async function loadMe(scroll) {
+    if (meLoaded && !scroll) return;
+    dbNote('내 정보를 불러오는 중…');
     try {
       const j = await DBLoad.callSelf('me');
-      loadRows(j.rows);
+      loadRows(j.rows); meLoaded = true;
       const p = state.people.find((x) => !x.isNew);
       if (p) { state.activeId = p.id; p.selected = true; renderList(); renderForm(); preview(); }
-      dbNote(`${j.email} 계정의 정보를 불러왔습니다. ③에서 직함을 고치고 ④에서 확인해 주세요.`);
-      $('#step3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      dbNote(`${j.email} 계정으로 내 정보를 불러왔습니다. 직함을 바꾸려면 ③에서 고치고 ④에서 반영해 주세요.`);
+      if (scroll) $('#step3').scrollIntoView({ behavior: 'smooth', block: 'start' });
     } catch (err) { dbNote(err.message, true); }
-    finally { b.disabled = false; }
-  });
+  }
+  $('#meLoad').addEventListener('click', () => loadMe(true));
+  if (DBLoad.selfReady()) {
+    $('#meLoad').hidden = true;
+    DBLoad.initSignIn($('#gsiBtn'), () => loadMe(false)).catch((e) => { $('#meLoad').hidden = false; dbNote(e.message, true); });
+  }
   function loadRows(rows) {
     {
       const fresh = C.rowsToPeople(rows).map((p) => ({ ...p, id: ++state.seq, selected: false, codeNew: false }));
