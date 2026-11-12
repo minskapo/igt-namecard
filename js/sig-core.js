@@ -13,7 +13,7 @@
     landing: 'https://igt.or.kr/',
     donate: 'https://secure.donus.org/igt/pay/step1',
     newsletter: 'https://igtkorea.stibee.com/',
-    linkedin: 'https://www.linkedin.com/in/igtkorea2013/'
+    linkedin: 'https://www.linkedin.com/company/institute-for-green-transformation/home/'
   };
   // 버튼 순서는 공통 이미지(assets/email/sig/common/<lang>/)와 같아야 한다.
   const BUTTONS = {
