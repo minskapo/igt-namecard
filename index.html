@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>명함 생성기 · 녹색전환연구소</title>
 <link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=20261112a">
+<link rel="stylesheet" href="css/style.css?v=20261112b">
 </head>
 <body>
 <a class="skip" href="#make">본문으로 건너뛰기</a>
@@ -29,7 +29,7 @@
   <div class="wrap intro-inner">
     <span class="eyebrow">구성원 명함 발급</span>
     <h1>명함 생성기</h1>
-    <p class="lead">구성원 DB를 불러와 이름을 고르면<br class="br-md"> 명함 미리보기와 인쇄발주용 AI 파일이 바로 만들어집니다.</p>
+    <p class="lead">연구소 계정으로 들어오면 내 정보가 자동으로 채워지고,<br class="br-md"> 명함 미리보기와 인쇄발주용 AI 파일이 바로 만들어집니다.</p>
   </div>
 </section>
 
@@ -37,27 +37,31 @@
   <div class="wrap">
     <div class="sec-head">
       <h2>명함 만들기</h2>
-      <span class="sec-sub">DB 불러오기 → 구성원 선택 → 내용 확인 → 내려받기</span>
+      <span class="sec-sub">내 정보 불러오기 → 내용 확인 → 내려받기</span>
     </div>
 
     <div class="grid">
       <section class="panel" id="step1">
-        <h3><span class="n">1</span> 구성원 DB 불러오기</h3>
+        <h3><span class="n">1</span> 내 정보 불러오기</h3>
         <div class="gload">
-          <button type="button" class="primary" id="dbLoad">Google 계정으로 DB 불러오기</button>
-          <span class="muted" id="dbLoadNote">연구소 계정으로 로그인하면 구성원 DB를 바로 읽어 옵니다.</span>
+          <button type="button" class="primary" id="meLoad">Google 계정으로 내 정보 불러오기</button>
+          <div id="gsiBtn"></div>
+          <span class="muted" id="dbLoadNote">연구소 계정으로 로그인되어 있으면 내 정보가 자동으로 나타납니다. 나타나지 않으면 버튼을 눌러 로그인해 주세요.</span>
         </div>
-        <p class="or"><span>또는 파일로 불러오기</span></p>
-        <label class="drop" id="drop">
-          <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
-          <strong>엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
-          <span>구성원 DB(‘운영_구성원 DB (명함·메일서명)’을 .xlsx로 받은 파일) 또는 연락처 엑셀</span>
-        </label>
-        <p class="note">파일은 이 브라우저 안에서만 읽힙니다. 서버로 전송되거나 저장되지 않습니다. <a href="https://docs.google.com/spreadsheets/d/1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI/export?format=xlsx">구성원 DB를 .xlsx로 받기</a></p>
-        <div class="row" id="sheetRow" hidden>
-          <label for="sheet">시트</label>
-          <select id="sheet"></select>
-        </div>
+        <details class="admin-tools">
+          <summary>관리자: 전체 구성원 불러오기</summary>
+          <div class="gload"><button type="button" class="ghost" id="dbLoad">전체 DB 불러오기</button></div>
+          <label class="drop" id="drop">
+            <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+            <strong>엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
+            <span>구성원 DB(‘운영_구성원 DB (명함·메일서명)’을 .xlsx로 받은 파일) 또는 연락처 엑셀</span>
+          </label>
+          <div class="row" id="sheetRow" hidden>
+            <label for="sheet">시트</label>
+            <select id="sheet"></select>
+          </div>
+          <p class="note">DB 시트를 공유받은 계정만 쓸 수 있습니다. 파일은 이 브라우저 안에서만 읽힙니다. <a href="https://docs.google.com/spreadsheets/d/1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI/export?format=xlsx">구성원 DB를 .xlsx로 받기</a></p>
+        </details>
       </section>
 
       <section class="panel" id="step2">
@@ -182,6 +186,6 @@
 <script src="js/card-ai-data.js?v=20261111a"></script>
 <script src="js/card-ai.js?v=20261111a"></script>
 <script src="js/card-pdf.js?v=20261111a"></script>
-<script src="js/app.js?v=20261112a"></script>
+<script src="js/app.js?v=20261112b"></script>
 </body>
 </html>

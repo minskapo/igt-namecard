@@ -72,7 +72,6 @@
   }
   // DB 불러오기 결과는 버튼 바로 아래에 보여 준다(④의 상태줄은 화면 밖에 있을 수 있음).
   const dbNote = (msg, err) => { const el = $('#dbLoadNote'); el.textContent = msg; el.style.color = err ? '#b42318' : ''; };
-  if (!DBLoad.ready()) dbNote('Google 로그인 연결 설정 전이라 아직 쓸 수 없습니다. 지금은 아래처럼 DB를 .xlsx로 받아 끌어다 놓아 주세요.', true);
   $('#dbLoad').addEventListener('click', async () => {
     const b = $('#dbLoad');
     if (!DBLoad.ready()) { dbNote('아직 Google 로그인 연결(클라이언트 ID)이 설정되지 않았습니다. 관리자가 메일 서명 페이지의 ‘DB 바로 불러오기 설정’을 마치면 쓸 수 있습니다. 지금은 아래 파일 불러오기를 써 주세요.', true); return; }
@@ -81,6 +80,24 @@
     catch (err) { dbNote(err.message, true); }
     finally { b.disabled = false; }
   });
+  // 구성원: 본인 정보만 불러오기. 연구소 계정으로 로그인되어 있으면 페이지를 열 때 자동으로 불러온다.
+  let meLoaded = false;
+  async function loadMe(force) {
+    if (meLoaded && !force) return;
+    dbNote('내 정보를 불러오는 중…');
+    try {
+      const j = await DBLoad.callSelf('me');
+      loadRows(j.rows); meLoaded = true;
+      const p = state.people.find((x) => !x.isNew);
+      if (p) { state.activeId = p.id; p.selected = true; renderList(); renderForm(); preview(); refreshLink(p); }
+      dbNote(`${j.email} 계정으로 내 정보를 불러왔습니다. ③에서 확인하고 ④에서 내려받으세요.`);
+    } catch (err) { dbNote(err.message, true); }
+  }
+  $('#meLoad').addEventListener('click', () => loadMe(true));
+  if (DBLoad.selfReady()) {
+    $('#meLoad').hidden = true;
+    DBLoad.initSignIn($('#gsiBtn'), () => loadMe(false)).catch((e) => { $('#meLoad').hidden = false; dbNote(e.message, true); });
+  }
   function loadRows(rows) {
     try {
       const fresh = C.rowsToPeople(rows).map((p) => ({ ...p, id: ++state.seq, selected: false }));
