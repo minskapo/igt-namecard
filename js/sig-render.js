@@ -2,7 +2,7 @@
 (function (root) {
   const S = root.SigCore;
   const INK = '#212124', GRAY = '#6B6B70';
-  const MAXW = 432;           // 글자가 들어갈 폭 (480 - 좌우 여백 24×2)
+  let MAXW = 552;             // 글자가 들어갈 폭 (서명 폭 - 좌우 여백). 레이아웃을 읽은 뒤 다시 계산
   const FAMILY = "'Asta Sans SIG'";
   const OUT_SCALE = 2;
   let ready = null;
@@ -81,6 +81,7 @@
     ctx.drawImage(A.tpl[lang], 0, 0, cv.width, cv.height);
     ctx.scale(sc, sc);
     ctx.textBaseline = 'alphabetic';
+    MAXW = lay.W - 2 * lay.x;
     const L = S.lines(p, lang), warn = [];
     const f1 = fitLine1(ctx, L), f2 = fitLine2(ctx, L), f3 = fitLine3(ctx, L);
     if (f1.n < 21 || f1.t < 15) warn.push('이름·직함 줄이 길어 글자를 조금 줄였습니다.');
