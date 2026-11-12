@@ -4,7 +4,7 @@
 
   const SITE = 'https://minskapo.github.io/igt-namecard/';
   const BASE = SITE + 'assets/email/sig/';
-  const COMMON_VER = '20261112';
+  const COMMON_VER = '20261112b';
   const OFFICE = { kr: '02-2135-1148', en: '+82-2-2135-1148' };
   const ORG_EN = 'Institute for Green Transformation';
   const SEP = '  |  ';

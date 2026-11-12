@@ -15,38 +15,18 @@
   "cells": [
    {
     "f": "row0.png",
-    "w": 24,
-    "btn": null
-   },
-   {
-    "f": "row1.png",
-    "w": 81,
+    "w": 108,
     "btn": 0
    },
    {
-    "f": "row2.png",
-    "w": 5,
-    "btn": null
-   },
-   {
-    "f": "row3.png",
-    "w": 81,
+    "f": "row1.png",
+    "w": 86,
     "btn": 1
    },
    {
-    "f": "row4.png",
-    "w": 5,
-    "btn": null
-   },
-   {
-    "f": "row5.png",
-    "w": 81,
+    "f": "row2.png",
+    "w": 408,
     "btn": 2
-   },
-   {
-    "f": "row6.png",
-    "w": 325,
-    "btn": null
    }
   ],
   "scale": 3
@@ -67,28 +47,13 @@
   "cells": [
    {
     "f": "row0.png",
-    "w": 24,
-    "btn": null
-   },
-   {
-    "f": "row1.png",
-    "w": 91,
+    "w": 117,
     "btn": 0
    },
    {
-    "f": "row2.png",
-    "w": 5,
-    "btn": null
-   },
-   {
-    "f": "row3.png",
-    "w": 86,
+    "f": "row1.png",
+    "w": 485,
     "btn": 1
-   },
-   {
-    "f": "row4.png",
-    "w": 396,
-    "btn": null
    }
   ],
   "scale": 3
