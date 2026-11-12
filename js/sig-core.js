@@ -11,7 +11,7 @@
 
   const LINK = {
     landing: 'https://igt.or.kr/',
-    donate: 'https://secure.donus.org/igt/pay/step1',
+    donate: 'https://igt.or.kr/project2030/',
     newsletter: 'https://igtkorea.stibee.com/',
     linkedin: 'https://www.linkedin.com/company/institute-for-green-transformation/home/'
   };
