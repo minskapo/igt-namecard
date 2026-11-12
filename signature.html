@@ -7,7 +7,7 @@
 <title>메일 서명 · 녹색전환연구소</title>
 <link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/style.css?v=20261112a">
-<link rel="stylesheet" href="css/sig.css?v=20261111b">
+<link rel="stylesheet" href="css/sig.css?v=20261112a">
 </head>
 <body>
 <a class="skip" href="#make">본문으로 건너뛰기</a>
@@ -30,16 +30,16 @@
   <div class="wrap intro-inner">
     <span class="eyebrow">구성원 메일 서명</span>
     <h1>메일 서명 도구</h1>
-    <p class="lead">구성원 DB를 불러오면 사람별 서명 이미지와<br class="br-md"> Gmail 일괄 적용 파일이 바로 만들어집니다.</p>
+    <p class="lead">서명은 관리자가 Gmail에 일괄로 넣어 두었습니다.<br class="br-md"> 이 페이지에서는 각자 필요한 설정만 하면 됩니다.</p>
   </div>
 </section>
 
 <section class="block flow">
   <div class="wrap">
     <div class="who">
-      <div><span class="eyebrow">기본</span><b>관리자가 한꺼번에 적용</b><p>모든 구성원의 Gmail 웹·앱 서명은 관리자가 GAM으로 한 번에 넣습니다. 국문·영문 서명을 골라 쓰거나 ‘--’ 줄을 없애려면 각자 <a href="#bilingual">한 번 설정</a>합니다.</p><a class="more" href="#admin">관리자 일괄 적용</a></div>
-      <div><span class="eyebrow dark">개별</span><b>직접 넣어야 하는 경우</b><p>Outlook·Apple Mail 같은 다른 메일 프로그램을 쓰거나, 영문 서명을 하나 더 두고 싶을 때는 아래 도구에서 복사해 직접 붙여 넣습니다.</p><a class="more" href="#personal">개별 설치</a></div>
-      <div><span class="eyebrow dark">신규</span><b>새 구성원이 들어오면</b><p>DB 시트에 한 줄을 넣고, 이 페이지에서 배포 파일을 받아 저장소에 올린 뒤 관리자가 그 사람만 적용합니다.</p><a class="more" href="#newbie">신규 구성원</a></div>
+      <div><span class="eyebrow">모두</span><b>처음 한 번 Gmail 설정</b><p>서명 앞 ‘--’ 줄을 없애고, 필요하면 영문 서명을 추가합니다. 관리자가 일괄로 바꿀 수 없는 설정입니다.</p><a class="more" href="#bilingual">Gmail 서명 정리</a></div>
+      <div><span class="eyebrow dark">필요할 때</span><b>직함 바꾸기</b><p>‘연구원’ 대신 다른 직책명을 쓰고 싶으면, 아래 도구에서 직접 고쳐 바로 반영합니다.</p><a class="more" href="#self">직함 바꾸기</a></div>
+      <div><span class="eyebrow dark">필요할 때</span><b>다른 메일 프로그램</b><p>Outlook·Apple Mail처럼 Gmail 밖에서 메일을 쓰면, 서명을 복사해 직접 붙여 넣습니다.</p><a class="more" href="#personal">직접 넣기</a></div>
     </div>
   </div>
 </section>
@@ -48,27 +48,26 @@
   <div class="wrap">
     <div class="sec-head">
       <h2>서명 만들기</h2>
-      <span class="sec-sub">DB 불러오기 → 구성원 선택 → 내용 확인 → 복사·내려받기</span>
+      <span class="sec-sub">내 정보 불러오기 → 내용 확인 → 복사·반영</span>
     </div>
 
     <div class="grid">
       <section class="panel" id="step1">
-        <h3><span class="n">1</span> 구성원 DB 불러오기</h3>
+        <h3><span class="n">1</span> 내 정보 불러오기</h3>
         <div class="gload">
-          <button type="button" class="primary" id="dbLoad">Google 계정으로 DB 불러오기</button>
-          <span class="muted" id="dbLoadNote">연구소 계정으로 로그인하면 구성원 DB를 바로 읽어 옵니다.</span>
+          <button type="button" class="primary" id="meLoad">Google 계정으로 내 정보 불러오기</button>
+          <span class="muted" id="dbLoadNote">연구소 계정으로 로그인하면 구성원 DB에서 내 정보만 불러옵니다.</span>
         </div>
-        <p class="or"><span>또는 파일로 불러오기</span></p>
-        <label class="drop" id="drop">
-          <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
-          <strong>DB 엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
-          <span>‘운영_구성원 DB (명함·메일서명)’ 시트를 .xlsx로 받은 파일</span>
-        </label>
-        <div class="actions">
-          <a class="btn ghost" href="https://docs.google.com/spreadsheets/d/1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI/edit" target="_blank" rel="noopener">DB 시트 열기</a>
-          <a class="btn ghost" href="https://docs.google.com/spreadsheets/d/1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI/export?format=xlsx">DB를 .xlsx로 받기</a>
-        </div>
-        <p class="note">DB는 이 브라우저 안에서만 읽히고 저장되지 않습니다. DB 시트를 공유받은 연구소 계정만 불러올 수 있습니다.</p>
+        <details class="admin-tools">
+          <summary>관리자: 전체 구성원 불러오기</summary>
+          <div class="gload"><button type="button" class="ghost" id="dbLoad">전체 DB 불러오기</button></div>
+          <label class="drop" id="drop">
+            <input type="file" id="file" accept=".xlsx,.xls,.csv" hidden>
+            <strong>DB 엑셀 파일을 끌어다 놓거나 눌러서 선택하세요</strong>
+            <span>‘운영_구성원 DB (명함·메일서명)’ 시트를 .xlsx로 받은 파일</span>
+          </label>
+          <p class="note">DB 시트를 공유받은 계정만 쓸 수 있습니다. 읽은 내용은 이 브라우저 밖으로 나가지 않습니다. <a href="https://docs.google.com/spreadsheets/d/1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI/edit" target="_blank" rel="noopener">DB 시트 열기</a></p>
+        </details>
       </section>
 
       <section class="panel" id="step2">
@@ -98,13 +97,13 @@
             <div class="f half"><label>이메일</label><input name="email" type="email"></div>
             <div class="f half"><label>일괄 적용 언어</label><select name="sigLang"><option value="kr">국문</option><option value="en">영문</option></select></div>
             <div class="f half"><label>서명 코드</label><div class="inline"><input name="sigCode" readonly><button type="button" class="ghost" id="newCode">새로 만들기</button></div></div>
-            <p class="note">여기서 고친 내용은 DB 시트에 저장되지 않습니다. 계속 쓸 내용은 DB 시트를 고친 뒤 다시 불러오세요.</p>
+            <p class="note">직함은 ④의 ‘바꾼 직함 내 서명에 반영’을 눌러야 저장됩니다. 다른 항목이 틀렸다면 운영기획팀에 알려 주세요.</p>
           </div>
         </form>
       </section>
 
       <section class="panel preview" id="step4">
-        <h3><span class="n">4</span> 미리보기·복사·내려받기</h3>
+        <h3><span class="n">4</span> 미리보기·복사·반영</h3>
         <div class="tabs" role="tablist">
           <button type="button" role="tab" class="tab" data-lang="kr" aria-selected="true">국문</button>
           <button type="button" role="tab" class="tab" data-lang="en" aria-selected="false">영문</button>
@@ -114,118 +113,81 @@
         <p id="hostState" class="muted"></p>
         <div class="actions">
           <button type="button" id="copySig" class="primary" disabled>서명 복사</button>
+          <button type="button" id="copyText" class="ghost" disabled>글자 서명 복사</button>
           <button type="button" id="dlHtml" class="ghost" disabled>HTML 내려받기</button>
           <button type="button" id="dlPng" class="ghost" disabled>이미지 내려받기</button>
-          <button type="button" id="copyText" class="ghost" disabled>글자 서명 복사</button>
         </div>
         <div class="bulk">
-          <div class="actions" style="margin-top:0"><button type="button" id="dlZip" class="primary" disabled>배포 파일 ZIP</button>
-          <button type="button" id="copyRows" class="ghost" disabled>추적링크 시트 행 복사</button></div>
-          <p class="note">선택한 사람의 서명 이미지(저장소에 올릴 파일), GAM 일괄 적용 파일, 사람별 HTML이 함께 들어 있습니다.</p>
+          <div class="actions" style="margin-top:0"><button type="button" id="publish" class="primary" disabled>바꾼 직함 내 서명에 반영</button></div>
+          <p class="note" id="pubNote">③에서 직함을 고쳤을 때만 누릅니다. 국문·영문 서명 이미지가 바뀌고, 바꾼 직함이 DB에도 저장됩니다.</p>
         </div>
+        <details class="admin-tools">
+          <summary>관리자: 배포 파일</summary>
+          <div class="actions" style="margin-top:12px"><button type="button" id="dlZip" class="primary" disabled>배포 파일 ZIP</button>
+          <button type="button" id="copyRows" class="ghost" disabled>추적링크 시트 행 복사</button></div>
+          <p class="note">선택한 사람의 서명 이미지, GAM 일괄 적용 파일, 사람별 HTML이 들어 있습니다. 쓰는 방법은 <a href="admin.html">관리자 안내</a>에 있습니다.</p>
+        </details>
         <p id="status" class="muted" role="status"></p>
       </section>
     </div>
   </div>
 </main>
 
-<section class="block" id="guide">
-  <div class="wrap">
-    <div class="sec-head" id="admin">
-      <h2>관리자 일괄 적용 (GAM)</h2>
-      <a class="more" href="https://github.com/GAM-team/GAM/wiki" target="_blank" rel="noopener">GAM 안내서</a>
-    </div>
-    <p class="lead-s">Google Workspace 관리자가 명령 한 줄로 모든 구성원의 Gmail 서명을 바꿉니다. 처음 한 번 GAM을 설치하고 권한을 연결해 두면, 그 뒤로는 3~5단계만 반복합니다.</p>
-    <ol class="steps">
-      <li><b>GAM 설치</b><span>관리자 PC에 GAM을 설치합니다. 맥·리눅스는 터미널에서 <code>bash &lt;(curl -s -S -L https://git.io/gam-install)</code>, 윈도우는 GAM 안내서의 설치 파일을 씁니다.</span></li>
-      <li><b>권한 연결</b><span>설치 안내에 따라 <code>gam create project</code> → <code>gam oauth create</code> → <code>gam user 관리자@igt.or.kr check serviceaccount</code>를 차례로 실행합니다. 마지막 단계에서 나오는 주소로 관리 콘솔의 ‘도메인 전체 위임’을 승인하면, 구성원 서명을 바꿀 권한(Gmail settings)이 생깁니다.</span></li>
-      <li><b>배포 파일 받기</b><span>위 ‘서명 만들기’에서 DB를 불러오고 <b>전체 선택</b> → <b>배포 파일 ZIP</b>을 받아 압축을 풉니다.</span></li>
-      <li><b>이미지 올리기</b><span>ZIP 안 <code>저장소에_올릴_파일/assets</code> 폴더를 명함생성기 저장소(<code>minskapo/igt-namecard</code>) 맨 위에 그대로 덮어쓰고 커밋·push 합니다. 1~2분 뒤 ZIP 안 <code>이미지_주소_확인.txt</code>의 주소를 하나 열어 이미지가 보이면 준비가 끝난 것입니다.</span></li>
-      <li><b>일괄 적용</b><span>압축을 푼 폴더에서 <code>gam csv gam/signatures.csv gam user '~email' signature file '~file' html</code>을 실행합니다. 맥 터미널(zsh)에서는 <code>~email</code>을 홈 폴더 경로로 읽어 오류가 나므로, 꼭 작은따옴표로 감싸 주세요. 한 사람만 바꿀 때는 <code>gam user minski@igt.or.kr signature file gam/html/minski.html html</code>처럼 씁니다.</span></li>
-      <li><b>확인</b><span><code>gam user minski@igt.or.kr show signature</code>로 들어간 서명을 확인하고, 본인 Gmail에서 새 메일을 열어 서명이 붙는지 봅니다.</span></li>
-    </ol>
-    <p class="note"><b>추적 링크:</b> 서명 버튼에는 연구소 GA4 추적링크 시트 규칙대로 <code>utm_source=signature</code> · <code>utm_medium=email</code> · <code>utm_campaign=email_signature</code>가 붙고, <code>utm_content</code>에는 구성원 이메일 아이디, <code>utm_term</code>에는 누른 버튼(donate·newsletter·homepage·website·card)이 들어갑니다. GA4에서 세션 소스/매체 <code>signature / email</code>로 보면 메일 서명으로 들어온 방문이고, 콘텐츠·검색어로 사람별·버튼별로 나눠 볼 수 있습니다. LinkedIn 버튼은 외부 사이트라 추적 링크를 붙이지 않습니다.</p>
-    <p class="note">일괄 적용은 사람마다 서명 하나(DB의 ‘서명 언어’)만 넣습니다. Gmail API가 계정마다 기본 서명 하나만 다루기 때문에, 이름 붙은 서명 여러 개와 ‘--’ 줄 설정은 관리자가 일괄로 바꿀 수 없습니다. 영문 서명을 함께 쓰거나 ‘--’ 줄을 없애려면 각자 아래 <a href="#bilingual">국문·영문 서명 함께 쓰기</a>를 따라 해 주세요. 적용하면 기존 서명은 바뀌므로, 미리 공지해 주세요.</p>
-  </div>
-</section>
-
 <section class="block" id="bilingual">
   <div class="wrap">
-    <div class="sec-head"><h2>Gmail에서 국문·영문 서명 함께 쓰기</h2></div>
-    <p class="lead-s">서명 이름을 ‘IGT 국문’, ‘IGT 영문’으로 맞춰 두면, 메일을 쓸 때마다 둘 중 하나를 골라 넣을 수 있습니다. 서명 앞에 붙는 ‘--’ 줄도 같은 화면에서 없앱니다. 처음 한 번만 하면 되고, 3분 정도 걸립니다.</p>
+    <div class="sec-head"><h2>처음 한 번: Gmail 서명 정리</h2></div>
+    <p class="lead-s">Gmail 설정(톱니바퀴) › <b>모든 설정 보기</b> › <b>기본설정</b> 탭 › ‘서명’ 항목에서 합니다. 다 고친 뒤 맨 아래 <b>변경사항 저장</b>을 눌러야 반영됩니다.</p>
     <ol class="steps">
-      <li><b>영문 서명 복사</b><span>이 페이지 위 ‘서명 만들기’에서 본인을 고르고, 4단계 미리보기에서 <b>영문</b> 탭을 누른 뒤 <b>서명 복사</b>를 누릅니다. 관리자에게 받은 배포 파일이 있다면 <code>사람별_HTML/메일서명_이름_영문.html</code>을 브라우저로 열어 서명 전체를 복사해도 됩니다.</span></li>
-      <li><b>서명 설정 열기</b><span>Gmail 웹에서 설정(톱니바퀴) › <b>모든 설정 보기</b> › <b>기본설정</b> 탭을 열고 ‘서명’ 항목으로 내려갑니다.</span></li>
-      <li><b>국문 서명 이름 정하기</b><span>관리자가 넣은 국문 서명이 목록에 보이면, 연필 아이콘을 눌러 이름을 <b>IGT 국문</b>으로 바꿉니다. 목록에 국문 서명이 없으면 1단계에서 <b>국문</b> 탭으로 서명을 복사하고, <b>새로 만들기</b>로 ‘IGT 국문’을 만들어 붙여 넣습니다.</span></li>
-      <li><b>영문 서명 추가</b><span><b>새로 만들기</b>를 누르고 이름을 <b>IGT 영문</b>으로 적은 뒤, 오른쪽 입력 칸에 1단계에서 복사한 영문 서명을 붙여 넣습니다.</span></li>
-      <li><b>기본 서명 고르기</b><span>바로 아래 ‘서명 기본값’에서 <b>새 이메일용</b>과 <b>답장/전달용</b>을 모두 ‘IGT 국문’(영문을 주로 쓰면 ‘IGT 영문’)으로 정합니다.</span></li>
-      <li><b>‘--’ 줄 없애기</b><span>같은 화면의 <b>답장에서 인용된 텍스트 앞에 이 서명을 삽입하고 그 앞에 있는 ‘--’ 행을 삭제합니다</b>(영문 화면: <i>Insert signature before quoted text in replies and remove the "--" line that precedes it</i>)에 체크합니다. 체크하면 답장할 때 서명이 원문 인용 위에 붙고, 서명 앞의 ‘--’ 줄도 사라집니다.</span></li>
-      <li><b>저장</b><span>화면 맨 아래 <b>변경사항 저장</b>을 누릅니다. 이 버튼을 누르지 않으면 바꾼 내용이 모두 사라집니다.</span></li>
-      <li><b>메일 쓸 때 고르기</b><span>새 메일 작성 창 아래쪽 도구 막대에서 <b>펜 아이콘(서명 삽입)</b>을 누르고, ‘IGT 국문’이나 ‘IGT 영문’을 고르면 서명이 바뀝니다.</span></li>
+      <li><b>‘--’ 줄 없애기</b><span><b>답장에서 인용된 텍스트 앞에 이 서명을 삽입하고 그 앞에 있는 ‘--’ 행을 삭제합니다</b>에 체크합니다. 서명 앞의 ‘--’ 줄이 사라지고, 답장할 때 서명이 원문 인용 위에 붙습니다.</span></li>
+      <li><b>영문 서명 추가</b><span>필요한 분만 합니다. 위 ‘서명 만들기’에서 내 정보를 불러와 <b>영문</b> 탭의 <b>서명 복사</b>를 누릅니다. Gmail에서 <b>새로 만들기</b>로 ‘IGT 영문’ 서명을 만들어 붙여 넣고, 기존 국문 서명은 이름을 ‘IGT 국문’으로 바꿉니다.</span></li>
+      <li><b>기본 서명 확인</b><span>‘서명 기본값’의 <b>새 이메일용</b>과 <b>답장/전달용</b>이 모두 ‘IGT 국문’(영문을 주로 쓰면 ‘IGT 영문’)인지 확인합니다.</span></li>
+      <li><b>메일 쓸 때 고르기</b><span>메일 작성 창 아래쪽의 <b>펜 아이콘(서명 삽입)</b>을 누르면 국문과 영문 서명을 골라 넣을 수 있습니다.</span></li>
     </ol>
-    <p class="note">관리자가 나중에 서명을 다시 일괄 적용하면 기본 서명이 새 내용으로 바뀝니다. 다시 적용했다는 공지를 받으면 서명 목록을 열어 ‘IGT 국문’, ‘IGT 영문’이 그대로 있는지 한 번 확인해 주세요. Gmail 휴대폰 앱에서는 웹에서 정한 기본 서명이 붙습니다.</p>
+    <p class="note">휴대폰 Gmail 앱은 웹에서 정한 기본 서명을 씁니다. 앱 설정 › 계정 › 서명에서 ‘모바일 서명’이 켜져 있으면 꺼 주세요. 관리자가 서명을 다시 일괄 적용하면 기본 서명이 새 내용으로 바뀌니, 그때 ‘IGT 영문’이 남아 있는지 한 번 확인해 주세요.</p>
   </div>
 </section>
 
-<section class="block" id="oauth">
+<section class="block" id="self">
   <div class="wrap">
-    <div class="sec-head"><h2>DB 바로 불러오기 설정 (처음 한 번)</h2></div>
-    <p class="lead-s">‘Google 계정으로 DB 불러오기’ 버튼을 쓰려면 Google Cloud에서 로그인용 클라이언트 ID를 하나 만들어야 합니다. GAM을 설치할 때 만든 Cloud 프로젝트를 그대로 쓰면 됩니다.</p>
+    <div class="sec-head"><h2>직함 바꾸기</h2></div>
+    <p class="lead-s">서명에는 기본으로 부서와 직급이 들어갑니다. ‘연구원’ 대신 ‘커뮤니케이션 담당자’처럼 다른 직책명을 쓰고 싶으면 직접 바꿀 수 있습니다.</p>
     <ol class="steps">
-      <li><b>API 켜기</b><span><a href="https://console.cloud.google.com/apis/library/sheets.googleapis.com" target="_blank" rel="noopener">Google Cloud 콘솔</a>에서 프로젝트를 고르고 <b>Google Sheets API</b>를 ‘사용’으로 바꿉니다.</span></li>
-      <li><b>동의 화면</b><span>API 및 서비스 › OAuth 동의 화면(Google 인증 플랫폼)에서 사용자 유형을 <b>내부</b>로 정합니다. 앱 이름은 ‘녹색전환연구소 디자인 산출물 통합도구’로 적습니다. 내부 앱은 연구소 계정만 쓸 수 있고 별도 심사가 없습니다.</span></li>
-      <li><b>클라이언트 ID</b><span>사용자 인증 정보 › 사용자 인증 정보 만들기 › <b>OAuth 클라이언트 ID</b> › 유형 ‘웹 애플리케이션’을 고르고, 승인된 JavaScript 원본에 <code>https://minskapo.github.io</code>를 넣고 만듭니다.</span></li>
-      <li><b>연결</b><span>만들어진 클라이언트 ID(<code>…apps.googleusercontent.com</code>)를 저장소 <code>js/db-load.js</code>의 <code>clientId</code>에 넣고 push 하거나, 김민석에게 보내 주세요. 클라이언트 ID는 공개되어도 괜찮은 값입니다.</span></li>
+      <li><b>내 정보 불러오기</b><span>위 ‘서명 만들기’ ①에서 <b>Google 계정으로 내 정보 불러오기</b>를 누르고 연구소 계정으로 로그인합니다.</span></li>
+      <li><b>직함 고치기</b><span>③의 <b>국문 직함 줄</b>과 <b>영문 직함 줄</b>을 고치고, ④ 미리보기의 국문·영문 탭에서 글자가 잘리지 않는지 확인합니다.</span></li>
+      <li><b>반영하기</b><span>④의 <b>바꾼 직함 내 서명에 반영</b>을 두 번 누릅니다. 1~3분 뒤 ‘반영되었습니다’가 뜨면 끝입니다. 바꾼 직함은 DB에도 저장되어, 관리자가 다시 일괄 적용해도 유지됩니다.</span></li>
+      <li><b>Gmail에 다시 넣기</b><span><b>서명 복사</b>를 눌러 Gmail 서명 칸의 기존 서명을 지우고 붙여 넣은 뒤 <b>변경사항 저장</b>을 누릅니다. 영문 서명을 쓰는 분은 영문 탭에서도 같은 방법으로 바꿉니다.</span></li>
     </ol>
-    <p class="note">불러오기는 로그인한 사람의 권한으로 시트를 읽기만 합니다. DB 시트를 공유받지 않은 계정은 불러올 수 없고, 읽은 내용은 브라우저 밖으로 나가지 않습니다.</p>
+    <p class="note">본인 서명만 바꿀 수 있습니다. 이름·전화번호·부서가 틀렸다면 직접 고치지 말고 운영기획팀에 알려 주세요.</p>
   </div>
 </section>
 
 <section class="band" id="personal">
   <div class="wrap">
-    <span class="eyebrow dark">개별 설치</span>
-    <h2>직접 서명을 넣어야 할 때</h2>
-    <p class="band-lead">‘서명 만들기’에서 본인을 고른 뒤 <b>서명 복사</b>를 누르고, 쓰는 메일 프로그램의 서명 칸에 붙여 넣습니다.</p>
+    <span class="eyebrow dark">직접 넣기</span>
+    <h2>다른 메일 프로그램에 서명 넣기</h2>
+    <p class="band-lead">‘서명 만들기’에서 내 정보를 불러와 <b>서명 복사</b>를 누르고, 쓰는 프로그램의 서명 칸에 붙여 넣습니다.</p>
     <div class="clients">
-      <div><b>Gmail 웹</b><span>설정(톱니바퀴) › 모든 설정 보기 › 기본설정 › 서명 › <b>새로 만들기</b> → 붙여넣기. 아래 ‘서명 기본값’에서 새 메일·답장에 쓸 서명을 고르고 맨 아래 <b>변경사항 저장</b>을 누릅니다. 국문·영문을 함께 쓰는 방법과 ‘--’ 줄을 없애는 방법은 <a href="#bilingual">위 안내</a>를 봐 주세요.</span></div>
-      <div><b>Gmail 앱 (휴대폰)</b><span>최신 Gmail 앱은 웹 서명을 가져와 씁니다. 앱 설정 › 계정 › 서명에서 웹 서명이 골라져 있는지 확인하고, ‘모바일 서명’(글자만 쓰는 서명)이 켜져 있으면 꺼 둡니다. 앱이 오래된 버전이면 업데이트해 주세요.</span></div>
-      <div><b>Outlook (Windows·Mac·웹)</b><span>설정 › 메일 › 서명(새 Outlook은 계정 › 서명) › 새 서명 → 붙여넣기 → 새 메일·회신 기본값 지정. 이미지가 안 보이면 ‘HTML 내려받기’ 파일을 브라우저로 열어 서명 부분을 복사해 다시 붙입니다.</span></div>
-      <div><b>Apple Mail (Mac)</b><span>설정 › 서명 › 계정 선택 › <b>+</b> → ‘항상 기본 메시지 서체와 일치’를 끄고 붙여넣기. 붙인 직후 이미지가 회색으로 보여도 보내는 메일에는 정상으로 들어갑니다.</span></div>
-      <div><b>iPhone 기본 메일</b><span>설정 › 앱 › Mail › 서명에 붙여 넣으면 이미지가 빠지거나 깨질 수 있습니다. 이때는 <b>글자 서명 복사</b>로 글자만 넣어 주세요.</span></div>
-      <div><b>Thunderbird 등 기타</b><span>‘HTML 내려받기’로 받은 파일을 서명 파일로 지정하거나(HTML 사용 켜기), 내용을 서명 칸에 붙여 넣습니다.</span></div>
+      <div><b>Outlook (Windows·Mac·웹)</b><span>설정 › 메일 › 서명(새 Outlook은 계정 › 서명) › 새 서명 → 붙여넣기 → 새 메일·회신 기본값을 지정합니다.</span></div>
+      <div><b>Apple Mail (Mac)</b><span>설정 › 서명 › 계정 선택 › <b>+</b> → ‘항상 기본 메시지 서체와 일치’를 끄고 붙여 넣습니다. 붙인 직후 이미지가 회색으로 보여도 보내는 메일에는 정상으로 들어갑니다.</span></div>
+      <div><b>iPhone 기본 메일</b><span>이미지가 빠지거나 깨질 수 있습니다. <b>글자 서명 복사</b>로 글자만 넣어 주세요.</span></div>
+      <div><b>Thunderbird 등 기타</b><span><b>HTML 내려받기</b>로 받은 파일을 서명 파일로 지정하거나(HTML 사용 켜기), 파일을 브라우저로 열어 서명을 복사해 붙여 넣습니다.</span></div>
     </div>
-    <p class="note">서명 복사는 저장소에 이미지가 올라간 사람만 정상 작동합니다. 미리보기 아래에 ‘이미지 준비됨’이 보이는지 먼저 확인하세요.</p>
-  </div>
-</section>
-
-<section class="block" id="newbie">
-  <div class="wrap">
-    <div class="sec-head"><h2>신규 구성원·정보 변경</h2></div>
-    <ol class="steps">
-      <li><b>DB에 적기</b><span>DB 시트 ‘구성원’ 탭 맨 아래에 한 줄을 넣습니다. 이메일 아이디·이름·부서·직급·핸드폰·이메일만 채우면 되고, 영문 이름과 직함은 비워 두어도 자동으로 채워집니다. 퇴사자는 ‘상태’를 <b>퇴사</b>로 바꿉니다.</span></li>
-      <li><b>배포 파일 받기</b><span>DB를 다시 받아 불러온 뒤 그 사람만 골라 <b>배포 파일 ZIP</b>을 받습니다. 서명 코드가 비어 있던 사람은 도구가 코드를 새로 만들고, ZIP 안 <code>서명코드_DB기록.csv</code>에 적어 줍니다. 이 코드를 DB ‘서명 코드’ 칸에 꼭 옮겨 적어 주세요.</span></li>
-      <li><b>추적링크 기록</b><span>같은 사람을 고른 채 <b>추적링크 시트 행 복사</b>를 누르고, <a href="https://docs.google.com/spreadsheets/d/1C5ncxBevH9FuNXDelcyYIBg-rYFwMoAu8GtsUAkG-Jo/edit?gid=870958988#gid=870958988" target="_blank" rel="noopener">GA4 추적링크 시트</a> ‘UTM코드 생성기’ 탭 맨 아래 빈 행의 A열에 붙여 넣습니다. 사람마다 버튼별로 5줄이 들어갑니다. 명함 QR 기록과 같은 방식입니다.</span></li>
-      <li><b>올리고 적용</b><span>위 관리자 4~5단계처럼 이미지를 저장소에 올리고, 관리자가 그 사람만 <code>gam user …</code>로 적용합니다. 관리자가 없을 때는 본인이 개별 설치로 넣어도 됩니다.</span></li>
-      <li><b>정보가 바뀌면</b><span>직급·전화가 바뀌어도 서명 코드는 그대로 둡니다. 같은 과정으로 이미지를 다시 올리고 다시 적용하면, 이미지 주소의 버전 값이 바뀌어 새 서명이 바로 보입니다.</span></li>
-    </ol>
+    <p class="note">붙여 넣었는데 이미지가 보이지 않으면 미리보기 아래에 ‘이미지 준비됨’이 보이는지 확인해 주세요.</p>
   </div>
 </section>
 
 <section class="block" id="trouble">
   <div class="wrap">
-    <div class="sec-head"><h2>문제 해결</h2></div>
+    <div class="sec-head"><h2>자주 묻는 질문</h2></div>
     <div class="faq">
-      <details><summary>서명 이미지가 엑스(X)나 빈칸으로 보여요</summary><p>이미지가 저장소에 아직 안 올라갔거나 push 직후일 수 있습니다. ‘서명 만들기’ 미리보기 아래 상태를 확인하고, ‘이미지 준비 안 됨’이면 관리자 4단계를 다시 해 주세요. 받는 사람 메일 프로그램이 외부 이미지를 막아 둔 경우에는 ‘이미지 표시’를 눌러야 보입니다.</p></details>
-      <details><summary>바꾼 내용이 서명에 반영되지 않아요</summary><p>이미지만 다시 올리고 서명을 다시 적용하지 않으면 예전 주소가 남아 있습니다. 배포 파일을 새로 받아 다시 적용해 주세요. Gmail은 이미지를 한동안 저장해 두므로, 주소가 같은 상태로는 바로 바뀌지 않을 수 있습니다.</p></details>
+      <details><summary>새 서명이 보이지 않아요</summary><p>열어 둔 Gmail 탭을 새로고침한 뒤 새 메일 쓰기 창을 열어 보세요. 그래도 안 보이면 <a href="#bilingual">Gmail 서명 정리</a> 3단계처럼 ‘서명 기본값’이 새 서명으로 되어 있는지 확인해 주세요.</p></details>
       <details><summary>서명이 두 번 붙거나 휴대폰에서 다른 서명이 붙어요</summary><p>Gmail 앱의 ‘모바일 서명’, Outlook·Apple Mail의 서명이 함께 켜져 있는지 확인하세요. Gmail로 보내는 메일에는 Gmail 서명 하나만 켜 두면 됩니다.</p></details>
-      <details><summary>서명 위에 ‘--’ 줄이 붙어요</summary><p>Gmail이 서명 앞에 자동으로 넣는 구분선입니다. 설정 › 모든 설정 보기 › 기본설정 › 서명에서 ‘답장에서 인용된 텍스트 앞에 이 서명을 삽입하고 그 앞에 있는 ‘--’ 행을 삭제합니다’에 체크하고 <b>변경사항 저장</b>을 누르면 사라집니다. 이 설정은 관리자가 일괄로 바꿀 수 없어서, 각자 한 번씩 해야 합니다. 자세한 순서는 <a href="#bilingual">국문·영문 서명 함께 쓰기</a> 6단계에 있습니다.</p></details>
-      <details><summary>국문·영문 서명을 골라 쓰고 싶어요</summary><p><a href="#bilingual">국문·영문 서명 함께 쓰기</a>를 따라 ‘IGT 국문’, ‘IGT 영문’ 두 서명을 만들어 두면, 메일 작성 창의 펜 아이콘에서 고를 수 있습니다.</p></details>
+      <details><summary>서명 이미지가 엑스(X)나 빈칸으로 보여요</summary><p>받는 사람 메일 프로그램이 외부 이미지를 막아 둔 경우입니다. 받는 쪽에서 ‘이미지 표시’를 누르면 보입니다. 내 화면에서도 깨져 보이면 운영기획팀에 알려 주세요.</p></details>
       <details><summary>다크모드에서 서명이 하얀 상자로 보여요</summary><p>의도된 모습입니다. 서명 전체를 이미지로 만들어 다크모드에서도 원래 색이 유지되도록 했습니다.</p></details>
-      <details><summary>버튼을 누르면 google.com을 거쳐 열려요</summary><p>Gmail이 받은 메일의 링크를 안전 확인 주소로 감싸는 기능입니다. 실제 이동하는 주소는 그대로이며, 서명에서 뺄 수 없습니다.</p></details>
-      <details><summary>이름이나 직함이 잘리거나 작게 나와요</summary><p>서명 폭(600px)을 넘는 글자는 도구가 조금씩 줄여 맞추고, 그래도 넘으면 미리보기 아래에 경고를 띄웁니다. DB의 영문 직함 줄을 짧게 고친 뒤 다시 만들어 주세요.</p></details>
-      <details><summary>GAM에서 권한 오류가 나요</summary><p><code>gam user 관리자@igt.or.kr check serviceaccount</code>를 다시 실행해 빠진 권한을 확인하고, 안내되는 주소에서 도메인 전체 위임을 승인합니다. 서명 변경에는 Gmail settings(basic·sharing) 권한이 필요합니다.</p></details>
+      <details><summary>버튼을 누르면 google.com을 거쳐 열려요</summary><p>Gmail이 받은 메일의 링크를 안전 확인 주소로 감싸는 기능입니다. 실제로 이동하는 주소는 그대로입니다.</p></details>
+      <details><summary>직함을 고쳤더니 글자가 작아지거나 잘려요</summary><p>서명 폭(600px)을 넘으면 도구가 글자를 조금씩 줄이고, 그래도 넘으면 미리보기 아래에 경고를 띄웁니다. 직함을 조금 짧게 고쳐 주세요.</p></details>
     </div>
-    <p class="note">그래도 안 되면 기후시민팀 김민석(minski@igt.or.kr)에게 화면을 캡처해 보내 주세요.</p>
+    <p class="note">그래도 안 되면 화면을 캡처해 기후시민팀 김민석(minski@igt.or.kr)에게 보내 주세요.</p>
   </div>
 </section>
 
@@ -234,17 +196,17 @@
     <p class="foot-org">사단법인 녹색전환연구소</p>
     <p>TEL 02-2135-1148 | E-MAIL office@igt.or.kr</p>
     <p>주소 (04506) 서울특별시 중구 중림로7길 4, 2층</p>
-    <p class="foot-meta">서명 이미지: assets/email/sig/ · 서체: Asta Sans (SIL OFL) · 내부 업무용 페이지</p>
+    <p class="foot-meta">서체: Asta Sans (SIL OFL) · 내부 업무용 페이지 · <a href="admin.html">관리자 안내</a></p>
   </div>
 </footer>
 
 <script src="vendor/xlsx.full.min.js"></script>
 <script src="vendor/jszip.min.js"></script>
 <script src="js/card-data.js?v=20261111b"></script>
-<script src="js/db-load.js?v=20261112a"></script>
+<script src="js/db-load.js?v=20261112b"></script>
 <script src="js/sig-glyphs.js?v=20261111a"></script>
 <script src="js/sig-core.js?v=20261112f"></script>
 <script src="js/sig-render.js?v=20261112b"></script>
-<script src="js/sig-app.js?v=20261112c"></script>
+<script src="js/sig-app.js?v=20261112d"></script>
 </body>
 </html>

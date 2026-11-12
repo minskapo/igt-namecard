@@ -1,0 +1,118 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>관리자 안내 · 녹색전환연구소</title>
+<link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=20261112a">
+<link rel="stylesheet" href="css/sig.css?v=20261112a">
+</head>
+<body>
+<a class="skip" href="#admin">본문으로 건너뛰기</a>
+
+<header class="site">
+  <div class="wrap navrow">
+    <a class="logo" href="index.html" aria-label="녹색전환연구소 디자인 산출물 통합도구 처음으로">
+      <span class="brand"><b>녹색전환연구소</b> 디자인 산출물 통합도구</span>
+    </a>
+    <nav class="nav" aria-label="도구 이동">
+      <a href="index.html">명함 생성기</a>
+      <a href="signature.html">메일 서명</a>
+      <a href="skills.html">Claude 스킬</a>
+    </nav>
+  </div>
+</header>
+
+<section class="intro">
+  <div class="intro-gradient" aria-hidden="true"></div>
+  <div class="wrap intro-inner">
+    <span class="eyebrow">관리자·운영 담당자</span>
+    <h1>메일 서명 관리자 안내</h1>
+    <p class="lead">GAM 일괄 적용, 신규 구성원 발급, 처음 한 번 설정을<br class="br-md"> 한곳에 모았습니다. 구성원 안내는 <a href="signature.html">메일 서명</a> 페이지에 있습니다.</p>
+  </div>
+</section>
+
+<section class="block flow" id="admin">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>GAM으로 일괄 적용</h2>
+      <a class="more" href="https://github.com/GAM-team/GAM/wiki" target="_blank" rel="noopener">GAM 안내서</a>
+    </div>
+    <p class="lead-s">Google Workspace 최고관리자 계정이 필요합니다. 처음에 GAM 설치와 권한 연결을 한 번 해 두면, 그 뒤로는 3~5단계만 반복합니다.</p>
+    <ol class="steps">
+      <li><b>GAM 설치</b><span>맥·리눅스 터미널에서 <code>bash &lt;(curl -s -S -L https://git.io/gam-install)</code>를 실행합니다. 윈도우는 GAM 안내서의 설치 파일을 씁니다.</span></li>
+      <li><b>권한 연결</b><span><code>gam create project</code> → <code>gam oauth create</code>(기본 선택 그대로 <code>c</code>) → <code>gam user 관리자@igt.or.kr check serviceaccount</code> 순서로 실행합니다. 마지막에 나오는 링크로 관리 콘솔의 ‘도메인 전체 위임’을 승인하는데, 범위 칸에는 <code>https://www.googleapis.com/auth/gmail.settings.basic</code> 하나만 남기는 것을 권합니다. 서명에는 이 권한만 필요하고, 나머지 범위는 FAIL로 남아도 됩니다.</span></li>
+      <li><b>배포 파일 받기</b><span><a href="signature.html#make">서명 만들기</a> ①의 ‘관리자: 전체 구성원 불러오기’로 DB를 불러오고, <b>전체 선택</b> → ④의 ‘관리자: 배포 파일’ › <b>배포 파일 ZIP</b>을 받아 압축을 풉니다.</span></li>
+      <li><b>이미지 올리기</b><span>ZIP 안 <code>저장소에_올릴_파일/assets</code> 폴더를 저장소(<code>minskapo/igt-namecard</code>) 맨 위에 덮어쓰고 커밋·push 합니다. 1~2분 뒤 <code>이미지_주소_확인.txt</code>의 주소가 열리면 준비된 것입니다.</span></li>
+      <li><b>일괄 적용</b><span>압축을 푼 폴더에서 <code>gam csv gam/signatures.csv gam user '~email' signature file '~file' html</code>을 실행합니다. 맥(zsh)에서는 작은따옴표를 꼭 붙여야 합니다. 한 사람만 바꿀 때는 <code>gam user minski@igt.or.kr signature file gam/html/minski.html html</code>처럼 씁니다.</span></li>
+      <li><b>확인·공지</b><span><code>gam user minski@igt.or.kr show signature</code>로 확인합니다. 일괄 적용하면 각자 넣어 둔 기본 서명이 바뀌므로, 적용 전후에 구성원에게 알리고 <a href="signature.html#bilingual">Gmail 서명 정리</a> 안내를 함께 보냅니다.</span></li>
+    </ol>
+    <p class="note">일괄 적용은 사람마다 서명 하나(DB의 ‘서명 언어’)만 넣습니다. ‘--’ 줄과 여러 서명 관리는 Gmail API로 바꿀 수 없어 구성원이 각자 설정합니다.</p>
+  </div>
+</section>
+
+<section class="block" id="newbie">
+  <div class="wrap">
+    <div class="sec-head"><h2>신규 구성원·정보 변경</h2></div>
+    <ol class="steps">
+      <li><b>DB에 적기</b><span>DB 시트 ‘구성원’ 탭에 한 줄을 넣습니다. 이메일 아이디·이름·부서·직급·핸드폰·이메일만 채우면 영문 이름과 직함은 자동으로 채워집니다. 영문 이름은 본인 표기를 확인합니다. 퇴사자는 ‘상태’를 <b>퇴사</b>로 바꿉니다.</span></li>
+      <li><b>배포 파일 받기</b><span>DB를 다시 불러와 그 사람만 골라 <b>배포 파일 ZIP</b>을 받습니다. 서명 코드가 없던 사람은 새 코드가 <code>서명코드_DB기록.csv</code>에 적혀 나오니, DB ‘서명 코드’ 칸에 꼭 옮겨 적습니다.</span></li>
+      <li><b>추적링크 기록</b><span><b>추적링크 시트 행 복사</b>를 누르고 <a href="https://docs.google.com/spreadsheets/d/1C5ncxBevH9FuNXDelcyYIBg-rYFwMoAu8GtsUAkG-Jo/edit?gid=870958988#gid=870958988" target="_blank" rel="noopener">추적링크 시트</a> ‘UTM코드 생성기’ 탭 맨 아래 빈 행의 A열에 붙여 넣습니다. 사람마다 5줄입니다.</span></li>
+      <li><b>올리고 적용</b><span>위 4~5단계처럼 이미지를 올리고 그 사람만 <code>gam user …</code>로 적용합니다.</span></li>
+      <li><b>정보가 바뀌면</b><span>서명 코드는 그대로 두고 DB를 고친 뒤 같은 과정을 반복합니다. 직함만 바꾸는 경우는 구성원이 <a href="signature.html#self">직함 바꾸기</a>로 직접 할 수 있습니다.</span></li>
+    </ol>
+    <p class="note"><b>추적 링크 규칙:</b> 버튼 링크에는 <code>utm_source=signature</code> · <code>utm_medium=email</code> · <code>utm_campaign=email_signature</code> · <code>utm_content=이메일 아이디</code> · <code>utm_term=누른 곳</code>(donate·newsletter·homepage·website·card)이 붙습니다. GA4에서는 세션 소스/매체 <code>signature / email</code>로 봅니다. LinkedIn 버튼에는 붙이지 않습니다.</p>
+  </div>
+</section>
+
+<section class="block" id="setup">
+  <div class="wrap">
+    <div class="sec-head"><h2>처음 한 번 설정</h2></div>
+    <div class="faq">
+      <details><summary>Google 로그인 연결 (완료됨)</summary><p>Google Cloud에서 Sheets API를 켜고, OAuth 동의 화면을 <b>내부</b>로 만든 뒤, 웹 애플리케이션 클라이언트 ID(승인된 JavaScript 원본 <code>https://minskapo.github.io</code>)를 만들어 <code>js/db-load.js</code>의 <code>clientId</code>에 넣었습니다. 로그인할 때 ‘관리자가 차단한 앱’이 뜨면 관리 콘솔 › 보안 › API 제어에서 ‘도메인 소유의 내부 앱 신뢰’를 켭니다.</p></details>
+      <details open><summary>구성원 셀프 반영 웹앱 (내 정보 불러오기·직함 바꾸기)</summary>
+        <ol class="steps">
+          <li><b>GitHub 토큰</b><span><a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener">GitHub 토큰 만들기</a>에서 Repository access를 <b>Only select repositories › minskapo/igt-namecard</b>로, Permissions › <b>Contents</b>를 Read and write로 정하고 만료를 1년으로 둡니다.</span></li>
+          <li><b>스크립트 만들기</b><span>DB 시트 소유자 계정으로 <a href="https://script.new" target="_blank" rel="noopener">script.new</a>를 열고 저장소의 <a href="tools/sig-self.gs" target="_blank" rel="noopener">tools/sig-self.gs</a> 내용을 붙여 넣습니다. 프로젝트 설정 › 스크립트 속성에 <code>GITHUB_TOKEN</code>을 추가합니다.</span></li>
+          <li><b>웹앱 배포</b><span>배포 › 새 배포 › 유형 <b>웹 앱</b>, 실행 계정 <b>나</b>, 액세스 권한 <b>모든 사용자</b>로 배포하고 권한을 승인합니다. 연구소 계정 확인은 스크립트가 직접 하므로 ‘모든 사용자’로 둬야 페이지에서 호출할 수 있습니다.</span></li>
+          <li><b>연결</b><span>웹앱 URL(<code>https://script.google.com/macros/s/…/exec</code>)을 <code>js/db-load.js</code>의 <code>selfUrl</code>에 넣고 push 합니다.</span></li>
+        </ol>
+        <p>웹앱은 로그인한 사람의 DB 한 줄만 돌려주고, 이미지는 그 사람의 서명 코드 폴더에만 올립니다. DB에는 국문·영문 직함만 적습니다. 토큰이 만료되면 1단계부터 다시 하고 스크립트 속성만 바꿉니다.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="band" id="skill">
+  <div class="wrap">
+    <span class="eyebrow dark">Claude 스킬</span>
+    <h2>관리자용 메일 서명 스킬</h2>
+    <p class="band-lead">신규 발급, GAM 적용, 이미지 업로드, 추적링크 기록, 도구 수정 규칙을 담았습니다. 설치 방법은 <a href="skills.html">Claude 스킬</a> 페이지와 같습니다.</p>
+    <div class="actions"><a class="btn primary" href="skill/igt-signature-admin.zip?v=20261112" download="igt-signature-admin.zip">관리자 스킬 내려받기 (ZIP)</a></div>
+  </div>
+</section>
+
+<section class="block" id="trouble">
+  <div class="wrap">
+    <div class="sec-head"><h2>관리자 문제 해결</h2></div>
+    <div class="faq">
+      <details><summary>GAM에서 권한 오류가 나요</summary><p><code>gam user 관리자@igt.or.kr check serviceaccount</code>를 다시 실행해 <code>gmail.settings.basic</code>이 PASS인지 확인합니다. 승인 직후에는 몇 분 걸릴 수 있습니다.</p></details>
+      <details><summary>zsh: no such user or named directory: email</summary><p>맥 터미널이 <code>~email</code>을 홈 폴더로 읽은 것입니다. <code>'~email'</code>, <code>'~file'</code>처럼 작은따옴표로 감싸 주세요.</p></details>
+      <details><summary>이미지를 올렸는데 서명에 반영되지 않아요</summary><p>이미지만 올리고 서명을 다시 적용하지 않으면 예전 주소(<code>?v=</code> 값)가 남습니다. 배포 파일을 새로 받아 다시 적용합니다. Gmail은 이미지를 한동안 저장해 두므로 바로 바뀌지 않을 수 있습니다.</p></details>
+      <details><summary>셀프 반영이 실패해요</summary><p>웹앱 URL, <code>GITHUB_TOKEN</code> 만료, DB에 그 사람의 서명 코드가 있는지를 차례로 확인합니다. 스크립트 편집기의 ‘실행’ 기록에서 오류 내용을 볼 수 있습니다.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p class="foot-org">사단법인 녹색전환연구소</p>
+    <p>TEL 02-2135-1148 | E-MAIL office@igt.or.kr</p>
+    <p>주소 (04506) 서울특별시 중구 중림로7길 4, 2층</p>
+    <p class="foot-meta">내부 업무용 페이지 · 관리 담당: 기후시민팀 김민석(minski@igt.or.kr)</p>
+  </div>
+</footer>
+</body>
+</html>

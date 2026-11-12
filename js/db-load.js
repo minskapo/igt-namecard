@@ -8,9 +8,11 @@
     sheetId: '1qAy53XI3rvwB5zf1y3fYk7dm7XejXDxdo68vZmTd1MI',
     tab: '구성원',
     range: 'A1:Z500',
-    domain: 'igt.or.kr'
+    domain: 'igt.or.kr',
+    // 구성원 셀프 반영용 Apps Script 웹앱 주소 (tools/sig-self.gs 배포 후 넣는다)
+    selfUrl: ''
   };
-  const SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly';
+  const SCOPE = 'openid email https://www.googleapis.com/auth/spreadsheets.readonly';
   let gsi = null, token = null, tokenExp = 0;
 
   const ready = () => !!CONFIG.clientId;
@@ -50,5 +52,17 @@
     const j = await r.json();
     return j.values || [];
   }
-  root.DBLoad = { CONFIG, ready, fetchRows };
+  // 셀프 반영 웹앱 호출 (본인 정보 불러오기, 본인 서명 반영)
+  const selfReady = () => ready() && !!CONFIG.selfUrl;
+  async function callSelf(action, data) {
+    if (!selfReady()) throw new Error('아직 구성원용 기능이 설정되지 않았습니다. 김민석(minski@igt.or.kr)에게 알려 주세요.');
+    const t = await getToken();
+    let r;
+    try { r = await fetch(CONFIG.selfUrl, { method: 'POST', body: JSON.stringify({ ...(data || {}), action, token: t }) }); }
+    catch (e) { throw new Error('서버에 연결하지 못했습니다. 잠시 뒤 다시 시도해 주세요.'); }
+    const j = await r.json().catch(() => ({ ok: false, error: '서버 응답을 읽지 못했습니다.' }));
+    if (!j.ok) throw new Error(j.error || '요청을 처리하지 못했습니다.');
+    return j;
+  }
+  root.DBLoad = { CONFIG, ready, fetchRows, selfReady, callSelf };
 })(window);

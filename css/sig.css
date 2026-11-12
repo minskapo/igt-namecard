@@ -34,10 +34,20 @@
 .faq summary::after { content: "+"; color: var(--muted); font-weight: 500; }
 .faq details[open] summary::after { content: "–"; }
 .faq p { margin: 0 0 18px; color: #45474d; line-height: 1.7; max-width: 860px; }
-#trouble { padding-top: 0; }
+#trouble { padding-top: 90px; }
 #newbie { padding-top: 90px; }
 @media (max-width: 640px) { #newbie { padding-top: 64px; } }
 
 @media (max-width: 960px) { .who { grid-template-columns: 1fr; } .clients { grid-template-columns: 1fr; } }
 @media (max-width: 640px) { .sigbox { padding: 12px; } #sigPreview { padding: 10px; } }
 #oauth { padding-top: 0; }
+
+/* 관리자용 접이식 도구 */
+.admin-tools { margin-top: 18px; padding-top: 14px; border-top: 1px solid var(--line); }
+.admin-tools > summary { cursor: pointer; color: var(--muted); font-size: 14px; font-weight: 500; list-style: none; }
+.admin-tools > summary::-webkit-details-marker { display: none; }
+.admin-tools > summary::before { content: "+ "; }
+.admin-tools[open] > summary::before { content: "– "; }
+.admin-tools .gload { margin: 12px 0; }
+#self { padding-top: 0; }
+.faq .steps { margin: 4px 0 16px; } .faq details > p:last-child { margin-bottom: 18px; } #setup { padding-top: 0; } #newbie { padding-top: 0; }

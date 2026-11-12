@@ -33,6 +33,20 @@
     catch (err) { dbNote(err.message, true); }
     finally { b.disabled = false; }
   });
+  // 구성원: 본인 정보만 불러오기 (DB 시트를 공유받지 않아도 된다)
+  $('#meLoad').addEventListener('click', async () => {
+    const b = $('#meLoad');
+    b.disabled = true; dbNote('내 정보를 불러오는 중…');
+    try {
+      const j = await DBLoad.callSelf('me');
+      loadRows(j.rows);
+      const p = state.people.find((x) => !x.isNew);
+      if (p) { state.activeId = p.id; p.selected = true; renderList(); renderForm(); preview(); }
+      dbNote(`${j.email} 계정의 정보를 불러왔습니다. ③에서 직함을 고치고 ④에서 확인해 주세요.`);
+      $('#step3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (err) { dbNote(err.message, true); }
+    finally { b.disabled = false; }
+  });
   function loadRows(rows) {
     {
       const fresh = C.rowsToPeople(rows).map((p) => ({ ...p, id: ++state.seq, selected: false, codeNew: false }));
@@ -137,7 +151,7 @@
   const schedulePreview = () => { clearTimeout(timer); timer = setTimeout(preview, 250); };
   async function preview() {
     const p = byId(state.activeId), my = ++ticket, lang = state.lang;
-    ['#copySig', '#dlHtml', '#dlPng', '#copyText'].forEach((k) => ($(k).disabled = !p));
+    ['#copySig', '#dlHtml', '#dlPng', '#copyText', '#publish'].forEach((k) => ($(k).disabled = !p));
     if (!p) { $('#sigPreview').innerHTML = '<p class="empty">구성원을 고르면 서명이 여기에 보입니다.</p>'; $('#warn').hidden = true; $('#hostState').textContent = ''; return; }
     try {
       const A = await R.load();
@@ -165,7 +179,7 @@
     el.textContent = '저장소의 서명 이미지를 확인하는 중…';
     const img = new Image();
     img.onload = () => { if (my === ticket) { el.className = 'muted ok'; el.textContent = '이미지 준비됨: 서명 복사로 바로 붙여 넣을 수 있습니다.'; } };
-    img.onerror = () => { if (my === ticket) { el.className = 'muted no'; el.textContent = '이미지 준비 안 됨: 이 내용의 서명 이미지가 아직 저장소에 없습니다. 배포 파일 ZIP을 받아 저장소에 올려 주세요.'; } };
+    img.onerror = () => { if (my === ticket) { el.className = 'muted no'; el.textContent = '이미지 준비 안 됨: 이 내용의 서명 이미지가 아직 없습니다. 직함을 고쳤다면 아래 ‘바꾼 직함 내 서명에 반영’을 눌러 주세요.'; } };
     img.src = S.topUrl(p, lang);
   }
 
@@ -216,6 +230,43 @@
     save(await R.toBlob(full), fileBase(p, lang) + '.png');
   });
   const loadImg = (src) => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = () => no(new Error(src)); i.src = src; });
+
+  /* ---------- 내 서명에 바로 반영 (구성원 셀프) ---------- */
+  const b64of = (blob) => new Promise((ok, no) => { const r = new FileReader(); r.onload = () => ok(String(r.result).split(',')[1]); r.onerror = no; r.readAsDataURL(blob); });
+  let pubArmed = false;
+  $('#publish').addEventListener('click', async () => {
+    const p = active(); if (!p) return;
+    const note = (m, e) => { const el = $('#pubNote'); el.textContent = m; el.style.color = e ? '#b42318' : ''; };
+    if (!DBLoad.selfReady()) { note('아직 구성원용 기능이 설정되지 않았습니다. 김민석(minski@igt.or.kr)에게 알려 주세요.', true); return; }
+    const miss = S.problems(p);
+    if (miss.length) { note('먼저 채워 주세요: ' + miss.join(', '), true); return; }
+    if (!S.validCode(p.sigCode) || p.codeNew) { note('서명 코드가 없는 사람은 관리자가 먼저 등록해야 합니다.', true); return; }
+    if (!pubArmed) { pubArmed = true; setTimeout(() => (pubArmed = false), 8000); note('국문·영문 서명 이미지를 지금 내용으로 바꿉니다. 맞으면 버튼을 한 번 더 눌러 주세요.'); return; }
+    pubArmed = false;
+    const b = $('#publish'); b.disabled = true;
+    try {
+      note('서명 이미지를 만드는 중…');
+      const files = {}, sizes = {};
+      for (const lang of ['kr', 'en']) {
+        const pc = R.parts(await R.top(p, lang));
+        for (const k of S.PARTS) { const bl = await R.toBlob(pc[k].canvas); files[`${lang}_${k}`] = await b64of(bl); sizes[`${lang}_${k}`] = bl.size; }
+      }
+      note('저장소에 올리는 중…');
+      await DBLoad.callSelf('publish', { email: p.email.trim(), titles: { kr: p.titleKr, en: p.titleEn }, files });
+      note('올렸습니다. 사이트에 반영되기를 기다리는 중… (1~3분)');
+      // 새 이미지가 사이트에 뜰 때까지 기다린다(크기로 비교).
+      const url = S.partUrl(p, 'kr', 'a');
+      let done = false;
+      for (let i = 0; i < 24 && !done; i++) {
+        await new Promise((ok) => setTimeout(ok, 10000));
+        try { const r = await fetch(url + '&t=' + Date.now(), { cache: 'no-store' }); if (r.ok && (await r.blob()).size === sizes.kr_a) done = true; } catch (e) { /* 다시 시도 */ }
+      }
+      note(done ? '반영되었습니다. 이제 ‘서명 복사’를 눌러 Gmail 서명에 다시 붙여 넣어 주세요. 바꾼 직함은 DB에도 저장되었습니다.'
+                : '올리기는 끝났지만 사이트 반영이 늦어지고 있습니다. 몇 분 뒤 페이지를 새로고침하고 ‘이미지 준비됨’이 보이면 서명을 복사해 주세요.');
+      preview();
+    } catch (err) { note(err.message, true); }
+    finally { b.disabled = false; }
+  });
 
   /* ---------- 배포 파일 ZIP ---------- */
   $('#dlZip').addEventListener('click', async () => {
