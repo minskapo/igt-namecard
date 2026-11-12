@@ -70,7 +70,10 @@
   }
 
   function fmtPhone(p) {
-    const d = String(p || '').replace(/\D/g, '');
+    const raw = String(p || '').trim();
+    // +82, 괄호 등 숫자·공백·하이픈 밖의 기호가 있으면 적은 그대로 쓴다.
+    if (/[^\d\s-]/.test(raw)) return raw;
+    const d = raw.replace(/\D/g, '');
     let parts;
     if (d.startsWith('02')) parts = d.length === 9 ? [d.slice(0,2), d.slice(2,5), d.slice(5)] : [d.slice(0,2), d.slice(2,6), d.slice(6)];
     else parts = d.length === 10 ? [d.slice(0,3), d.slice(3,6), d.slice(6)] : [d.slice(0,3), d.slice(3,7), d.slice(7)];
@@ -92,7 +95,7 @@
     const ix = (k) => head.indexOf(k);
     const [iD, iN, iT, iP, iE] = ['부서', '이름', '직급', '핸드폰', '이메일'].map(ix);
     // 구성원 DB 시트에만 있는 열 (없으면 -1)
-    const [iNE, iTK, iTE, iS, iL, iC] = ['영문 이름', '국문 직함', '영문 직함', '상태', '서명 언어', '서명 코드'].map(ix);
+    const [iNE, iTK, iTE, iS, iL, iC, iLI] = ['영문 이름', '국문 직함', '영문 직함', '상태', '서명 언어', '서명 코드', 'LinkedIn'].map(ix);
     const cell = (r, i) => (i >= 0 && r ? String(r[i] || '').trim() : '');
     const people = []; let lastDept = '';
     for (const r of rows.slice(h + 1)) {
@@ -106,6 +109,7 @@
       if (cell(r, iTE)) p.titleEn = cell(r, iTE);
       p.sigLang = cell(r, iL) === '영문' ? 'en' : 'kr';
       p.sigCode = cell(r, iC);
+      p.linkedin = cell(r, iLI);
       p.fromDb = iC >= 0;
       people.push(p);
     }

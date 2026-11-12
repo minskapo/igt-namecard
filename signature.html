@@ -7,7 +7,7 @@
 <title>메일 서명 · 녹색전환연구소</title>
 <link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/style.css?v=20261112b">
-<link rel="stylesheet" href="css/sig.css?v=20261112b">
+<link rel="stylesheet" href="css/sig.css?v=20261112c">
 </head>
 <body>
 <a class="skip" href="#make">본문으로 건너뛰기</a>
@@ -38,7 +38,7 @@
   <div class="wrap">
     <div class="who">
       <div><span class="eyebrow">모두</span><b>처음 한 번 Gmail 설정</b><p>서명 앞 ‘--’ 줄을 없애고, 필요하면 영문 서명을 추가합니다. 관리자가 일괄로 바꿀 수 없는 설정입니다.</p><a class="more" href="#bilingual">Gmail 서명 정리</a></div>
-      <div><span class="eyebrow dark">필요할 때</span><b>직함 바꾸기</b><p>‘연구원’ 대신 다른 직책명을 쓰고 싶으면, 아래 도구에서 직접 고쳐 바로 반영합니다.</p><a class="more" href="#self">직함 바꾸기</a></div>
+      <div><span class="eyebrow dark">필요할 때</span><b>직함·LinkedIn 바꾸기</b><p>다른 직책명을 쓰거나 영문 서명의 LinkedIn 버튼을 내 프로필로 연결하고 싶으면, 아래 도구에서 직접 고쳐 반영합니다.</p><a class="more" href="#self">직함·LinkedIn 바꾸기</a></div>
       <div><span class="eyebrow dark">필요할 때</span><b>다른 메일 프로그램</b><p>Outlook·Apple Mail처럼 Gmail 밖에서 메일을 쓰면, 서명을 복사해 직접 붙여 넣습니다.</p><a class="more" href="#personal">직접 넣기</a></div>
     </div>
   </div>
@@ -98,7 +98,11 @@
             <div class="f half"><label>이메일</label><input name="email" type="email"></div>
             <div class="f half"><label>일괄 적용 언어</label><select name="sigLang"><option value="kr">국문</option><option value="en">영문</option></select></div>
             <div class="f half"><label>서명 코드</label><div class="inline"><input name="sigCode" readonly><button type="button" class="ghost" id="newCode">새로 만들기</button></div></div>
-            <p class="note">직함은 ④의 ‘바꾼 직함 내 서명에 반영’을 눌러야 저장됩니다. 다른 항목이 틀렸다면 운영기획팀에 알려 주세요.</p>
+            <div class="f"><label>LinkedIn 주소 (영문 서명 LinkedIn 버튼, 비우면 연구소 페이지)</label><input name="linkedin" type="url" inputmode="url" placeholder="https://www.linkedin.com/in/내-아이디"></div>
+            <div class="f publish-box">
+              <button type="button" id="publish" class="primary" disabled>내 서명에 반영</button>
+              <p class="note" id="pubNote">직함이나 LinkedIn 주소를 고쳤을 때 누릅니다. 국문·영문 서명이 함께 바뀌고 DB에도 저장됩니다. 이름·전화·부서가 틀렸다면 운영기획팀에 알려 주세요.</p>
+            </div>
           </div>
         </form>
       </section>
@@ -118,10 +122,6 @@
           <button type="button" id="dlHtml" class="ghost" disabled>HTML 내려받기</button>
           <button type="button" id="dlPng" class="ghost" disabled>이미지 내려받기</button>
         </div>
-        <div class="bulk">
-          <div class="actions" style="margin-top:0"><button type="button" id="publish" class="primary" disabled>바꾼 직함 내 서명에 반영</button></div>
-          <p class="note" id="pubNote">③에서 직함을 고쳤을 때만 누릅니다. 국문·영문 서명 이미지가 바뀌고, 바꾼 직함이 DB에도 저장됩니다.</p>
-        </div>
         <details class="admin-tools">
           <summary>관리자: 배포 파일</summary>
           <div class="actions" style="margin-top:12px"><button type="button" id="dlZip" class="primary" disabled>배포 파일 ZIP</button>
@@ -140,7 +140,7 @@
     <p class="lead-s">Gmail 설정(톱니바퀴) › <b>모든 설정 보기</b> › <b>기본설정</b> 탭 › ‘서명’ 항목에서 합니다. 다 고친 뒤 맨 아래 <b>변경사항 저장</b>을 눌러야 반영됩니다.</p>
     <ol class="steps">
       <li><b>‘--’ 줄 없애기</b><span><b>답장에서 인용된 텍스트 앞에 이 서명을 삽입하고 그 앞에 있는 ‘--’ 행을 삭제합니다</b>에 체크합니다. 서명 앞의 ‘--’ 줄이 사라지고, 답장할 때 서명이 원문 인용 위에 붙습니다.</span></li>
-      <li><b>영문 서명 추가</b><span>필요한 분만 합니다. 위 ‘서명 만들기’에서 내 정보를 불러와 <b>영문</b> 탭의 <b>서명 복사</b>를 누릅니다. Gmail에서 <b>새로 만들기</b>로 ‘IGT 영문’ 서명을 만들어 붙여 넣고, 기존 국문 서명은 이름을 ‘IGT 국문’으로 바꿉니다.</span></li>
+      <li><b>영문 서명 추가</b><span>필요한 분만 합니다. 관리자가 넣어 둔 기본 서명은 새 서명을 만들면 지워지므로, 국문도 함께 새로 만듭니다. ① 이 페이지 ④에서 <b>국문</b> 탭 <b>서명 복사</b> → Gmail <b>새로 만들기</b> → 이름 ‘IGT 국문’으로 붙여 넣기. ② <b>영문</b> 탭 <b>서명 복사</b> → <b>새로 만들기</b> → 이름 ‘IGT 영문’으로 붙여 넣기. ③ 이름 없이 남은 옛 서명이 있으면 지웁니다.</span></li>
       <li><b>기본 서명 확인</b><span>‘서명 기본값’의 <b>새 이메일용</b>과 <b>답장/전달용</b>이 모두 ‘IGT 국문’(영문을 주로 쓰면 ‘IGT 영문’)인지 확인합니다.</span></li>
       <li><b>메일 쓸 때 고르기</b><span>메일 작성 창 아래쪽의 <b>펜 아이콘(서명 삽입)</b>을 누르면 국문과 영문 서명을 골라 넣을 수 있습니다.</span></li>
     </ol>
@@ -150,13 +150,13 @@
 
 <section class="block" id="self">
   <div class="wrap">
-    <div class="sec-head"><h2>직함 바꾸기</h2></div>
-    <p class="lead-s">서명에는 기본으로 부서와 직급이 들어갑니다. ‘연구원’ 대신 ‘커뮤니케이션 담당자’처럼 다른 직책명을 쓰고 싶으면 직접 바꿀 수 있습니다.</p>
+    <div class="sec-head"><h2>직함·LinkedIn 바꾸기</h2></div>
+    <p class="lead-s">서명에는 기본으로 부서와 직급이 들어갑니다. ‘연구원’ 대신 ‘커뮤니케이션 담당자’처럼 다른 직책명을 쓰거나, 영문 서명의 LinkedIn 버튼을 내 프로필로 연결하고 싶으면 직접 바꿀 수 있습니다.</p>
     <ol class="steps">
       <li><b>내 정보 불러오기</b><span>연구소 계정으로 로그인되어 있으면 이 페이지를 열 때 내 정보가 자동으로 나타납니다. 나타나지 않으면 ‘서명 만들기’ ①의 Google 버튼을 눌러 로그인합니다.</span></li>
-      <li><b>직함 고치기</b><span>③의 <b>국문 직함 줄</b>과 <b>영문 직함 줄</b>을 고치고, ④ 미리보기의 국문·영문 탭에서 글자가 잘리지 않는지 확인합니다.</span></li>
-      <li><b>반영하기</b><span>④의 <b>바꾼 직함 내 서명에 반영</b>을 두 번 누릅니다. 1~3분 뒤 ‘반영되었습니다’가 뜨면 끝입니다. 바꾼 직함은 DB에도 저장되어, 관리자가 다시 일괄 적용해도 유지됩니다.</span></li>
-      <li><b>Gmail에 다시 넣기</b><span><b>서명 복사</b>를 눌러 Gmail 서명 칸의 기존 서명을 지우고 붙여 넣은 뒤 <b>변경사항 저장</b>을 누릅니다. 영문 서명을 쓰는 분은 영문 탭에서도 같은 방법으로 바꿉니다.</span></li>
+      <li><b>고치기</b><span>③에서 <b>국문 직함 줄</b>, <b>영문 직함 줄</b>, <b>LinkedIn 주소</b>를 고치고, ④ 미리보기의 국문·영문 탭에서 글자가 잘리지 않는지 확인합니다. LinkedIn 주소를 넣으면 영문 서명의 LinkedIn 버튼이 내 프로필로 연결됩니다.</span></li>
+      <li><b>반영하기</b><span>③ 아래의 <b>내 서명에 반영</b>을 두 번 누릅니다. 국문·영문 서명이 함께 바뀌며, 1~3분 뒤 ‘반영되었습니다’가 뜨면 끝입니다. 고친 내용은 DB에도 저장되어 관리자가 다시 일괄 적용해도 유지됩니다.</span></li>
+      <li><b>Gmail에 다시 넣기</b><span>‘반영되었습니다’가 뜬 뒤에 <b>서명 복사</b>를 눌러 Gmail 서명 칸의 기존 서명을 지우고 붙여 넣은 뒤 <b>변경사항 저장</b>을 누릅니다. 영문 서명은 영문 탭에서 복사해 ‘IGT 영문’ 서명에 같은 방법으로 바꿉니다.</span></li>
     </ol>
     <p class="note">본인 서명만 바꿀 수 있습니다. 이름·전화번호·부서가 틀렸다면 직접 고치지 말고 운영기획팀에 알려 주세요.</p>
   </div>
@@ -202,11 +202,11 @@
 
 <script src="vendor/xlsx.full.min.js"></script>
 <script src="vendor/jszip.min.js"></script>
-<script src="js/card-data.js?v=20261111b"></script>
+<script src="js/card-data.js?v=20261112a"></script>
 <script src="js/db-load.js?v=20261112d"></script>
 <script src="js/sig-glyphs.js?v=20261111a"></script>
-<script src="js/sig-core.js?v=20261112f"></script>
+<script src="js/sig-core.js?v=20261112g"></script>
 <script src="js/sig-render.js?v=20261112b"></script>
-<script src="js/sig-app.js?v=20261112e"></script>
+<script src="js/sig-app.js?v=20261112f"></script>
 </body>
 </html>

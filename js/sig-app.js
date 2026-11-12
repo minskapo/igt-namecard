@@ -111,7 +111,7 @@
 
   /* ---------- 3. 편집 ---------- */
   const form = $('#form');
-  const KEYS = ['name', 'nameEn', 'titleKr', 'titleEn', 'mobile', 'email', 'sigLang', 'sigCode'];
+  const KEYS = ['name', 'nameEn', 'titleKr', 'titleEn', 'mobile', 'email', 'linkedin', 'sigLang', 'sigCode'];
   function renderForm() {
     const p = byId(state.activeId);
     $('#fields').hidden = !p; $('#formEmpty').hidden = !!p;
@@ -247,27 +247,29 @@
     const miss = S.problems(p);
     if (miss.length) { note('먼저 채워 주세요: ' + miss.join(', '), true); return; }
     if (!S.validCode(p.sigCode) || p.codeNew) { note('서명 코드가 없는 사람은 관리자가 먼저 등록해야 합니다.', true); return; }
-    if (!pubArmed) { pubArmed = true; setTimeout(() => (pubArmed = false), 8000); note('국문·영문 서명 이미지를 지금 내용으로 바꿉니다. 맞으면 버튼을 한 번 더 눌러 주세요.'); return; }
+    if (p.linkedin && !S.validLinkedIn(p.linkedin)) { note('LinkedIn 주소는 https://www.linkedin.com/in/… 형식으로 넣어 주세요.', true); return; }
+    if (!pubArmed) { pubArmed = true; setTimeout(() => (pubArmed = false), 8000); note('국문·영문 서명을 지금 내용으로 바꿉니다. 맞으면 버튼을 한 번 더 눌러 주세요.'); return; }
     pubArmed = false;
     const b = $('#publish'); b.disabled = true;
     try {
       note('서명 이미지를 만드는 중…');
-      const files = {}, sizes = {};
+      const files = {}, blobs = {};
       for (const lang of ['kr', 'en']) {
         const pc = R.parts(await R.top(p, lang));
-        for (const k of S.PARTS) { const bl = await R.toBlob(pc[k].canvas); files[`${lang}_${k}`] = await b64of(bl); sizes[`${lang}_${k}`] = bl.size; }
+        for (const k of S.PARTS) { const bl = await R.toBlob(pc[k].canvas); files[`${lang}_${k}`] = await b64of(bl); blobs[`${lang}_${k}`] = bl; }
       }
       note('저장소에 올리는 중…');
-      await DBLoad.callSelf('publish', { email: p.email.trim(), titles: { kr: p.titleKr, en: p.titleEn }, files });
+      await DBLoad.callSelf('publish', { email: p.email.trim(), titles: { kr: p.titleKr, en: p.titleEn }, linkedin: (p.linkedin || '').trim(), files });
       note('올렸습니다. 사이트에 반영되기를 기다리는 중… (1~3분)');
-      // 새 이미지가 사이트에 뜰 때까지 기다린다(크기로 비교).
-      const url = S.partUrl(p, 'kr', 'a');
+      // 국문·영문 이름 영역 이미지가 사이트에 새것으로 뜰 때까지 기다린다(내용 비교). 한쪽만 고쳐도 둘 다 확인한다.
+      const same = async (a, b) => { const x = new Uint8Array(await a.arrayBuffer()), y = new Uint8Array(await b.arrayBuffer()); return x.length === y.length && x.every((v, i) => v === y[i]); };
+      const ready = async (lang) => { try { const r = await fetch(S.partUrl(p, lang, 'a') + '&t=' + Date.now(), { cache: 'no-store' }); return r.ok && (await same(await r.blob(), blobs[lang + '_a'])); } catch (e) { return false; } };
       let done = false;
       for (let i = 0; i < 24 && !done; i++) {
         await new Promise((ok) => setTimeout(ok, 10000));
-        try { const r = await fetch(url + '&t=' + Date.now(), { cache: 'no-store' }); if (r.ok && (await r.blob()).size === sizes.kr_a) done = true; } catch (e) { /* 다시 시도 */ }
+        done = (await ready('kr')) && (await ready('en'));
       }
-      note(done ? '반영되었습니다. 이제 ‘서명 복사’를 눌러 Gmail 서명에 다시 붙여 넣어 주세요. 바꾼 직함은 DB에도 저장되었습니다.'
+      note(done ? '반영되었습니다. 이제 ④에서 국문·영문 탭마다 ‘서명 복사’를 눌러 Gmail 서명에 다시 붙여 넣어 주세요. 고친 내용은 DB에도 저장되었습니다.'
                 : '올리기는 끝났지만 사이트 반영이 늦어지고 있습니다. 몇 분 뒤 페이지를 새로고침하고 ‘이미지 준비됨’이 보이면 서명을 복사해 주세요.');
       preview();
     } catch (err) { note(err.message, true); }

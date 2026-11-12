@@ -4,7 +4,7 @@
  * 하는 일
  *  - me      : 로그인한 구성원의 DB 한 줄만 돌려준다. 구성원에게 DB 시트를 공유하지 않아도 된다.
  *  - publish : 구성원이 서명 페이지에서 만든 본인 서명 이미지 10장을 GitHub 저장소에 올리고,
- *              바꾼 국문·영문 직함을 DB에 적는다. 본인 서명 코드 폴더에만 쓸 수 있다.
+ *              바꾼 국문·영문 직함과 LinkedIn 주소를 DB에 적는다. 본인 서명 코드 폴더에만 쓸 수 있다.
  *
  * 설치 (관리자, 처음 한 번)
  *  1) DB 시트 소유자 계정으로 script.new 에서 새 프로젝트를 만들고 이 파일 내용을 붙여 넣는다.
@@ -86,6 +86,8 @@ function publish(email, req) {
     const code = String(d.rows[i][d.head.indexOf('서명 코드')] || '').trim();
     if (!/^[a-z0-9]{8,32}$/.test(code)) throw new Error('서명 코드가 아직 없습니다. 관리자에게 요청해 주세요.');
 
+    const linkedin = typeof req.linkedin === 'string' ? req.linkedin.trim() : null;
+    if (linkedin && !/^https:\/\/([a-z]{2,3}\.)?linkedin\.com\/[^\s"'<>]+$/i.test(linkedin)) throw new Error('LinkedIn 주소 형식이 맞지 않습니다.');
     const files = req.files || {}, items = [];
     LANGS.forEach(function (l) {
       PARTS.forEach(function (p) {
@@ -106,6 +108,9 @@ function publish(email, req) {
     const put = function (col, val) { const c = d.head.indexOf(col); if (c >= 0 && val) d.sh.getRange(i + 2, c + 1).setValue(val); };
     put('국문 직함', clean(t.kr));
     put('영문 직함', clean(t.en));
+    // LinkedIn 주소는 비우면 지운다(영문 서명 버튼이 연구소 페이지로 돌아간다).
+    const iL = d.head.indexOf('LinkedIn');
+    if (iL >= 0 && linkedin !== null) d.sh.getRange(i + 2, iL + 1).setValue(linkedin.slice(0, 200));
 
     cache.put(key, '1', 60);
     return { ok: true, commit: sha, code: code };

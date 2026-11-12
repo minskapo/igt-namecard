@@ -28,6 +28,9 @@
     ]
   };
 
+  // 개인 LinkedIn 주소가 있으면 영문 LinkedIn 버튼이 그 주소로, 없으면 연구소 공식 페이지로 간다.
+  const validLinkedIn = (u) => /^https:\/\/([a-z]{2,3}\.)?linkedin\.com\/[^\s"'<>]+$/i.test(String(u || '').trim());
+  const linkedinOf = (p) => (validLinkedIn(p.linkedin) ? String(p.linkedin).trim() : LINK.linkedin);
   const idOf = (p) => String(p.email || '').split('@')[0].trim().toLowerCase();
 
   // 연구소 GA4 추적링크 시트(UTM코드 생성기)의 규칙을 따른다.
@@ -42,7 +45,8 @@
   }
 
   function phone(p, lang) {
-    const d = String(p.mobile || '').replace(/\D/g, '');
+    let d = String(p.mobile || '').replace(/\D/g, '');
+    if (/^\s*\+\s*82/.test(String(p.mobile || ''))) d = '0' + d.replace(/^82/, '').replace(/^0/, '');
     let parts;
     if (d.startsWith('02')) parts = d.length === 9 ? [d.slice(0, 2), d.slice(2, 5), d.slice(5)] : [d.slice(0, 2), d.slice(2, 6), d.slice(6)];
     else parts = d.length === 10 ? [d.slice(0, 3), d.slice(3, 6), d.slice(6)] : [d.slice(0, 3), d.slice(3, 7), d.slice(7)];
@@ -134,7 +138,7 @@
     ].map(([href, alt], i) => cell(xs[i + 1] - xs[i], href, part('m' + (i + 1)), mh, alt)).join('');
     const buttons = L.cells.map((c) => {
       const b = c.btn === null ? null : BUTTONS[lang][c.btn];
-      const href = b ? (b.noUtm ? b.url : utm(b.url, id, b.key)) : card;
+      const href = b ? (b.key === 'linkedin' ? linkedinOf(p) : b.noUtm ? b.url : utm(b.url, id, b.key)) : card;
       return cell(c.w, href, common(c.f), L.bot - L.top, b ? b.alt : '');
     }).join('');
     return `<table cellpadding="0" cellspacing="0" border="0" role="presentation" width="100%" style="width:100%;max-width:${L.W}px;border-collapse:collapse;">` +
@@ -153,7 +157,7 @@
       return ['--', `${L.name} | ${[t.job, t.team].filter(Boolean).join(', ')}`, ORG_EN,
         `M ${L.m} | T ${L.t} | E ${L.e}`, '2F, 4 Jungnim-ro 7-gil, Jung-gu, Seoul, Republic of Korea',
         'A good life for all, within a living planet', '',
-        'LinkedIn ' + LINK.linkedin, 'Website ' + utm(LINK.landing, id, 'website')].join('\n');
+        'LinkedIn ' + linkedinOf(p), 'Website ' + utm(LINK.landing, id, 'website')].join('\n');
     }
     return ['--', `${L.name} | ${L.title}`, '녹색전환연구소 (Institute for Green Transformation)',
       `M ${L.m} | T ${L.t} | E ${L.e}`, '서울특별시 중구 중림로7길 4, 2층',
@@ -190,6 +194,6 @@
       url, UTM.campaign, UTM.source, UTM.medium, id, term, '', utm(url, id, term), '']);
   }
 
-  const api = { UTM, sheetRows, PARTS, partUrl, telHref, SITE, BASE, COMMON_VER, LINK, BUTTONS, idOf, utm, phone, lines, altText, version, newCode, validCode, topUrl, commonUrl, html, plain, problems, splitTitleEn };
+  const api = { validLinkedIn, linkedinOf, UTM, sheetRows, PARTS, partUrl, telHref, SITE, BASE, COMMON_VER, LINK, BUTTONS, idOf, utm, phone, lines, altText, version, newCode, validCode, topUrl, commonUrl, html, plain, problems, splitTitleEn };
   if (typeof module !== 'undefined' && module.exports) module.exports = api; else root.SigCore = api;
 })(typeof window !== 'undefined' ? window : globalThis);

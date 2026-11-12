@@ -12,7 +12,7 @@
     titleEn: { y: 121.2344, size: 7.8, track: -20, leading: 9.36, maxWidth: 150 },
     rows: [
       { label: 'MOBILE',  key: 'mobile',  y: 86.5957 },
-      { label: 'TEL',     key: 'tel',     y: 75.333 },
+      { label: 'OFFICE',  key: 'tel',     y: 75.333 },
       { label: 'E-MAIL',  key: 'email',   y: 64.0703 },
       { label: 'ADDRESS', key: 'address', y: 52.8076, valueY: 53.1406, valueSize: 7.2 }
     ],
