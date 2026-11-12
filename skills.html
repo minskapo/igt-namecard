@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex, nofollow">
-<title>Claude 스킬 · 녹색전환연구소</title>
+<title>AI 스킬 · 녹색전환연구소</title>
 <link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/style.css?v=20261112a">
 </head>
@@ -19,7 +19,7 @@
     <nav class="nav" aria-label="도구 이동">
       <a href="index.html">명함 생성기</a>
       <a href="signature.html">메일 서명</a>
-      <a href="skills.html" aria-current="page">Claude 스킬</a>
+      <a href="skills.html" aria-current="page">AI 스킬</a>
     </nav>
   </div>
 </header>
@@ -27,9 +27,9 @@
 <section class="intro">
   <div class="intro-gradient" aria-hidden="true"></div>
   <div class="wrap intro-inner">
-    <span class="eyebrow">Claude 스킬</span>
-    <h1>Claude 스킬 내려받기</h1>
-    <p class="lead">명함과 메일 서명 업무를 Claude가 이 도구의 규칙대로<br class="br-md"> 처리하도록 스킬을 설치합니다.</p>
+    <span class="eyebrow">AI 스킬</span>
+    <h1>AI 스킬 내려받기</h1>
+    <p class="lead">Claude나 ChatGPT에 스킬을 설치하면, 명함과 메일 서명 업무를<br class="br-md"> 이 도구의 규칙대로 말로 요청할 수 있습니다.</p>
   </div>
 </section>
 
@@ -59,13 +59,23 @@
       </div>
     </div>
     </div>
+    <div class="sec-head" style="margin-top:56px"><h2>Claude에 설치하기</h2></div>
     <ol class="steps">
-      <li><b>내려받기</b><span>필요한 스킬의 ‘내려받기’를 눌러 ZIP 파일을 받습니다. 압축은 풀지 않습니다. 둘 다 설치해도 됩니다.</span></li>
+      <li><b>내려받기</b><span>위에서 필요한 스킬의 ZIP 파일을 받습니다. 압축은 풀지 않습니다.</span></li>
       <li><b>업로드</b><span><a href="https://claude.ai/customize/skills" target="_blank" rel="noopener">Claude 스킬 설정</a>(Customize › Skills)에서 <b>+</b> → <b>Create skill</b> → <b>Upload a skill</b>을 고르고 ZIP 파일을 올립니다.</span></li>
-      <li><b>켜기</b><span>스킬 목록에 생긴 <b>igt-namecard</b>, <b>igt-email-signature</b>를 켭니다. 개인 요금제는 Settings › Capabilities에서 ‘Code execution and file creation’(파일 생성)이 켜져 있어야 합니다.</span></li>
-      <li><b>사용하기</b><span>Claude에게 위 예시처럼 요청합니다. Google Sheets 커넥터를 연결해 두면 구성원 DB와 추적링크 시트 기록까지 대신 처리합니다.</span></li>
+      <li><b>켜기</b><span>스킬 목록에 생긴 스킬을 켭니다. 개인 요금제는 Settings › Capabilities에서 ‘Code execution and file creation’이 켜져 있어야 합니다.</span></li>
     </ol>
-    <p class="note">Claude Code에서는 ZIP을 풀어 <code>~/.claude/skills/</code> 아래에 넣으면 됩니다. GAM 일괄 적용 같은 관리자 작업용 스킬은 <a href="admin.html#skill">관리자 안내</a>에 따로 있습니다.</p>
+
+    <div class="sec-head" style="margin-top:56px"><h2>ChatGPT에 설치하기</h2></div>
+    <ol class="steps">
+      <li><b>내려받기</b><span>위에서 필요한 스킬의 ZIP 파일을 받습니다. 업로드할 때 ZIP이 올라가지 않으면 압축을 풀어 생긴 폴더를 올립니다.</span></li>
+      <li><b>업로드</b><span>ChatGPT 왼쪽 사이드바에서 <b>Plugins</b> → <b>Skills</b> 탭 → <b>Create</b> → <b>Upload from your computer</b>를 고르고 파일을 올립니다.</span></li>
+      <li><b>확인</b><span>ChatGPT가 올린 스킬을 검사합니다. ‘Needs Review’나 ‘Blocked’로 표시되면 조직 관리자에게 승인을 요청합니다.</span></li>
+    </ol>
+    <p class="note">ChatGPT 스킬은 Business·Enterprise·Edu 요금제에서 쓸 수 있고, Enterprise·Edu는 관리자가 먼저 켜야 합니다. 개인 요금제에서 메뉴가 보이지 않으면 Claude를 이용해 주세요. (<a href="https://help.openai.com/en/articles/20001066" target="_blank" rel="noopener">OpenAI 안내</a>)</p>
+
+    <div class="sec-head" style="margin-top:56px"><h2>사용하기</h2></div>
+    <p class="lead-s">위 예시처럼 평소 말로 요청하면, 요청에 맞는 스킬을 AI가 알아서 씁니다. Google Sheets를 연결해 두면 구성원 DB와 추적링크 시트 기록까지 대신 처리합니다. GAM 일괄 적용 같은 관리자 작업용 스킬은 <a href="admin.html#skill">관리자 안내</a>에 따로 있습니다.</p>
   </div>
 </main>
 
