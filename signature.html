@@ -37,7 +37,7 @@
 <section class="block flow">
   <div class="wrap">
     <div class="who">
-      <div><span class="eyebrow">기본</span><b>관리자가 한꺼번에 적용</b><p>모든 구성원의 Gmail 웹·앱 서명은 관리자가 GAM으로 한 번에 넣습니다. 구성원은 따로 할 일이 없습니다.</p><a class="more" href="#admin">관리자 일괄 적용</a></div>
+      <div><span class="eyebrow">기본</span><b>관리자가 한꺼번에 적용</b><p>모든 구성원의 Gmail 웹·앱 서명은 관리자가 GAM으로 한 번에 넣습니다. 국문·영문 서명을 골라 쓰거나 ‘--’ 줄을 없애려면 각자 <a href="#bilingual">한 번 설정</a>합니다.</p><a class="more" href="#admin">관리자 일괄 적용</a></div>
       <div><span class="eyebrow dark">개별</span><b>직접 넣어야 하는 경우</b><p>Outlook·Apple Mail 같은 다른 메일 프로그램을 쓰거나, 영문 서명을 하나 더 두고 싶을 때는 아래 도구에서 복사해 직접 붙여 넣습니다.</p><a class="more" href="#personal">개별 설치</a></div>
       <div><span class="eyebrow dark">신규</span><b>새 구성원이 들어오면</b><p>DB 시트에 한 줄을 넣고, 이 페이지에서 배포 파일을 받아 저장소에 올린 뒤 관리자가 그 사람만 적용합니다.</p><a class="more" href="#newbie">신규 구성원</a></div>
     </div>
@@ -141,11 +141,29 @@
       <li><b>권한 연결</b><span>설치 안내에 따라 <code>gam create project</code> → <code>gam oauth create</code> → <code>gam user 관리자@igt.or.kr check serviceaccount</code>를 차례로 실행합니다. 마지막 단계에서 나오는 주소로 관리 콘솔의 ‘도메인 전체 위임’을 승인하면, 구성원 서명을 바꿀 권한(Gmail settings)이 생깁니다.</span></li>
       <li><b>배포 파일 받기</b><span>위 ‘서명 만들기’에서 DB를 불러오고 <b>전체 선택</b> → <b>배포 파일 ZIP</b>을 받아 압축을 풉니다.</span></li>
       <li><b>이미지 올리기</b><span>ZIP 안 <code>저장소에_올릴_파일/assets</code> 폴더를 명함생성기 저장소(<code>minskapo/igt-namecard</code>) 맨 위에 그대로 덮어쓰고 커밋·push 합니다. 1~2분 뒤 ZIP 안 <code>이미지_주소_확인.txt</code>의 주소를 하나 열어 이미지가 보이면 준비가 끝난 것입니다.</span></li>
-      <li><b>일괄 적용</b><span>압축을 푼 폴더에서 <code>gam csv gam/signatures.csv gam user ~email signature file ~file html</code>을 실행합니다. 한 사람만 바꿀 때는 <code>gam user minski@igt.or.kr signature file gam/html/minski.html html</code>처럼 씁니다.</span></li>
+      <li><b>일괄 적용</b><span>압축을 푼 폴더에서 <code>gam csv gam/signatures.csv gam user '~email' signature file '~file' html</code>을 실행합니다. 맥 터미널(zsh)에서는 <code>~email</code>을 홈 폴더 경로로 읽어 오류가 나므로, 꼭 작은따옴표로 감싸 주세요. 한 사람만 바꿀 때는 <code>gam user minski@igt.or.kr signature file gam/html/minski.html html</code>처럼 씁니다.</span></li>
       <li><b>확인</b><span><code>gam user minski@igt.or.kr show signature</code>로 들어간 서명을 확인하고, 본인 Gmail에서 새 메일을 열어 서명이 붙는지 봅니다.</span></li>
     </ol>
     <p class="note"><b>추적 링크:</b> 서명 버튼에는 연구소 GA4 추적링크 시트 규칙대로 <code>utm_source=signature</code> · <code>utm_medium=email</code> · <code>utm_campaign=email_signature</code>가 붙고, <code>utm_content</code>에는 구성원 이메일 아이디, <code>utm_term</code>에는 누른 버튼(donate·newsletter·homepage·website·card)이 들어갑니다. GA4에서 세션 소스/매체 <code>signature / email</code>로 보면 메일 서명으로 들어온 방문이고, 콘텐츠·검색어로 사람별·버튼별로 나눠 볼 수 있습니다. LinkedIn 버튼은 외부 사이트라 추적 링크를 붙이지 않습니다.</p>
-    <p class="note">일괄 적용은 사람마다 서명 하나(DB의 ‘서명 언어’)만 넣습니다. 영문 서명을 함께 쓰려는 사람은 아래 개별 설치로 하나 더 추가합니다. 적용하면 기존 서명은 바뀌므로, 미리 공지해 주세요.</p>
+    <p class="note">일괄 적용은 사람마다 서명 하나(DB의 ‘서명 언어’)만 넣습니다. Gmail API가 계정마다 기본 서명 하나만 다루기 때문에, 이름 붙은 서명 여러 개와 ‘--’ 줄 설정은 관리자가 일괄로 바꿀 수 없습니다. 영문 서명을 함께 쓰거나 ‘--’ 줄을 없애려면 각자 아래 <a href="#bilingual">국문·영문 서명 함께 쓰기</a>를 따라 해 주세요. 적용하면 기존 서명은 바뀌므로, 미리 공지해 주세요.</p>
+  </div>
+</section>
+
+<section class="block" id="bilingual">
+  <div class="wrap">
+    <div class="sec-head"><h2>Gmail에서 국문·영문 서명 함께 쓰기</h2></div>
+    <p class="lead-s">서명 이름을 ‘IGT 국문’, ‘IGT 영문’으로 맞춰 두면, 메일을 쓸 때마다 둘 중 하나를 골라 넣을 수 있습니다. 서명 앞에 붙는 ‘--’ 줄도 같은 화면에서 없앱니다. 처음 한 번만 하면 되고, 3분 정도 걸립니다.</p>
+    <ol class="steps">
+      <li><b>영문 서명 복사</b><span>이 페이지 위 ‘서명 만들기’에서 본인을 고르고, 4단계 미리보기에서 <b>영문</b> 탭을 누른 뒤 <b>서명 복사</b>를 누릅니다. 관리자에게 받은 배포 파일이 있다면 <code>사람별_HTML/메일서명_이름_영문.html</code>을 브라우저로 열어 서명 전체를 복사해도 됩니다.</span></li>
+      <li><b>서명 설정 열기</b><span>Gmail 웹에서 설정(톱니바퀴) › <b>모든 설정 보기</b> › <b>기본설정</b> 탭을 열고 ‘서명’ 항목으로 내려갑니다.</span></li>
+      <li><b>국문 서명 이름 정하기</b><span>관리자가 넣은 국문 서명이 목록에 보이면, 연필 아이콘을 눌러 이름을 <b>IGT 국문</b>으로 바꿉니다. 목록에 국문 서명이 없으면 1단계에서 <b>국문</b> 탭으로 서명을 복사하고, <b>새로 만들기</b>로 ‘IGT 국문’을 만들어 붙여 넣습니다.</span></li>
+      <li><b>영문 서명 추가</b><span><b>새로 만들기</b>를 누르고 이름을 <b>IGT 영문</b>으로 적은 뒤, 오른쪽 입력 칸에 1단계에서 복사한 영문 서명을 붙여 넣습니다.</span></li>
+      <li><b>기본 서명 고르기</b><span>바로 아래 ‘서명 기본값’에서 <b>새 이메일용</b>과 <b>답장/전달용</b>을 모두 ‘IGT 국문’(영문을 주로 쓰면 ‘IGT 영문’)으로 정합니다.</span></li>
+      <li><b>‘--’ 줄 없애기</b><span>같은 화면의 <b>답장에서 인용된 텍스트 앞에 이 서명을 삽입하고 그 앞에 있는 ‘--’ 행을 삭제합니다</b>(영문 화면: <i>Insert signature before quoted text in replies and remove the "--" line that precedes it</i>)에 체크합니다. 체크하면 답장할 때 서명이 원문 인용 위에 붙고, 서명 앞의 ‘--’ 줄도 사라집니다.</span></li>
+      <li><b>저장</b><span>화면 맨 아래 <b>변경사항 저장</b>을 누릅니다. 이 버튼을 누르지 않으면 바꾼 내용이 모두 사라집니다.</span></li>
+      <li><b>메일 쓸 때 고르기</b><span>새 메일 작성 창 아래쪽 도구 막대에서 <b>펜 아이콘(서명 삽입)</b>을 누르고, ‘IGT 국문’이나 ‘IGT 영문’을 고르면 서명이 바뀝니다.</span></li>
+    </ol>
+    <p class="note">관리자가 나중에 서명을 다시 일괄 적용하면 기본 서명이 새 내용으로 바뀝니다. 다시 적용했다는 공지를 받으면 서명 목록을 열어 ‘IGT 국문’, ‘IGT 영문’이 그대로 있는지 한 번 확인해 주세요. Gmail 휴대폰 앱에서는 웹에서 정한 기본 서명이 붙습니다.</p>
   </div>
 </section>
 
@@ -169,7 +187,7 @@
     <h2>직접 서명을 넣어야 할 때</h2>
     <p class="band-lead">‘서명 만들기’에서 본인을 고른 뒤 <b>서명 복사</b>를 누르고, 쓰는 메일 프로그램의 서명 칸에 붙여 넣습니다.</p>
     <div class="clients">
-      <div><b>Gmail 웹 (영문 서명 추가)</b><span>설정(톱니바퀴) › 모든 설정 보기 › 기본설정 › 서명 › <b>새로 만들기</b> → 붙여넣기. 아래 ‘서명 기본값’에서 새 메일·답장에 쓸 서명을 고르고 맨 아래 <b>변경사항 저장</b>을 누릅니다.</span></div>
+      <div><b>Gmail 웹</b><span>설정(톱니바퀴) › 모든 설정 보기 › 기본설정 › 서명 › <b>새로 만들기</b> → 붙여넣기. 아래 ‘서명 기본값’에서 새 메일·답장에 쓸 서명을 고르고 맨 아래 <b>변경사항 저장</b>을 누릅니다. 국문·영문을 함께 쓰는 방법과 ‘--’ 줄을 없애는 방법은 <a href="#bilingual">위 안내</a>를 봐 주세요.</span></div>
       <div><b>Gmail 앱 (휴대폰)</b><span>최신 Gmail 앱은 웹 서명을 가져와 씁니다. 앱 설정 › 계정 › 서명에서 웹 서명이 골라져 있는지 확인하고, ‘모바일 서명’(글자만 쓰는 서명)이 켜져 있으면 꺼 둡니다. 앱이 오래된 버전이면 업데이트해 주세요.</span></div>
       <div><b>Outlook (Windows·Mac·웹)</b><span>설정 › 메일 › 서명(새 Outlook은 계정 › 서명) › 새 서명 → 붙여넣기 → 새 메일·회신 기본값 지정. 이미지가 안 보이면 ‘HTML 내려받기’ 파일을 브라우저로 열어 서명 부분을 복사해 다시 붙입니다.</span></div>
       <div><b>Apple Mail (Mac)</b><span>설정 › 서명 › 계정 선택 › <b>+</b> → ‘항상 기본 메시지 서체와 일치’를 끄고 붙여넣기. 붙인 직후 이미지가 회색으로 보여도 보내는 메일에는 정상으로 들어갑니다.</span></div>
@@ -200,6 +218,8 @@
       <details><summary>서명 이미지가 엑스(X)나 빈칸으로 보여요</summary><p>이미지가 저장소에 아직 안 올라갔거나 push 직후일 수 있습니다. ‘서명 만들기’ 미리보기 아래 상태를 확인하고, ‘이미지 준비 안 됨’이면 관리자 4단계를 다시 해 주세요. 받는 사람 메일 프로그램이 외부 이미지를 막아 둔 경우에는 ‘이미지 표시’를 눌러야 보입니다.</p></details>
       <details><summary>바꾼 내용이 서명에 반영되지 않아요</summary><p>이미지만 다시 올리고 서명을 다시 적용하지 않으면 예전 주소가 남아 있습니다. 배포 파일을 새로 받아 다시 적용해 주세요. Gmail은 이미지를 한동안 저장해 두므로, 주소가 같은 상태로는 바로 바뀌지 않을 수 있습니다.</p></details>
       <details><summary>서명이 두 번 붙거나 휴대폰에서 다른 서명이 붙어요</summary><p>Gmail 앱의 ‘모바일 서명’, Outlook·Apple Mail의 서명이 함께 켜져 있는지 확인하세요. Gmail로 보내는 메일에는 Gmail 서명 하나만 켜 두면 됩니다.</p></details>
+      <details><summary>서명 위에 ‘--’ 줄이 붙어요</summary><p>Gmail이 서명 앞에 자동으로 넣는 구분선입니다. 설정 › 모든 설정 보기 › 기본설정 › 서명에서 ‘답장에서 인용된 텍스트 앞에 이 서명을 삽입하고 그 앞에 있는 ‘--’ 행을 삭제합니다’에 체크하고 <b>변경사항 저장</b>을 누르면 사라집니다. 이 설정은 관리자가 일괄로 바꿀 수 없어서, 각자 한 번씩 해야 합니다. 자세한 순서는 <a href="#bilingual">국문·영문 서명 함께 쓰기</a> 6단계에 있습니다.</p></details>
+      <details><summary>국문·영문 서명을 골라 쓰고 싶어요</summary><p><a href="#bilingual">국문·영문 서명 함께 쓰기</a>를 따라 ‘IGT 국문’, ‘IGT 영문’ 두 서명을 만들어 두면, 메일 작성 창의 펜 아이콘에서 고를 수 있습니다.</p></details>
       <details><summary>다크모드에서 서명이 하얀 상자로 보여요</summary><p>의도된 모습입니다. 서명 전체를 이미지로 만들어 다크모드에서도 원래 색이 유지되도록 했습니다.</p></details>
       <details><summary>버튼을 누르면 google.com을 거쳐 열려요</summary><p>Gmail이 받은 메일의 링크를 안전 확인 주소로 감싸는 기능입니다. 실제 이동하는 주소는 그대로이며, 서명에서 뺄 수 없습니다.</p></details>
       <details><summary>이름이나 직함이 잘리거나 작게 나와요</summary><p>서명 폭(600px)을 넘는 글자는 도구가 조금씩 줄여 맞추고, 그래도 넘으면 미리보기 아래에 경고를 띄웁니다. DB의 영문 직함 줄을 짧게 고친 뒤 다시 만들어 주세요.</p></details>
