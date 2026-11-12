@@ -10,7 +10,7 @@
     range: 'A1:Z500',
     domain: 'igt.or.kr',
     // 구성원 셀프 반영용 Apps Script 웹앱 주소 (tools/sig-self.gs 배포 후 넣는다)
-    selfUrl: ''
+    selfUrl: 'https://script.google.com/macros/s/AKfycbxj53QktpO_V2Ax1cRVgCdI6-x8a38uyqAGsji8dAdQa6GLXfppRwAmId_1J6NIbPVZ6A/exec'
   };
   const SCOPE = 'https://www.googleapis.com/auth/spreadsheets.readonly';
   let gsi = null, token = null, tokenExp = 0;
