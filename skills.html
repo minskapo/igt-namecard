@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Claude 스킬 · 녹색전환연구소</title>
+<link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="css/style.css?v=20261112a">
+</head>
+<body>
+<a class="skip" href="#skills">본문으로 건너뛰기</a>
+
+<header class="site">
+  <div class="wrap navrow">
+    <a class="logo" href="index.html" aria-label="녹색전환연구소 디자인 산출물 통합도구 처음으로">
+      <span class="brand"><b>녹색전환연구소</b> 디자인 산출물 통합도구</span>
+    </a>
+    <nav class="nav" aria-label="도구 이동">
+      <a href="index.html">명함 생성기</a>
+      <a href="signature.html">메일 서명</a>
+      <a href="skills.html" aria-current="page">Claude 스킬</a>
+    </nav>
+  </div>
+</header>
+
+<section class="intro">
+  <div class="intro-gradient" aria-hidden="true"></div>
+  <div class="wrap intro-inner">
+    <span class="eyebrow">Claude 스킬</span>
+    <h1>Claude 스킬 내려받기</h1>
+    <p class="lead">명함과 메일 서명 업무를 Claude가 이 도구의 규칙대로<br class="br-md"> 처리하도록 스킬을 설치합니다.</p>
+  </div>
+</section>
+
+<main id="skills" class="block">
+  <div class="wrap">
+    <div class="skill-grid">
+    <div class="skill-card">
+      <div class="skill-info">
+        <span class="eyebrow">igt-namecard</span>
+        <h3 class="skill-title">명함 스킬</h3>
+        <p>명함 내용 규칙, QR 추적링크, 추적링크 시트 기록, 강프린팅 발주 메시지 초안까지 담았습니다. 구성원 DB 시트를 기준으로 명함을 만듭니다.</p>
+        <p class="skill-ask">이렇게 말하면 됩니다: “신규 입사자 ○○○ 명함 만들어줘”</p>
+        <div class="actions">
+          <a class="btn primary" href="skill/igt-namecard.zip?v=20261112" download="igt-namecard.zip">명함 스킬 내려받기 (ZIP)</a>
+        </div>
+      </div>
+    </div>
+    <div class="skill-card">
+      <div class="skill-info">
+        <span class="eyebrow">igt-email-signature</span>
+        <h3 class="skill-title">메일 서명 스킬</h3>
+        <p>확정된 서명 디자인, 구성원별 UTM 규칙, 서명 이미지 올리기, 추적링크 시트 기록, GAM 일괄 적용과 개별 설치, 문제 해결 방법을 담았습니다.</p>
+        <p class="skill-ask">이렇게 말하면 됩니다: “○○○ 메일 서명 만들어서 적용 준비해줘”</p>
+        <div class="actions">
+          <a class="btn primary" href="skill/igt-email-signature.zip?v=20261112" download="igt-email-signature.zip">메일 서명 스킬 내려받기 (ZIP)</a>
+        </div>
+      </div>
+    </div>
+    </div>
+    <ol class="steps">
+      <li><b>내려받기</b><span>필요한 스킬의 ‘내려받기’를 눌러 ZIP 파일을 받습니다. 압축은 풀지 않습니다. 둘 다 설치해도 됩니다.</span></li>
+      <li><b>업로드</b><span><a href="https://claude.ai/customize/skills" target="_blank" rel="noopener">Claude 스킬 설정</a>(Customize › Skills)에서 <b>+</b> → <b>Create skill</b> → <b>Upload a skill</b>을 고르고 ZIP 파일을 올립니다.</span></li>
+      <li><b>켜기</b><span>스킬 목록에 생긴 <b>igt-namecard</b>, <b>igt-email-signature</b>를 켭니다. 개인 요금제는 Settings › Capabilities에서 ‘Code execution and file creation’(파일 생성)이 켜져 있어야 합니다.</span></li>
+      <li><b>사용하기</b><span>Claude에게 위 예시처럼 요청합니다. Google Sheets 커넥터를 연결해 두면 구성원 DB와 추적링크 시트 기록까지 대신 처리합니다.</span></li>
+    </ol>
+    <p class="note">Claude Code에서는 ZIP을 풀어 <code>~/.claude/skills/</code> 아래에 넣으면 됩니다. 스킬이 바뀌면 이곳 파일도 함께 갱신합니다.</p>
+  </div>
+</main>
+
+<footer class="site-foot">
+  <div class="wrap">
+    <p class="foot-org">사단법인 녹색전환연구소</p>
+    <p>TEL 02-2135-1148 | E-MAIL office@igt.or.kr</p>
+    <p>주소 (04506) 서울특별시 중구 중림로7길 4, 2층</p>
+    <p class="foot-meta">서체: Asta Sans (SIL OFL) · 내부 업무용 페이지</p>
+  </div>
+</footer>
+
+</body>
+</html>

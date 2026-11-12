@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>명함 생성기 · 녹색전환연구소</title>
 <link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=20261111b">
+<link rel="stylesheet" href="css/style.css?v=20261112a">
 </head>
 <body>
 <a class="skip" href="#make">본문으로 건너뛰기</a>
@@ -17,11 +17,9 @@
       <span class="brand"><b>녹색전환연구소</b> 디자인 산출물 통합도구</span>
     </a>
     <nav class="nav" aria-label="도구 이동">
-      <a href="index.html#make" aria-current="page">명함 생성기</a>
-      <a href="index.html#guide-order">인쇄 주문</a>
-      <a href="index.html#guide-sheet">추적링크</a>
+      <a href="index.html" aria-current="page">명함 생성기</a>
       <a href="signature.html">메일 서명</a>
-      <a href="index.html#skill">Claude 스킬</a>
+      <a href="skills.html">Claude 스킬</a>
     </nav>
   </div>
 </header>
@@ -164,31 +162,6 @@
   </div>
 </section>
 
-<section class="block skill" id="skill">
-  <div class="wrap">
-    <div class="sec-head">
-      <h2>Claude 명함 스킬 설치</h2>
-      <span class="sec-sub">Claude에게 “○○○ 명함 만들어줘”라고 말하면 이 페이지의 흐름대로 처리합니다.</span>
-    </div>
-    <div class="skill-card">
-      <div class="skill-info">
-        <span class="eyebrow">igt-namecard</span>
-        <p>명함 내용 규칙, QR 추적링크, 추적링크 시트 기록, 강프린팅 발주 메시지 초안까지 담은 Claude 스킬입니다. 연구소 구성원 누구나 설치해 쓸 수 있습니다.</p>
-        <div class="actions">
-          <a class="btn primary" href="skill/igt-namecard.zip?v=20261111" download="igt-namecard.zip">스킬 파일 내려받기 (ZIP)</a>
-          <a class="btn ghost" href="https://claude.ai/customize/skills" target="_blank" rel="noopener">Claude 스킬 설정 열기</a>
-        </div>
-      </div>
-    </div>
-    <ol class="steps">
-      <li><b>내려받기</b><span>위 ‘스킬 파일 내려받기’를 눌러 <code>igt-namecard.zip</code>을 받습니다. 압축은 풀지 않습니다.</span></li>
-      <li><b>업로드</b><span>‘Claude 스킬 설정 열기’(Customize › Skills)에서 <b>+</b> → <b>Create skill</b> → <b>Upload a skill</b>을 고르고 ZIP 파일을 올립니다.</span></li>
-      <li><b>켜기</b><span>스킬 목록에 생긴 <b>igt-namecard</b>를 켭니다. 개인 요금제는 Settings › Capabilities에서 ‘Code execution and file creation’(파일 생성)이 켜져 있어야 합니다.</span></li>
-      <li><b>사용하기</b><span>Claude에게 “신규 입사자 ○○○ 명함 만들어줘”처럼 요청합니다. Google Sheets 커넥터를 연결해 두면 추적링크 시트 기록까지 대신 처리합니다.</span></li>
-    </ol>
-    <p class="note">Claude Code에서는 ZIP을 풀어 <code>~/.claude/skills/igt-namecard/</code>에 넣으면 됩니다. 스킬이 바뀌면 이곳 파일도 함께 갱신합니다.</p>
-  </div>
-</section>
 
 <footer class="site-foot">
   <div class="wrap">

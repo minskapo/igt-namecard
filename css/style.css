@@ -182,3 +182,10 @@ code { background: var(--chip); border-radius: 6px; padding: 2px 6px; font-size:
 .logo .brand b { font-weight: 700; margin-right: 4px; }
 .nav a[aria-current="page"] { text-decoration: underline; text-decoration-color: var(--green); text-decoration-thickness: 3px; text-underline-offset: 6px; }
 @media (max-width: 1100px) { .nav { gap: 20px; } .nav a { font-size: 15px; } }
+
+/* Claude 스킬 페이지 */
+.skill-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.skill-title { margin: 12px 0 0; font-size: 22px; font-weight: 700; letter-spacing: -0.2px; }
+.skill-ask { color: var(--muted) !important; font-size: 15px; }
+#skills { padding-top: 10px; }
+@media (max-width: 960px) { .skill-grid { grid-template-columns: 1fr; } }
