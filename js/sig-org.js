@@ -2,7 +2,7 @@
 (function (root) {
   const D = root.SigOrgDef || require('./sig-org-def.js');
   const SITE = 'https://minskapo.github.io/igt-namecard/';
-  const VER = '20261116a';
+  const VER = '20261116b';
   const W = 602, H = 267, TOP = 211, BOT = 249, R3 = [109, 133];
   const UTM = { source: 'signature', medium: 'email', campaign: 'email_signature' };
   const utm = (url, id, term) => url + (url.includes('?') ? '&' : '?') +
@@ -81,6 +81,11 @@
 
   async function render() {
     layout = layout || await fetch('assets/email/sig/org/layout.json?v=' + VER).then((r) => r.json());
+    // 후원 메일은 국문만 있다
+    const hasEn = !!find(state.key, 'en');
+    if (!hasEn) state.lang = 'kr';
+    const enBtn = box.querySelector('[data-lang="en"]');
+    enBtn.disabled = !hasEn; enBtn.title = hasEn ? '' : '후원 메일은 국문 서명만 씁니다.';
     const o = find(state.key, state.lang);
     document.getElementById('orgPreview').innerHTML = html(o, layout, '');
     document.getElementById('orgAddr').textContent = o.email;
