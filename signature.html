@@ -7,7 +7,7 @@
 <title>메일 서명 · 녹색전환연구소</title>
 <link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="stylesheet" href="css/style.css?v=20261112b">
-<link rel="stylesheet" href="css/sig.css?v=20261112c">
+<link rel="stylesheet" href="css/sig.css?v=20261116a">
 </head>
 <body>
 <a class="skip" href="#make">본문으로 건너뛰기</a>
@@ -39,6 +39,7 @@
     <div class="who">
       <div><span class="eyebrow">모두</span><b>처음 한 번 Gmail 설정</b><p>서명 앞 ‘--’ 줄을 없애고, 필요하면 영문 서명을 추가합니다. 관리자가 일괄로 바꿀 수 없는 설정입니다.</p><a class="more" href="#bilingual">Gmail 서명 정리</a></div>
       <div><span class="eyebrow dark">필요할 때</span><b>직함·LinkedIn 바꾸기</b><p>다른 직책명을 쓰거나 영문 서명의 LinkedIn 버튼을 내 프로필로 연결하고 싶으면, 아래 도구에서 직접 고쳐 반영합니다.</p><a class="more" href="#self">직함·LinkedIn 바꾸기</a></div>
+      <div><span class="eyebrow dark">담당자</span><b>기관 메일 서명</b><p>연구소 공식 메일(office@)과 후원 전용 메일(donate@)에 쓰는 서명을 복사해 넣습니다.</p><a class="more" href="#org">기관 메일 서명</a></div>
       <div><span class="eyebrow dark">필요할 때</span><b>다른 메일 프로그램</b><p>Outlook·Apple Mail처럼 Gmail 밖에서 메일을 쓰면, 서명을 복사해 직접 붙여 넣습니다.</p><a class="more" href="#personal">직접 넣기</a></div>
     </div>
   </div>
@@ -177,6 +178,38 @@
   </div>
 </section>
 
+<section class="block" id="org">
+  <div class="wrap">
+    <div class="sec-head">
+      <h2>기관 메일 서명</h2>
+      <span class="sec-sub">연구소 공식 메일(office@)과 후원 전용 메일(donate@)에 쓰는 서명입니다.</span>
+    </div>
+    <div class="panel preview" id="orgSigs">
+      <div class="otabs" role="group" aria-label="기관 메일 고르기">
+        <button type="button" class="otab" data-key="office" aria-pressed="true">공식 메일 office@</button>
+        <button type="button" class="otab" data-key="donate" aria-pressed="false">후원 메일 donate@</button>
+        <span class="otab-sep" aria-hidden="true"></span>
+        <button type="button" class="otab" data-lang="kr" aria-pressed="true">국문</button>
+        <button type="button" class="otab" data-lang="en" aria-pressed="false">영문</button>
+      </div>
+      <div class="sigbox"><div id="orgPreview" class="orgpv"><p class="empty">서명을 불러오는 중입니다.</p></div></div>
+      <p class="muted">넣을 계정: <b id="orgAddr">office@igt.or.kr</b></p>
+      <div class="actions">
+        <button type="button" id="orgCopy" class="primary">서명 복사</button>
+        <button type="button" id="orgText" class="ghost">글자 서명 복사</button>
+        <button type="button" id="orgHtml" class="ghost">HTML 내려받기</button>
+        <button type="button" id="orgGam" class="ghost">관리자: GAM용 파일</button>
+      </div>
+      <p id="orgStatus" class="muted" role="status"></p>
+    </div>
+    <ol class="steps">
+      <li><b>Gmail에 넣기</b><span>해당 계정(또는 그 주소로 보내기가 설정된 계정)으로 Gmail에 들어가 설정 › 모든 설정 보기 › 기본설정 › 서명 › <b>새로 만들기</b>를 누르고, 위 <b>서명 복사</b> 내용을 붙여 넣습니다. ‘새 이메일’·‘답장/전달’ 기본값을 이 서명으로 지정하고 맨 아래 <b>변경사항 저장</b>을 누릅니다.</span></li>
+      <li><b>보내기 주소로 쓸 때</b><span>개인 계정에서 ‘다른 주소에서 메일 보내기’로 office@·donate@를 쓰는 경우, 서명 기본값의 ‘보낸 사람’ 칸을 그 주소로 바꾼 뒤 기본값을 지정합니다.</span></li>
+      <li><b>추적 링크</b><span>버튼과 홈페이지 링크에는 <code>utm_content=office</code> 또는 <code>donate</code>가 붙어 GA4에서 기관 서명 유입을 따로 볼 수 있습니다. 후원회원 가입·마이페이지(돈어스)와 LinkedIn 링크에는 붙이지 않습니다.</span></li>
+    </ol>
+  </div>
+</section>
+
 <section class="block" id="trouble">
   <div class="wrap">
     <div class="sec-head"><h2>자주 묻는 질문</h2></div>
@@ -208,5 +241,7 @@
 <script src="js/sig-core.js?v=20261112g"></script>
 <script src="js/sig-render.js?v=20261112b"></script>
 <script src="js/sig-app.js?v=20261112f"></script>
+<script src="js/sig-org-def.js?v=20261116a"></script>
+<script src="js/sig-org.js?v=20261116a"></script>
 </body>
 </html>
