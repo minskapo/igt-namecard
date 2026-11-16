@@ -34,7 +34,8 @@
 .faq summary::after { content: "+"; color: var(--muted); font-weight: 500; }
 .faq details[open] summary::after { content: "–"; }
 .faq p { margin: 0 0 18px; color: #45474d; line-height: 1.7; max-width: 860px; }
-#trouble { padding-top: 90px; }
+.band + .block { padding-top: 90px; }
+@media (max-width: 640px) { .band + .block { padding-top: 64px; } }
 #newbie { padding-top: 90px; }
 @media (max-width: 640px) { #newbie { padding-top: 64px; } }
 

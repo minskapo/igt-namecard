@@ -2,7 +2,7 @@
 (function (root) {
   const D = root.SigOrgDef || require('./sig-org-def.js');
   const SITE = 'https://minskapo.github.io/igt-namecard/';
-  const VER = '20261116b';
+  const VER = '20261116c';
   const W = 602, H = 267, TOP = 211, BOT = 249, R3 = [109, 133];
   const UTM = { source: 'signature', medium: 'email', campaign: 'email_signature' };
   const utm = (url, id, term) => url + (url.includes('?') ? '&' : '?') +
