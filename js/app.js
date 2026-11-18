@@ -154,6 +154,7 @@
     $('#count').textContent = n ? `${n}명 선택됨` : '';
     ['#dlAi', '#dlPng'].forEach((k) => ($(k).disabled = !n));
     $('#dlAi').textContent = n > 1 ? `인쇄발주용 AI (${n}명 ZIP)` : '인쇄발주용 AI';
+    renderOrder();
   }
 
   /* ---------- 3. 편집 ---------- */
@@ -292,9 +293,60 @@
         fname = `녹색전환연구소_명함_${who}_${LABEL[kind]}_${ymd()}.zip`;
         saveBlob(await zip.generateAsync({ type: 'blob', compression: 'DEFLATE' }), fname);
       }
-      status(`${fname} 파일을 내려받았습니다.${kind === 'ai' ? ' 성원애드피아 주문 방법은 아래 인쇄 주문 가이드를 참고하세요.' : ''}`);
+      status(`${fname} 파일을 내려받았습니다.${kind === 'ai' ? ' 강프린팅 주문은 아래 인쇄 주문 가이드의 ‘주문 메일 만들기’를 쓰면 됩니다.' : ''}`);
     } catch (err) { status('파일 생성에 실패했습니다: ' + err.message, true); console.error(err); }
     finally { updateCount(); }
+  }
+
+
+  /* ---------- 강프린팅 주문 메일 ---------- */
+  const OM = window.OrderMail;
+  function orderSel() { return state.people.filter((p) => p.selected); }
+  function orderQty() { const v = parseInt(($('#orderQty') || {}).value, 10); return v > 0 ? v : 0; }
+  function orderStatus(msg, err) { const el = $('#orderStatus'); el.textContent = msg; el.style.color = err ? '#b42318' : ''; }
+  function renderOrder() {
+    const OM = window.OrderMail;
+    if (!OM || !$('#orderMail')) return;
+    const sel = orderSel();
+    $('#orderWho').textContent = sel.length ? `선택한 사람: ${sel.map((p) => p.name || '이름 없음').join(', ')} (${sel.length}명)` : '선택한 사람: 없음 (명함 만들기 ②에서 체크)';
+    $('#orderMail').disabled = $('#orderCopy').disabled = !sel.length;
+    $('#orderText').textContent = OM.compose({ people: sel.length ? sel : [{ name: '○○○' }], qty: orderQty(), sender: null, attachBiz: true }).text;
+  }
+  if (OM && $('#orderMail')) {
+    $('#orderQty').addEventListener('input', renderOrder);
+    $('#orderCopy').addEventListener('click', async () => {
+      const m = OM.compose({ people: orderSel(), qty: orderQty(), sender: null, attachBiz: true });
+      try { await navigator.clipboard.writeText(`받는 사람: ${m.to}\n제목: ${m.subject}\n\n${m.text}`); orderStatus('메일 문안을 복사했습니다. 인쇄용 AI와 사업자등록증은 직접 붙여 주세요.'); }
+      catch (e) { window.prompt('아래 내용을 복사하세요.', m.text); }
+    });
+    $('#orderMail').addEventListener('click', async () => {
+      const sel = orderSel();
+      if (!sel.length) return;
+      if (!orderQty() && !confirm('1인당 수량이 비어 있습니다. 수량 없이 메일을 만들까요? (Gmail에서 고쳐 쓸 수 있습니다)')) return;
+      const btn = $('#orderMail'); btn.disabled = true;
+      // 로그인 창은 클릭 직후에 띄워야 팝업 차단을 피한다
+      const login = OM.login().catch((e) => { throw e; });
+      try {
+        orderStatus('Google 계정으로 로그인하는 중입니다…');
+        await login;
+        for (const p of sel) {
+          if (!validEmail(p.email)) throw new Error(`${p.name || '이름 없음'}: 이메일이 없어 QR 추적 링크를 만들 수 없습니다.`);
+          orderStatus(`QR 단축링크를 확인하는 중입니다… (${p.name})`);
+          await ensureLink(p);
+        }
+        const a = await loadAssets();
+        const files = [];
+        for (const [i, p] of sel.entries()) {
+          orderStatus(`인쇄용 AI를 만드는 중입니다… (${i + 1}/${sel.length})`);
+          const [f] = await filesFor(p, 'ai', a);
+          files.push({ name: f.name.replace(/(\.ai)$/, `_${ymd()}$1`), data: f.data, type: 'application/postscript' });
+        }
+        const r = await OM.draft({ people: sel, qty: orderQty(), files, onStep: orderStatus });
+        window.open(r.url, '_blank', 'noopener');
+        orderStatus(`Gmail 임시보관함에 주문 메일을 만들었습니다${r.attachedBiz ? '' : ' (사업자등록증은 권한이 없어 붙이지 못했습니다. 직접 첨부해 주세요)'}. 새 탭에서 확인한 뒤 보내 주세요. 탭이 열리지 않으면 Gmail 임시보관함을 열어 주세요.`, !r.attachedBiz);
+      } catch (err) { orderStatus('주문 메일을 만들지 못했습니다: ' + err.message, true); console.error(err); }
+      finally { btn.disabled = !orderSel().length; }
+    });
   }
 
   /* ---------- 링크 복사 · 시트 행 복사 ---------- */
@@ -319,5 +371,6 @@
   function esc(s) { return String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
   function status(msg, err) { const el = $('#status'); el.textContent = msg; el.style.color = err ? '#b42318' : ''; }
 
+  renderOrder();
   preview();
 })();
