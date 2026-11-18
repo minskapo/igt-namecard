@@ -168,7 +168,13 @@
       r = await send([{ name: zname, type: 'application/zip', data: zdata }, ...(biz ? [biz] : [])]);
     }
     if ([0, 400, 413].includes(r.status)) throw new Error('메일을 만들지 못했습니다. 첨부파일이 너무 크거나 연결이 끊겼습니다. 사람을 나눠서 다시 만들어 주세요.');
-    if (r.status === 403) throw new Error('Gmail 임시보관함 권한이 없습니다. 로그인 창에서 권한을 모두 허용해 주세요.');
+    if (r.status === 403) {
+      const j = await r.json().catch(() => ({}));
+      const msg = (j.error && j.error.message) || '';
+      if (/has not been used|is disabled|accessNotConfigured/i.test(msg + JSON.stringify(j)))
+        throw new Error('연구소 Google Cloud 프로젝트에서 Gmail API가 아직 켜져 있지 않습니다. 관리자(김민석)에게 알려 주세요.');
+      throw new Error('Gmail 임시보관함 권한이 없습니다. 로그인 창에서 권한을 모두 허용해 주세요. (' + msg.slice(0, 120) + ')');
+    }
     if (!r.ok) throw new Error('메일을 만들지 못했습니다 (' + r.status + ').');
     const d = await r.json();
     const id = d.message && d.message.id;
