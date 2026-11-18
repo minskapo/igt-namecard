@@ -302,6 +302,7 @@
   /* ---------- 강프린팅 주문 메일 ---------- */
   const OM = window.OrderMail;
   function orderSel() { return state.people.filter((p) => p.selected); }
+  function orderShip() { const el = document.querySelector('input[name=orderShip]:checked'); return el ? el.value : '택배'; }
   function orderQty() { const v = parseInt(($('#orderQty') || {}).value, 10); return v > 0 ? v : 0; }
   function orderStatus(msg, err) { const el = $('#orderStatus'); el.textContent = msg; el.style.color = err ? '#b42318' : ''; }
   function renderOrder() {
@@ -310,12 +311,13 @@
     const sel = orderSel();
     $('#orderWho').textContent = sel.length ? `선택한 사람: ${sel.map((p) => p.name || '이름 없음').join(', ')} (${sel.length}명)` : '선택한 사람: 없음 (명함 만들기 ②에서 체크)';
     $('#orderMail').disabled = $('#orderCopy').disabled = !sel.length;
-    $('#orderText').textContent = OM.compose({ people: sel.length ? sel : [{ name: '○○○' }], qty: orderQty(), sender: null, attachBiz: true }).text;
+    $('#orderText').textContent = OM.compose({ people: sel.length ? sel : [{ name: '○○○' }], qty: orderQty(), delivery: orderShip(), sender: null, attachBiz: true }).text;
   }
   if (OM && $('#orderMail')) {
     $('#orderQty').addEventListener('input', renderOrder);
+    document.querySelectorAll('input[name=orderShip]').forEach((r) => r.addEventListener('change', renderOrder));
     $('#orderCopy').addEventListener('click', async () => {
-      const m = OM.compose({ people: orderSel(), qty: orderQty(), sender: null, attachBiz: true });
+      const m = OM.compose({ people: orderSel(), qty: orderQty(), delivery: orderShip(), sender: null, attachBiz: true });
       try { await navigator.clipboard.writeText(`받는 사람: ${m.to}\n제목: ${m.subject}\n\n${m.text}`); orderStatus('메일 문안을 복사했습니다. 인쇄용 AI와 사업자등록증은 직접 붙여 주세요.'); }
       catch (e) { window.prompt('아래 내용을 복사하세요.', m.text); }
     });
@@ -341,7 +343,7 @@
           const [f] = await filesFor(p, 'ai', a);
           files.push({ name: f.name.replace(/(\.ai)$/, `_${ymd()}$1`), data: f.data, type: 'application/postscript' });
         }
-        const r = await OM.draft({ people: sel, qty: orderQty(), files, onStep: orderStatus });
+        const r = await OM.draft({ people: sel, qty: orderQty(), delivery: orderShip(), files, onStep: orderStatus });
         window.open(r.url, '_blank', 'noopener');
         orderStatus(`Gmail 임시보관함에 주문 메일을 만들었습니다${r.attachedBiz ? '' : ' (사업자등록증은 권한이 없어 붙이지 못했습니다. 직접 첨부해 주세요)'}. 새 탭에서 확인한 뒤 보내 주세요. 탭이 열리지 않으면 Gmail 임시보관함을 열어 주세요.`, !r.attachedBiz);
       } catch (err) { orderStatus('주문 메일을 만들지 못했습니다: ' + err.message, true); console.error(err); }

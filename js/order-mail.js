@@ -22,8 +22,9 @@
 
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 
-  // 메일 문안. people: [{name}], qty: 1인당 수량, sender: {name, email}, attachBiz: 사업자등록증 첨부 여부
-  function compose({ people, qty, sender, attachBiz }) {
+  // 메일 문안. people: [{name}], qty: 1인당 수량, sender: {name, email}, attachBiz: 사업자등록증 첨부 여부, delivery: '택배' | '퀵'
+  function compose({ people, qty, sender, attachBiz, delivery }) {
+    const ship = delivery === '퀵' ? '선불 퀵으로' : '택배로';
     const n = people.length, names = people.map((p) => p.name).filter(Boolean);
     const who = n === 1 ? `${names[0]} 1명` : `${n}명`;
     const subject = `녹색전환연구소 / 명함 인쇄 주문드립니다 (${who})`;
@@ -38,7 +39,7 @@
       ['수량', qty ? `1인당 ${qty.toLocaleString('ko-KR')}매${n > 1 ? total : ''}` : '1인당 ○매']
     ];
     const pay = [
-      [`${ORDER.address}로 택배 또는 퀵으로 보내주시면 됩니다.`],
+      [`${ship} 보내주시면 됩니다.`, [`받는 곳: ${ORDER.address}`]],
       ['배송비 포함 세금계산서를 보내주시면 계좌이체하겠습니다.', [
         `${ORDER.org}${attachBiz ? ' (사업자등록증 첨부)' : ''}`,
         `사업자등록번호: ${ORDER.bizNo}`,
@@ -136,13 +137,13 @@
   }
 
   // 임시보관함 메일 만들기 → {url, attachedBiz, sender}
-  async function draft({ people, qty, files, onStep }) {
+  async function draft({ people, qty, delivery, files, onStep }) {
     const step = onStep || (() => {});
     step('Google 계정을 확인하는 중입니다…');
     const sender = await me();
     step('사업자등록증을 불러오는 중입니다…');
     const biz = await bizFile().catch(() => null);
-    const m = compose({ people, qty, sender, attachBiz: !!biz });
+    const m = compose({ people, qty, sender, attachBiz: !!biz, delivery });
     const all = files.map((f) => ({ ...f, type: f.type || 'application/postscript' }));
     if (biz) all.push(biz);
     step('Gmail 임시보관함에 메일을 만드는 중입니다…');

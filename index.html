@@ -6,7 +6,7 @@
 <meta name="robots" content="noindex, nofollow">
 <title>명함 생성기 · 녹색전환연구소</title>
 <link rel="preload" href="assets/AstaSans-UI.woff2" as="font" type="font/woff2" crossorigin>
-<link rel="stylesheet" href="css/style.css?v=20261118a">
+<link rel="stylesheet" href="css/style.css?v=20261118b">
 </head>
 <body>
 <a class="skip" href="#make">본문으로 건너뛰기</a>
@@ -145,8 +145,13 @@
       <div class="order-row">
         <label for="orderQty">1인당 수량</label>
         <div class="inline qty"><input id="orderQty" type="number" min="1" step="1" inputmode="numeric" placeholder="예: 200"><span>매</span></div>
-        <span class="muted" id="orderWho">선택한 사람: 없음</span>
+        <span class="order-label">배송</span>
+        <div class="seg" role="radiogroup" aria-label="배송 방법">
+          <label><input type="radio" name="orderShip" value="택배" checked><span>택배</span></label>
+          <label><input type="radio" name="orderShip" value="퀵"><span>퀵(선불)</span></label>
+        </div>
       </div>
+      <p class="muted" id="orderWho">선택한 사람: 없음</p>
       <div class="actions">
         <button type="button" id="orderMail" class="primary" disabled>주문 메일 만들기 (Gmail)</button>
         <button type="button" id="orderCopy" class="ghost" disabled>메일 문안만 복사</button>
@@ -208,7 +213,7 @@
 <script src="js/card-ai-data.js?v=20261111a"></script>
 <script src="js/card-ai.js?v=20261112a"></script>
 <script src="js/card-pdf.js?v=20261112a"></script>
-<script src="js/order-mail.js?v=20261118a"></script>
-<script src="js/app.js?v=20261118a"></script>
+<script src="js/order-mail.js?v=20261118b"></script>
+<script src="js/app.js?v=20261118b"></script>
 </body>
 </html>
