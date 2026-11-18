@@ -146,11 +146,28 @@
     const m = compose({ people, qty, sender, attachBiz: !!biz, delivery });
     const all = files.map((f) => ({ ...f, type: f.type || 'application/postscript' }));
     if (biz) all.push(biz);
+    // Gmail의 업로드 주소(upload/gmail)는 브라우저 호출(CORS)을 받지 않으므로, 일반 주소에 raw(base64url)로 보낸다.
+    const send = async (attach) => {
+      const raw = mime({ from: sender.email, to: m.to, subject: m.subject, text: m.text, html: m.html, files: attach });
+      const rawB64 = b64(utf8(raw)).replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+      try {
+        return await api('https://gmail.googleapis.com/gmail/v1/users/me/drafts', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ message: { raw: rawB64 } })
+        });
+      } catch (e) { return { ok: false, status: 0 }; } // 너무 큰 요청은 CORS 헤더 없이 거절되어 fetch 오류로 보일 수 있다
+    };
     step('Gmail 임시보관함에 메일을 만드는 중입니다…');
-    const raw = mime({ from: sender.email, to: m.to, subject: m.subject, text: m.text, html: m.html, files: all });
-    const r = await api('https://gmail.googleapis.com/upload/gmail/v1/users/me/drafts?uploadType=media', {
-      method: 'POST', headers: { 'Content-Type': 'message/rfc822' }, body: raw
-    });
+    let r = await send(all);
+    // 너무 크면 인쇄용 AI를 ZIP 하나로 묶어 다시 시도
+    if ([0, 400, 413].includes(r.status) && files.length > 1 && root.JSZip) {
+      step('첨부파일이 커서 인쇄용 AI를 ZIP으로 묶는 중입니다…');
+      const zip = new root.JSZip();
+      files.forEach((f) => zip.file(f.name, f.data));
+      const zdata = await zip.generateAsync({ type: 'uint8array', compression: 'DEFLATE' });
+      const zname = `녹색전환연구소_명함_${people.length}명_인쇄용_AI.zip`;
+      r = await send([{ name: zname, type: 'application/zip', data: zdata }, ...(biz ? [biz] : [])]);
+    }
+    if ([0, 400, 413].includes(r.status)) throw new Error('메일을 만들지 못했습니다. 첨부파일이 너무 크거나 연결이 끊겼습니다. 사람을 나눠서 다시 만들어 주세요.');
     if (r.status === 403) throw new Error('Gmail 임시보관함 권한이 없습니다. 로그인 창에서 권한을 모두 허용해 주세요.');
     if (!r.ok) throw new Error('메일을 만들지 못했습니다 (' + r.status + ').');
     const d = await r.json();
