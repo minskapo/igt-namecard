@@ -326,7 +326,9 @@
       if (!sel.length) return;
       if (!orderQty() && !confirm('1인당 수량이 비어 있습니다. 수량 없이 메일을 만들까요? (Gmail에서 고쳐 쓸 수 있습니다)')) return;
       const btn = $('#orderMail'); btn.disabled = true;
-      // 로그인 창은 클릭 직후에 띄워야 팝업 차단을 피한다
+      // 새 탭과 로그인 창은 클릭 직후에 띄워야 팝업 차단을 피한다. 탭은 먼저 열어 두고, 메일이 만들어지면 Gmail 임시보관함으로 보낸다.
+      const tab = window.open('about:blank', '_blank');
+      if (tab) { try { tab.opener = null; tab.document.title = 'Gmail 임시보관함 여는 중'; tab.document.body.innerHTML = '<p style="font:16px sans-serif;padding:24px">주문 메일을 만드는 중입니다. 다 만들어지면 Gmail 임시보관함이 열립니다…</p>'; } catch (e) {} }
       const login = OM.login().catch((e) => { throw e; });
       try {
         orderStatus('Google 계정으로 로그인하는 중입니다…');
@@ -344,9 +346,9 @@
           files.push({ name: f.name.replace(/(\.ai)$/, `_${ymd()}$1`), data: f.data, type: 'application/postscript' });
         }
         const r = await OM.draft({ people: sel, qty: orderQty(), delivery: orderShip(), files, onStep: orderStatus });
-        window.open(r.url, '_blank', 'noopener');
-        orderStatus(`Gmail 임시보관함에 주문 메일을 만들었습니다${r.attachedBiz ? '' : ' (사업자등록증은 권한이 없어 붙이지 못했습니다. 직접 첨부해 주세요)'}. 새 탭에서 확인한 뒤 보내 주세요. 탭이 열리지 않으면 Gmail 임시보관함을 열어 주세요.`, !r.attachedBiz);
-      } catch (err) { orderStatus('주문 메일을 만들지 못했습니다: ' + err.message, true); console.error(err); }
+        if (tab && !tab.closed) tab.location.href = r.url; else window.location.href = r.url;
+        orderStatus(`Gmail 임시보관함에 주문 메일을 만들었습니다${r.attachedBiz ? '' : ' (사업자등록증은 권한이 없어 붙이지 못했습니다. 직접 첨부해 주세요)'}. 열린 Gmail 탭에서 확인한 뒤 보내 주세요.`, !r.attachedBiz);
+      } catch (err) { if (tab && !tab.closed) tab.close(); orderStatus('주문 메일을 만들지 못했습니다: ' + err.message, true); console.error(err); }
       finally { btn.disabled = !orderSel().length; }
     });
   }

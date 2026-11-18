@@ -178,7 +178,8 @@
     if (!r.ok) throw new Error('메일을 만들지 못했습니다 (' + r.status + ').');
     const d = await r.json();
     const id = d.message && d.message.id;
-    const url = `https://mail.google.com/mail/?authuser=${encodeURIComponent(sender.email)}#drafts?compose=${id}`;
+    // Gmail 임시보관함 화면을 열고, 방금 만든 메일을 바로 띄운다
+    const url = `https://mail.google.com/mail/u/?authuser=${encodeURIComponent(sender.email)}#drafts?compose=${id}`;
     return { url, attachedBiz: !!biz, sender };
   }
 
