@@ -185,6 +185,7 @@
 
   // 버튼을 누른 순간 로그인 창을 띄워야 팝업이 막히지 않으므로, 페이지가 열릴 때 로그인 모듈을 미리 불러 둔다.
   if (typeof document !== 'undefined') loadGsi().catch(() => {});
-  const out = { ORDER, compose, draft, mime, login: getToken };
+  const hasToken = () => !!token && Date.now() < tokenExp - 60000;
+  const out = { ORDER, compose, draft, mime, login: getToken, hasToken };
   if (typeof module !== 'undefined' && module.exports) module.exports = out; else root.OrderMail = out;
 })(typeof window !== 'undefined' ? window : globalThis);
